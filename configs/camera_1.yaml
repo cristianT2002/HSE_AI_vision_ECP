@@ -2,7 +2,7 @@ camera:
   coordinates: '{"x": 71.64315500887596, "y": 31.396375990939976, "width": 171.42677072719823,
     "height": 89.80294450736127, "camara": "Mesa", "punto": "IESCO_T661_ECP"}'
   ip: 10.10.115.231
-  label: A_Person, No_Helmet, White, Harness, YellowGreen
+  label: ''
   name camera: Mesa
   password: 4xUR3_2017
   place: POZO11

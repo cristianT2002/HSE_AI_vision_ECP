@@ -1,7 +1,7 @@
 camera:
   coordinates: '0'
   ip: 10.10.115.232
-  label: ',A_Person'
+  label: ',Harness,No_Helmet,White,YellowGreen'
   name camera: Perforador
   password: 4xUR3_2017
   place: POZO11
