@@ -1,0 +1,84 @@
+import os
+import yaml
+import time
+from src.db_utils import connect_to_db, close_connection
+
+CONFIGS_FOLDER = "configs"
+DATABASE_CONFIG_FILE = "configs/database.yaml"
+
+def load_yaml_config(path):
+    """
+    Carga un archivo YAML y devuelve su contenido como diccionario.
+    """
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            return yaml.safe_load(file)
+    except Exception as e:
+        print(f"Error cargando el archivo YAML: {e}")
+        raise
+
+def generate_camera_yaml(data):
+    """
+    Genera un archivo YAML por cada cámara en la base de datos.
+    """
+    if not os.path.exists(CONFIGS_FOLDER):
+        os.makedirs(CONFIGS_FOLDER)
+
+    existing_files = set(os.listdir(CONFIGS_FOLDER))
+
+    for camera in data:
+        camera_id = camera["ID"]
+        place_cam = camera["LUGAR"]
+        ponit_int = camera["PUNTO"]
+        name_cam = camera["NOMBRE_CAMARA"]
+        ip_camera = camera["IP_CAMARA"]
+        username = camera["USUARIO"]
+        password = camera["CONTRASENA"]
+        probability = camera["PROBABILIDAD"]
+        coordinates = camera["COORDENADAS_AREA"]
+        state_place_model = camera["ESTADO_LUGAR_MODELO"]
+        rtsp_url = f"rtsp://{username}:{password}@{ip_camera}:554/Streaming/Channels/102"
+        model = "juanmodelo.pt"
+
+        camera_config = {
+            "camera": {
+                "rtsp_url": rtsp_url,
+                "username": username,
+                "password": password,
+                "ip": ip_camera,
+                "port": 554,
+                "point": ponit_int,
+                "place": place_cam,
+                "name camera": name_cam,
+                "probability": probability,
+                "coordinates": coordinates,
+                "label": state_place_model
+
+
+            },
+            "model": {
+                "path": f"models/{model}"
+            },
+            "labels": ["A_Person", "Harness", "No_Helmet", "White", "YellowGreen"]
+        }
+
+        output_file = os.path.join(CONFIGS_FOLDER, f"camera_{camera_id}.yaml")
+        with open(output_file, "w", encoding="utf-8") as file:
+            yaml.dump(camera_config, file, default_flow_style=False, allow_unicode=True)
+
+        print(f"Archivo YAML generado o actualizado: {output_file}")
+        existing_files.discard(f"camera_{camera_id}.yaml")
+
+    # Eliminar archivos YAML que no están en la base de datos
+    for leftover_file in existing_files:
+        file_path = os.path.join(CONFIGS_FOLDER, leftover_file)
+        if leftover_file.startswith("camera_") and leftover_file.endswith(".yaml"):
+            os.remove(file_path)
+            print(f"Archivo YAML eliminado: {file_path}")
+
+
+if __name__ == "__main__":
+
+    
+# monitor_database()
+    print("1") 

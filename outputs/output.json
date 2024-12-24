@@ -1,0 +1,41 @@
+[
+    {
+        "ID": 1,
+        "LUGAR": "POZO11",
+        "PUNTO": "IESCO_T661_ECP",
+        "NOMBRE_CAMARA": "Mesa",
+        "IP_CAMARA": "10.10.115.231",
+        "URL_CAMARA_SERVER": "http://172.30.37.76:5000/video_feed/1",
+        "ESTADO_LUGAR_MODELO": "A_Person, No_Helmet, White, Harness, YellowGreen",
+        "USUARIO": "admin",
+        "CONTRASENA": "4xUR3_2017",
+        "PROBABILIDAD": "10",
+        "COORDENADAS_AREA": "{\"x\": 71.64315500887596, \"y\": 31.396375990939976, \"width\": 171.42677072719823, \"height\": 89.80294450736127, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}"
+    },
+    {
+        "ID": 2,
+        "LUGAR": "POZO11",
+        "PUNTO": "IESCO_T661_ECP",
+        "NOMBRE_CAMARA": "Perforador",
+        "IP_CAMARA": "10.10.115.232",
+        "URL_CAMARA_SERVER": "http://172.30.37.76:5000/video_feed/2",
+        "ESTADO_LUGAR_MODELO": ",A_Person",
+        "USUARIO": "admin",
+        "CONTRASENA": "4xUR3_2017",
+        "PROBABILIDAD": "10",
+        "COORDENADAS_AREA": "0"
+    },
+    {
+        "ID": 3,
+        "LUGAR": "POZO15",
+        "PUNTO": "IESCO_T661_ECP",
+        "NOMBRE_CAMARA": "Mesa",
+        "IP_CAMARA": "10.10.115.233",
+        "URL_CAMARA_SERVER": "0",
+        "ESTADO_LUGAR_MODELO": "A_Person, No_Helmet, White, Harness, YellowGreen",
+        "USUARIO": "admin",
+        "CONTRASENA": "4xUR3_2017",
+        "PROBABILIDAD": "10",
+        "COORDENADAS_AREA": "{\"x\": 71.64315500887596, \"y\": 31.396375990939976, \"width\": 171.42677072719823, \"height\": 89.80294450736127, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}"
+    }
+]
