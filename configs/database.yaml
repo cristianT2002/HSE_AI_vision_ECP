@@ -1,0 +1,8 @@
+database:
+  host: "10.20.30.33"
+  port: 3306
+  user: "ax_monitor"
+  password: "axure.2024"
+  database_name: "hseVideoAnalytics"
+  query_yaml: "SELECT ID, LUGAR, PUNTO, NOMBRE_CAMARA, IP_CAMARA, USUARIO, CONTRASENA, ESTADO_LUGAR_MODELO, PROBABILIDAD, COORDENADAS_AREA FROM IP_Videofeed;"
+  query_json: "SELECT * FROM IP_Videofeed;"

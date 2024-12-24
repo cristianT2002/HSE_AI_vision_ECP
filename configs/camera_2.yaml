@@ -1,0 +1,20 @@
+camera:
+  coordinates: '0'
+  ip: 10.10.115.232
+  label: ',A_Person'
+  name camera: Perforador
+  password: 4xUR3_2017
+  place: POZO11
+  point: IESCO_T661_ECP
+  port: 554
+  probability: '10'
+  rtsp_url: rtsp://admin:4xUR3_2017@10.10.115.232:554/Streaming/Channels/102
+  username: admin
+labels:
+- A_Person
+- Harness
+- No_Helmet
+- White
+- YellowGreen
+model:
+  path: models/juanmodelo.pt
