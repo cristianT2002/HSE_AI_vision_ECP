@@ -4,6 +4,8 @@ import cv2
 import os
 import time
 from src.load_config import load_yaml_config
+import socket
+from src.db_utils import connect_to_db, close_connection
 
 app = Flask(__name__)
 
@@ -97,7 +99,29 @@ def generate_frames(config_path, retry_interval=5):
         finally:
             if cap:
                 cap.release()
-    
+
+def save_feed_url_to_database(camera_id, url):
+    """
+    Guarda la URL del video feed en la columna URL_CAMARA_SERVER de la base de datos.
+    """
+    connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+    cursor = connection.cursor()
+
+    try:
+        update_query = """
+            UPDATE IP_Videofeed
+            SET URL_CAMARA_SERVER = %s
+            WHERE ID = %s
+        """
+        cursor.execute(update_query, (url, camera_id))
+        connection.commit()
+        print(f"URL {url} guardada correctamente para la cámara {camera_id}")
+    except Exception as e:
+        print(f"Error al guardar la URL en la base de datos: {e}")
+    finally:
+        cursor.close()
+        close_connection(connection)
+
 @app.route("/video_feed/<int:camera_id>")
 def video_feed(camera_id):
     """
@@ -108,6 +132,14 @@ def video_feed(camera_id):
 
         if not os.path.exists(config_path):
             return f"No se encontró el archivo YAML para la cámara {camera_id}.", 404
+        
+        # Obtener la IP del host
+        host_ip = socket.gethostbyname(socket.gethostname())
+        feed_url = f"http://{host_ip}:5000/video_feed/{camera_id}"
+        print(feed_url)
+
+        # Guardar la URL en la base de datos
+        save_feed_url_to_database(camera_id, feed_url)
 
         return Response(generate_frames(config_path), mimetype="multipart/x-mixed-replace; boundary=frame")
     except Exception as e:
