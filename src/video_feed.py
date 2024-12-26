@@ -97,7 +97,7 @@ def generate_frames(config_path, retry_interval=5):
         finally:
             if cap:
                 cap.release()
-
+    
 @app.route("/video_feed/<int:camera_id>")
 def video_feed(camera_id):
     """
