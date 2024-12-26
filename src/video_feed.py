@@ -40,6 +40,7 @@ def generate_frames(config_path, retry_interval=5):
             while True:
                 # Recargar la configuración del YAML en cada iteración
                 config = load_yaml_config(config_path)
+                print(config)
                 rtsp_url = config["camera"]["rtsp_url"]
                 min_probability = float(config["camera"].get("probability", 50))
                 labels_to_detect = [label.strip() for label in config["camera"].get("label", "").split(",")]
