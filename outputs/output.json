@@ -9,8 +9,8 @@
         "ESTADO_LUGAR_MODELO": ",Harness, A_Person",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "PROBABILIDAD": "10",
-        "COORDENADAS_AREA": "prueba"
+        "PROBABILIDAD": "68",
+        "COORDENADAS_AREA": "{\"x\": 91.81101038854634, \"y\": 46.617214043035105, \"width\": 85.51170680980242, \"height\": 75.23442808607022, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}"
     },
     {
         "ID": 2,
@@ -19,11 +19,11 @@
         "NOMBRE_CAMARA": "Perforador",
         "IP_CAMARA": "10.10.115.232",
         "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/2",
-        "ESTADO_LUGAR_MODELO": "A_Person",
+        "ESTADO_LUGAR_MODELO": ",No_Helmet,White,YellowGreen,A_Person",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
         "PROBABILIDAD": "10",
-        "COORDENADAS_AREA": "0"
+        "COORDENADAS_AREA": "{\"x\": 40.38297917038687, \"y\": 6.82559456398641, \"width\": 32.67192571506602, \"height\": 10.002265005662515, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\"}"
     },
     {
         "ID": 3,
@@ -35,7 +35,7 @@
         "ESTADO_LUGAR_MODELO": ",Harness, A_Person",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "PROBABILIDAD": "10",
-        "COORDENADAS_AREA": "{\"x\": 71.64315500887596, \"y\": 31.396375990939976, \"width\": 171.42677072719823, \"height\": 89.80294450736127, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}"
+        "PROBABILIDAD": "68",
+        "COORDENADAS_AREA": "{\"x\": 91.81101038854634, \"y\": 46.617214043035105, \"width\": 85.51170680980242, \"height\": 75.23442808607022, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}"
     }
 ]

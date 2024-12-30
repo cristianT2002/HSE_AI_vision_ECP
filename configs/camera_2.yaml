@@ -1,7 +1,8 @@
 camera:
-  coordinates: '0'
+  coordinates: '{"x": 40.38297917038687, "y": 6.82559456398641, "width": 32.67192571506602,
+    "height": 10.002265005662515, "camara": "Perforador", "punto": "IESCO_T661_ECP"}'
   ip: 10.10.115.232
-  label: A_Person
+  label: ',No_Helmet,White,YellowGreen,A_Person'
   name camera: Perforador
   password: 4xUR3_2017
   place: POZO11
