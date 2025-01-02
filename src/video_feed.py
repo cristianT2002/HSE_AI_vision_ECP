@@ -6,6 +6,7 @@ import time
 from src.load_config import load_yaml_config
 import socket
 from src.db_utils import connect_to_db, close_connection
+import json
 
 app = Flask(__name__)
 
