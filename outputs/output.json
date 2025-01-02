@@ -9,8 +9,7 @@
         "ESTADO_LUGAR_MODELO": ",Harness, A_Person",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "PROBABILIDAD": "68",
-        "COORDENADAS_AREA": "{\"area1\":{\"x\": 91.81101038854634, \"y\": 46.617214043035105, \"width\": 85.51170680980242, \"height\": 75.23442808607022, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"50\", \"Harness\": \"10\", \"White\": \"10\"}}"
+        "COORDENADAS_AREA": "{\"area1\":{\"x\": 91.81101038854634, \"y\": 46.617214043035105, \"width\": 85.51170680980242, \"height\": 75.23442808607022, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\", \"Harness\": \"10\", \"White\": \"10\"}}"
     },
     {
         "ID": 2,
@@ -22,20 +21,6 @@
         "ESTADO_LUGAR_MODELO": ",No_Helmet,White,YellowGreen, A_Person",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "PROBABILIDAD": "10",
-        "COORDENADAS_AREA": "{\"area1\":{\"x\": 91.81101038854634, \"y\": 46.617214043035105, \"width\": 85.51170680980242, \"height\": 75.23442808607022, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"50\", \"Harness\": \"10\"}, \"area2\":{\"x\": 91.81101038854634, \"y\": 46.617214043035105, \"width\": 85.51170680980242, \"height\": 75.23442808607022, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"50\", \"Harness\": \"10\", \"No_Helmet\": \"20\"}}"
-    },
-    {
-        "ID": 3,
-        "LUGAR": "POZO15",
-        "PUNTO": "IESCO_T661_ECP",
-        "NOMBRE_CAMARA": "Mesa",
-        "IP_CAMARA": "10.10.115.233",
-        "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/3",
-        "ESTADO_LUGAR_MODELO": ",Harness, A_Person",
-        "USUARIO": "admin",
-        "CONTRASENA": "4xUR3_2017",
-        "PROBABILIDAD": "68",
-        "COORDENADAS_AREA": "{\"area1\":{\"x\": 91.81101038854634, \"y\": 46.617214043035105, \"width\": 85.51170680980242, \"height\": 75.23442808607022, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}}"
+        "COORDENADAS_AREA": "{\"area1\":{\"x\": 91.81101038854634, \"y\": 46.617214043035105, \"width\": 85.51170680980242, \"height\": 75.23442808607022, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"90\", \"Harness\": \"10\", \"White\":\"20\", \"No_Helmet\": \"80\"}}"
     }
 ]

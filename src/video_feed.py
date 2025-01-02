@@ -35,19 +35,47 @@ COLORS = {
 def generate_frames(config_path, retry_interval=5):
     """
     Genera frames desde un RTSP utilizando YOLO para inferencias.
-    Filtra las detecciones dinámicamente basándose en el YAML.
+    Filtra las detecciones dinámicamente basándose en las etiquetas definidas en 'camera.label'
+    y las probabilidades específicas de 'coordinates -> area1'.
     """
     while True:
         try:
             cap = None
             while True:
                 # Recargar la configuración del YAML en cada iteración
-                config = load_yaml_config(config_path)
-                print(config)
-                rtsp_url = config["camera"]["rtsp_url"]
-                min_probability = float(config["camera"].get("probability", 50))
-                labels_to_detect = [label.strip() for label in config["camera"].get("label", "").split(",")]
+                try:
+                    config = load_yaml_config(config_path)
+                    print(f"Configuración cargada desde {config_path}: {config}")  # Debug
+                except Exception as yaml_error:
+                    print(f"Error al cargar el archivo YAML: {yaml_error}")
+                    time.sleep(retry_interval)
+                    continue
+                
+                # Validar que existan las claves necesarias
+                try:
+                    rtsp_url = config["camera"]["rtsp_url"]
+                    
+                    # Etiquetas a pintar definidas en 'label'
+                    labels_to_draw = [label.strip() for label in config["camera"].get("label", "").split(",")]
 
+                    # Probabilidades específicas de 'coordinates -> area1'
+                    area_config = config["camera"]["coordinates"]["area1"]
+                    label_probabilities = {
+                        key: float(value) for key, value in area_config.items()
+                        if key != "camara" and key != "punto"  # Ignorar claves irrelevantes
+                    }
+                    print(f"Etiquetas a pintar: {labels_to_draw}")  # Debug
+                    print(f"Probabilidades cargadas: {label_probabilities}")  # Debug
+                except KeyError as key_error:
+                    print(f"Clave faltante en el archivo YAML: {key_error}")
+                    time.sleep(retry_interval)
+                    continue
+                except ValueError as value_error:
+                    print(f"Error en el formato de las probabilidades: {value_error}")
+                    time.sleep(retry_interval)
+                    continue
+
+                # Manejo del flujo RTSP
                 if cap is None or not cap.isOpened():
                     cap = cv2.VideoCapture(rtsp_url)
                     if not cap.isOpened():
@@ -63,44 +91,240 @@ def generate_frames(config_path, retry_interval=5):
                     break
 
                 # Procesar el frame con el modelo cargado globalmente
-                results = model(frame)
+                try:
+                    results = model(frame)
+                except Exception as model_error:
+                    print(f"Error al procesar el frame con el modelo: {model_error}")
+                    time.sleep(retry_interval)
+                    continue
 
                 for detection in results[0].boxes:
-                    # Obtener coordenadas, probabilidad y etiqueta de la detección
-                    x1, y1, x2, y2 = map(int, detection.xyxy[0])
-                    probability = detection.conf[0] * 100
-                    class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
-                    label = LABELS.get(class_index, "Unknown")
+                    try:
+                        # Obtener coordenadas, probabilidad y etiqueta de la detección
+                        x1, y1, x2, y2 = map(int, detection.xyxy[0])
+                        probability = detection.conf[0] * 100
+                        class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+                        label = LABELS.get(class_index, "Unknown")
 
-                    # Filtrar detecciones basadas en los labels del YAML y la probabilidad
-                    if label in labels_to_detect and probability >= min_probability:
-                        color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta, blanco si no existe
+                        # Verificar si la etiqueta está en las configuraciones de 'label'
+                        if label in labels_to_draw:
+                            # Tomar la probabilidad desde 'coordinates -> area1'
+                            min_probability = label_probabilities.get(label, 0)
 
-                        # Dibujar el rectángulo de la detección
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+                            # Filtrar detecciones basadas en la probabilidad específica
+                            if probability >= min_probability:
+                                color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta, blanco si no existe
 
-                        # Agregar un fondo para el texto
-                        text = f"{label}: {probability:.2f}%"
-                        (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-                        text_offset_x, text_offset_y = x1, y1 - 10
-                        box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
-                        cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+                                # Dibujar el rectángulo de la detección
+                                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
 
-                        # Agregar el texto encima del fondo
-                        cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                                # Agregar un fondo para el texto
+                                text = f"{label}: {probability:.2f}%"
+                                (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+                                text_offset_x, text_offset_y = x1, y1 - 10
+                                box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
+                                cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+
+                                # Agregar el texto encima del fondo
+                                cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                    except Exception as detection_error:
+                        print(f"Error al procesar una detección: {detection_error}")
 
                 # Codificar el frame como JPEG
-                _, buffer = cv2.imencode(".jpg", frame)
-                frame_bytes = buffer.tobytes()
-
-                # Yield del frame para streaming
-                yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
+                try:
+                    _, buffer = cv2.imencode(".jpg", frame)
+                    frame_bytes = buffer.tobytes()
+                    yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
+                except Exception as encoding_error:
+                    print(f"Error al codificar el frame: {encoding_error}")
         except Exception as e:
             print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
             time.sleep(retry_interval)
         finally:
             if cap:
                 cap.release()
+
+
+
+# def generate_frames(config_path, retry_interval=5):
+#     """
+#     Genera frames desde un RTSP utilizando YOLO para inferencias.
+#     Filtra las detecciones dinámicamente basándose en el YAML.
+#     """
+#     while True:
+#         try:
+#             cap = None
+#             while True:
+#                 # Recargar la configuración del YAML en cada iteración
+#                 try:
+#                     config = load_yaml_config(config_path)
+#                     print(f"Configuración cargada desde {config_path}: {config}")  # Debug
+#                 except Exception as yaml_error:
+#                     print(f"Error al cargar el archivo YAML: {yaml_error}")
+#                     time.sleep(retry_interval)
+#                     continue
+                
+#                 # Validar que existan las claves necesarias
+#                 try:
+#                     rtsp_url = config["camera"]["rtsp_url"]
+#                     area_config = config["camera"]["coordinates"]["area1"]
+
+#                     # Filtrar solo las claves que son etiquetas válidas
+#                     valid_labels = ["A_Person", "Harness", "No_Helmet", "White", "YellowGreen"]
+#                     label_probabilities = {
+#                         key: float(value) for key, value in area_config.items()
+#                         if key in valid_labels
+#                     }
+#                     print(f"Probabilidades cargadas: {label_probabilities}")  # Debug
+#                 except KeyError as key_error:
+#                     print(f"Clave faltante en el archivo YAML: {key_error}")
+#                     time.sleep(retry_interval)
+#                     continue
+#                 except ValueError as value_error:
+#                     print(f"Error en el formato de las probabilidades: {value_error}")
+#                     time.sleep(retry_interval)
+#                     continue
+
+#                 # Manejo del flujo RTSP
+#                 if cap is None or not cap.isOpened():
+#                     cap = cv2.VideoCapture(rtsp_url)
+#                     if not cap.isOpened():
+#                         print(f"No se pudo abrir el video feed: {rtsp_url}. Reintentando en {retry_interval} segundos...")
+#                         time.sleep(retry_interval)
+#                         continue
+
+#                 ret, frame = cap.read()
+#                 if not ret:
+#                     print(f"Error al leer el flujo de video: {rtsp_url}. Reiniciando conexión...")
+#                     cap.release()
+#                     cap = None
+#                     break
+
+#                 # Procesar el frame con el modelo cargado globalmente
+#                 try:
+#                     results = model(frame)
+#                 except Exception as model_error:
+#                     print(f"Error al procesar el frame con el modelo: {model_error}")
+#                     time.sleep(retry_interval)
+#                     continue
+
+#                 for detection in results[0].boxes:
+#                     try:
+#                         # Obtener coordenadas, probabilidad y etiqueta de la detección
+#                         x1, y1, x2, y2 = map(int, detection.xyxy[0])
+#                         probability = detection.conf[0] * 100
+#                         class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+#                         label = LABELS.get(class_index, "Unknown")
+
+#                         # Verificar si la etiqueta está en las configuraciones de probabilidades
+#                         if label in label_probabilities:
+#                             min_probability = label_probabilities[label]
+
+#                             # Filtrar detecciones basadas en las probabilidades del YAML
+#                             if probability >= min_probability:
+#                                 color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta, blanco si no existe
+
+#                                 # Dibujar el rectángulo de la detección
+#                                 cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+
+#                                 # Agregar un fondo para el texto
+#                                 text = f"{label}: {probability:.2f}%"
+#                                 (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+#                                 text_offset_x, text_offset_y = x1, y1 - 10
+#                                 box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
+#                                 cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+
+#                                 # Agregar el texto encima del fondo
+#                                 cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+#                     except Exception as detection_error:
+#                         print(f"Error al procesar una detección: {detection_error}")
+
+#                 # Codificar el frame como JPEG
+#                 try:
+#                     _, buffer = cv2.imencode(".jpg", frame)
+#                     frame_bytes = buffer.tobytes()
+#                     yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
+#                 except Exception as encoding_error:
+#                     print(f"Error al codificar el frame: {encoding_error}")
+#         except Exception as e:
+#             print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
+#             time.sleep(retry_interval)
+#         finally:
+#             if cap:
+#                 cap.release()
+
+
+#------------------------------original---------------------------------------------------
+
+# def generate_frames(config_path, retry_interval=5):
+#     """
+#     Genera frames desde un RTSP utilizando YOLO para inferencias.
+#     Filtra las detecciones dinámicamente basándose en el YAML.
+#     """
+#     while True:
+#         try:
+#             cap = None
+#             while True:
+#                 # Recargar la configuración del YAML en cada iteración
+#                 config = load_yaml_config(config_path)
+#                 print(config)
+#                 rtsp_url = config["camera"]["rtsp_url"]
+#                 min_probability = float(config["camera"].get("probability", 50))
+#                 labels_to_detect = [label.strip() for label in config["camera"].get("label", "").split(",")]
+
+#                 if cap is None or not cap.isOpened():
+#                     cap = cv2.VideoCapture(rtsp_url)
+#                     if not cap.isOpened():
+#                         print(f"No se pudo abrir el video feed: {rtsp_url}. Reintentando en {retry_interval} segundos...")
+#                         time.sleep(retry_interval)
+#                         continue
+
+#                 ret, frame = cap.read()
+#                 if not ret:
+#                     print(f"Error al leer el flujo de video: {rtsp_url}. Reiniciando conexión...")
+#                     cap.release()
+#                     cap = None
+#                     break
+
+#                 # Procesar el frame con el modelo cargado globalmente
+#                 results = model(frame)
+
+#                 for detection in results[0].boxes:
+#                     # Obtener coordenadas, probabilidad y etiqueta de la detección
+#                     x1, y1, x2, y2 = map(int, detection.xyxy[0])
+#                     probability = detection.conf[0] * 100
+#                     class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+#                     label = LABELS.get(class_index, "Unknown")
+
+#                     # Filtrar detecciones basadas en los labels del YAML y la probabilidad
+#                     if label in labels_to_detect and probability >= min_probability:
+#                         color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta, blanco si no existe
+
+#                         # Dibujar el rectángulo de la detección
+#                         cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+
+#                         # Agregar un fondo para el texto
+#                         text = f"{label}: {probability:.2f}%"
+#                         (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+#                         text_offset_x, text_offset_y = x1, y1 - 10
+#                         box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
+#                         cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+
+#                         # Agregar el texto encima del fondo
+#                         cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+
+#                 # Codificar el frame como JPEG
+#                 _, buffer = cv2.imencode(".jpg", frame)
+#                 frame_bytes = buffer.tobytes()
+
+#                 # Yield del frame para streaming
+#                 yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
+#         except Exception as e:
+#             print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
+#             time.sleep(retry_interval)
+#         finally:
+#             if cap:
+#                 cap.release()
 
 def save_feed_url_to_database(camera_id, url):
     """

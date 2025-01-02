@@ -1,7 +1,7 @@
 camera:
   coordinates:
     area1:
-      A_Person: '50'
+      A_Person: '10'
       Harness: '10'
       White: '10'
       camara: Mesa
