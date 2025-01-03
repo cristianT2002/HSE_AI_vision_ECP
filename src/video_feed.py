@@ -39,7 +39,7 @@ def generate_frames(config_path, retry_interval=5):
     y las probabilidades específicas de 'coordinates -> area1'. Además, dibuja una caja azul 
     utilizando las coordenadas definidas en el archivo YAML, y realiza inferencias solo dentro de esa caja.
     """
-    target_width, target_height = 1000, 567  # Resolución deseada
+    target_width, target_height = 640, 380  # Resolución deseada
 
     while True:
         try:
@@ -68,12 +68,37 @@ def generate_frames(config_path, retry_interval=5):
                         key: float(value) for key, value in area_config.items()
                         if key not in ["camara", "punto"]  # Ignorar claves irrelevantes
                     }
+                    
+                    # Dimensiones de las imágenes
+                    width2 = 294.1226453481414
+                    height2 = 145.45830319313836
+                    width1 = 640
+                    height1 = 380
 
                     # Obtener las coordenadas de la caja azul
-                    area_x = float(area_config["x"])
-                    area_y = float(area_config["y"])
-                    area_width = float(area_config["width"])
-                    area_height = float(area_config["height"])
+                    area_x = int(area_config["x"])
+                    area_y = int(area_config["y"])
+                    area_width = int(area_config["width"])
+                    area_height = int(area_config["height"])
+                    
+                    x2 = area_x  # Ejemplo de coordenada x en imagen2
+                    y2 = area_y   # Ejemplo de coordenada y en imagen2
+                    
+                    rect_width2 = area_width
+                    rect_height2 = area_height
+                    
+                    # Escalar coordenadas a imagen1
+                    x1 = (x2 / width2) * width1
+                    y1 = (y2 / height2) * height1
+
+                    # Escalar dimensiones del rectángulo a imagen1
+                    rect_width1 = (rect_width2 / width2) * width1
+                    rect_height1 = (rect_height2 / height2) * height1
+                    
+                    start_point = (int(x1), int(y1))
+                    end_point = (int(x1 + rect_width1), int(y1 + rect_height1))
+                    
+                    
                 except KeyError as key_error:
                     print(f"Clave faltante en el archivo YAML: {key_error}")
                     time.sleep(retry_interval)
@@ -102,7 +127,8 @@ def generate_frames(config_path, retry_interval=5):
                 frame = cv2.resize(frame, (target_width, target_height))
 
                 # Dibujar la caja azul en el frame
-                cv2.rectangle(frame, (area_x, area_y), (area_x + area_width, area_y + area_height), (255, 0, 0), 2)
+                # cv2.rectangle(frame, (area_x, area_y), (area_x + area_width, area_y + area_height), (255, 0, 0), 2)
+                cv2.rectangle(frame, start_point, end_point, (255, 0, 0), 2)
 
                 # Procesar el frame con el modelo cargado globalmente
                 try:

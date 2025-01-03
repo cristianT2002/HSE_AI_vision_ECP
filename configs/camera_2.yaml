@@ -1,12 +1,13 @@
 camera:
   coordinates:
     area1:
+      Personas: '25'
       camara: Perforador
-      height: 20.1058201058201
+      height: 139.41798941798942
       punto: IESCO_T661_ECP
-      width: 24.25906283147191
-      x: 137.776876520871
-      y: 57.45701058201058
+      width: 277.33200224620947
+      x: 13.486616334934796
+      y: 5.340608465608465
   ip: 10.10.115.232
   label: ',No_Helmet,White,YellowGreen, A_Person'
   name camera: Perforador

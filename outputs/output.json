@@ -5,11 +5,11 @@
         "PUNTO": "IESCO_T661_ECP",
         "NOMBRE_CAMARA": "Mesa",
         "IP_CAMARA": "10.10.115.231",
-        "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/1",
+        "URL_CAMARA_SERVER": "http://10.212.134.14:5000/video_feed/1",
         "ESTADO_LUGAR_MODELO": ",Harness, A_Person",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 114.71579210082984, \"y\": 49.520502645502646, \"width\": 99.43220814874897, \"height\": 40.2116402116402, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"Personas\": \"25\"}}"
+        "COORDENADAS_AREA": "{\"area1\": {\"x\": 6.598240469208211, \"y\": 3.224206349206349, \"width\": 287.51481874337054, \"height\": 141.53439153439152, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"Personas\": \"46\"}}"
     },
     {
         "ID": 2,
@@ -21,6 +21,6 @@
         "ESTADO_LUGAR_MODELO": ",No_Helmet,White,YellowGreen, A_Person",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 137.776876520871, \"y\": 57.45701058201058, \"width\": 24.25906283147191, \"height\": 20.1058201058201, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\"}}"
+        "COORDENADAS_AREA": "{\"area1\": {\"x\": 13.486616334934796, \"y\": 5.340608465608465, \"width\": 277.33200224620947, \"height\": 139.41798941798942, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"Personas\": \"25\"}}"
     }
 ]
