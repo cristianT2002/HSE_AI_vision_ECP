@@ -35,7 +35,8 @@ COLORS = {
 def generate_frames(config_path, retry_interval=5):
     """
     Genera frames desde un RTSP utilizando YOLO para inferencias.
-    Dibuja cajas para cada área definida en el YAML y realiza inferencias dentro de ellas.
+    Dibuja cajas y procesa detecciones para area1, area2 y area3,
+    utilizando las probabilidades y etiquetas específicas de cada área.
     """
     target_width, target_height = 640, 380  # Resolución deseada
 
@@ -56,11 +57,6 @@ def generate_frames(config_path, retry_interval=5):
                 # Validar que existan las claves necesarias
                 try:
                     rtsp_url = config["camera"]["rtsp_url"]
-                    
-                    # Etiquetas a pintar definidas en 'label'
-                    labels_to_draw = [label.strip() for label in config["camera"].get("label", "").split(",")]
-
-                    # Obtener todas las áreas
                     areas = config["camera"]["coordinates"]
                 except KeyError as key_error:
                     print(f"Clave faltante en el archivo YAML: {key_error}")
@@ -85,22 +81,22 @@ def generate_frames(config_path, retry_interval=5):
                 # Redimensionar el frame a la resolución deseada
                 frame = cv2.resize(frame, (target_width, target_height))
 
-                # Dibujar las cajas y realizar inferencias para cada área
+                # Dimensiones originales de las imágenes
+                width2 = 294.1226453481414
+                height2 = 145.45830319313836
+                width1 = 640
+                height1 = 380
+
+                # Procesar cada área: area1, area2, area3
                 for area_name, area_config in areas.items():
                     try:
-                        # Obtener las coordenadas de la caja
+                        # Obtener las coordenadas y dimensiones del área actual
                         area_x = float(area_config["x"])
                         area_y = float(area_config["y"])
                         area_width = float(area_config["width"])
                         area_height = float(area_config["height"])
-                        
-                        # Dimensiones originales y escaladas
-                        width2 = 294.1226453481414
-                        height2 = 145.45830319313836
-                        width1 = 640
-                        height1 = 380
 
-                        # Escalar coordenadas a la resolución objetivo
+                        # Escalar las coordenadas a la resolución objetivo
                         x1 = (area_x / width2) * width1
                         y1 = (area_y / height2) * height1
                         rect_width1 = (area_width / width2) * width1
@@ -109,45 +105,47 @@ def generate_frames(config_path, retry_interval=5):
                         start_point = (int(x1), int(y1))
                         end_point = (int(x1 + rect_width1), int(y1 + rect_height1))
 
-                        # Dibujar la caja azul para cada área
+                        # Dibujar la caja azul
                         cv2.rectangle(frame, start_point, end_point, (255, 0, 0), 2)
-                    except KeyError as e:
-                        print(f"Error al procesar las coordenadas de {area_name}: {e}")
-                        continue
 
-                    # Procesar el frame con el modelo cargado globalmente
-                    try:
+                        # Procesar el frame con el modelo
                         results = model(frame)
-                    except Exception as model_error:
-                        print(f"Error al procesar el frame con el modelo: {model_error}")
-                        time.sleep(retry_interval)
+
+                        for detection in results[0].boxes:
+                            try:
+                                # Obtener coordenadas, probabilidad y etiqueta de la detección
+                                x1_det, y1_det, x2_det, y2_det = map(int, detection.xyxy[0])
+                                probability = detection.conf[0] * 100
+                                class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+                                label = LABELS.get(class_index, "Unknown")
+
+                                # Verificar si la etiqueta está permitida en el área actual
+                                if label in area_config:
+                                    min_probability = float(area_config[label])
+
+                                    # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
+                                    if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
+                                        if probability >= min_probability:
+                                            # Dibujar la detección
+                                            color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
+                                            cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
+
+                                            # Agregar el texto de la etiqueta
+                                            text = f"{label}: {probability:.2f}%"
+                                            (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+                                            text_offset_x, text_offset_y = x1_det, y1_det - 10
+                                            box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
+                                            
+                                            # Condicional para pintar del label  
+                                            
+                                            cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+                                            cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                            except Exception as detection_error:
+                                print(f"Error al procesar una detección en {area_name}: {detection_error}")
+
+                    except Exception as area_error:
+                        print(f"Error al procesar {area_name}: {area_error}")
                         continue
-
-                    # Filtrar y dibujar detecciones dentro de la caja actual
-                    for detection in results[0].boxes:
-                        try:
-                            # Obtener coordenadas, probabilidad y etiqueta de la detección
-                            x1_det, y1_det, x2_det, y2_det = map(int, detection.xyxy[0])
-                            probability = detection.conf[0] * 100
-                            class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
-                            label = LABELS.get(class_index, "Unknown")
-
-                            # Verificar si la detección está dentro de la caja actual
-                            if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
-                                if label in labels_to_draw:
-                                    # Dibujar la detección
-                                    color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
-                                    cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
-
-                                    # Agregar el texto de la etiqueta
-                                    text = f"{label}: {probability:.2f}%"
-                                    (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-                                    text_offset_x, text_offset_y = x1_det, y1_det - 10
-                                    box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
-                                    cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
-                                    cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-                        except Exception as detection_error:
-                            print(f"Error al procesar una detección: {detection_error}")
 
                 # Codificar el frame como JPEG
                 try:
@@ -162,6 +160,134 @@ def generate_frames(config_path, retry_interval=5):
         finally:
             if cap:
                 cap.release()
+
+
+
+# def generate_frames(config_path, retry_interval=5):
+#     """
+#     Genera frames desde un RTSP utilizando YOLO para inferencias.
+#     Dibuja cajas y procesa detecciones para area1, area2 y area3,
+#     utilizando las probabilidades y coordenadas específicas de cada área.
+#     """
+#     target_width, target_height = 640, 380  # Resolución deseada
+
+#     while True:
+#         try:
+#             cap = None
+#             while True:
+#                 # Recargar la configuración del YAML en cada iteración
+#                 try:
+#                     config = load_yaml_config(config_path)
+#                     print(f"Configuración cargada desde {config_path}: {config}")  # Debug
+#                     rtsp_url = config["camera"]["rtsp_url"]
+#                 except Exception as yaml_error:
+#                     print(f"Error al cargar el archivo YAML: {yaml_error}")
+#                     time.sleep(retry_interval)
+#                     continue
+
+#                 # Validar que existan las claves necesarias
+#                 try:
+#                     rtsp_url = config["camera"]["rtsp_url"]
+#                     labels_to_draw = [label.strip() for label in config["camera"].get("label", "").split(",")]
+#                     areas = ["area1", "area2", "area3"]
+#                 except KeyError as key_error:
+#                     print(f"Clave faltante en el archivo YAML: {key_error}")
+#                     time.sleep(retry_interval)
+#                     continue
+
+#                 # Manejo del flujo RTSP
+#                 if cap is None or not cap.isOpened():
+#                     cap = cv2.VideoCapture(rtsp_url)
+#                     if not cap.isOpened():
+#                         print(f"No se pudo abrir el video feed: {rtsp_url}. Reintentando en {retry_interval} segundos...")
+#                         time.sleep(retry_interval)
+#                         continue
+
+#                 ret, frame = cap.read()
+#                 if not ret:
+#                     print(f"Error al leer el flujo de video: {rtsp_url}. Reiniciando conexión...")
+#                     cap.release()
+#                     cap = None
+#                     break
+
+#                 # Redimensionar el frame a la resolución deseada
+#                 frame = cv2.resize(frame, (target_width, target_height))
+
+#                 # Dimensiones originales de las imágenes
+#                 width2 = 294.1226453481414
+#                 height2 = 145.45830319313836
+#                 width1 = 640
+#                 height1 = 380
+
+#                 # Procesar cada área: area1, area2, area3
+#                 for area_name in areas:
+#                     try:
+#                         area_config = config["camera"]["coordinates"][area_name]
+
+#                         # Obtener las coordenadas y dimensiones del área actual
+#                         area_x = float(area_config["x"])
+#                         area_y = float(area_config["y"])
+#                         area_width = float(area_config["width"])
+#                         area_height = float(area_config["height"])
+#                         min_probability = float(area_config.get("A_Person", 50))  # Ejemplo: probabilidad específica para 'A_Person'
+
+#                         # Escalar las coordenadas a la resolución objetivo
+#                         x1 = (area_x / width2) * width1
+#                         y1 = (area_y / height2) * height1
+#                         rect_width1 = (area_width / width2) * width1
+#                         rect_height1 = (area_height / height2) * height1
+
+#                         start_point = (int(x1), int(y1))
+#                         end_point = (int(x1 + rect_width1), int(y1 + rect_height1))
+
+#                         # Dibujar la caja azul
+#                         cv2.rectangle(frame, start_point, end_point, (255, 0, 0), 2)
+
+#                         # Procesar el frame con el modelo
+#                         results = model(frame)
+
+#                         for detection in results[0].boxes:
+#                             try:
+#                                 # Obtener coordenadas, probabilidad y etiqueta de la detección
+#                                 x1_det, y1_det, x2_det, y2_det = map(int, detection.xyxy[0])
+#                                 probability = detection.conf[0] * 100
+#                                 class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+#                                 label = LABELS.get(class_index, "Unknown")
+
+#                                 # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
+#                                 if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
+#                                     if label in labels_to_draw and probability >= min_probability:
+#                                         # Dibujar la detección
+#                                         color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
+#                                         cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
+
+#                                         # Agregar el texto de la etiqueta
+#                                         text = f"{label}: {probability:.2f}%"
+#                                         (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+#                                         text_offset_x, text_offset_y = x1_det, y1_det - 10
+#                                         box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
+#                                         cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+#                                         cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+#                             except Exception as detection_error:
+#                                 print(f"Error al procesar una detección en {area_name}: {detection_error}")
+
+#                     except Exception as area_error:
+#                         print(f"Error al procesar {area_name}: {area_error}")
+#                         continue
+
+#                 # Codificar el frame como JPEG
+#                 try:
+#                     _, buffer = cv2.imencode(".jpg", frame)
+#                     frame_bytes = buffer.tobytes()
+#                     yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
+#                 except Exception as encoding_error:
+#                     print(f"Error al codificar el frame: {encoding_error}")
+#         except Exception as e:
+#             print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
+#             time.sleep(retry_interval)
+#         finally:
+#             if cap:
+#                 cap.release()
 
 
 
@@ -370,6 +496,143 @@ if __name__ == "__main__":
 
 
 
+
+
+
+# def generate_frames(config_path, retry_interval=5):
+#     """
+#     Genera frames desde un RTSP utilizando YOLO para inferencias.
+#     Dibuja cajas para cada área definida en el YAML y realiza inferencias dentro de ellas,
+#     utilizando una probabilidad mínima específica para cada área.
+#     """
+#     target_width, target_height = 640, 380  # Resolución deseada
+
+#     while True:
+#         try:
+#             cap = None
+#             while True:
+#                 # Recargar la configuración del YAML en cada iteración
+#                 try:
+#                     config = load_yaml_config(config_path)
+#                     print(f"Configuración cargada desde {config_path}: {config}")  # Debug
+#                     rtsp_url = config["camera"]["rtsp_url"]
+#                 except Exception as yaml_error:
+#                     print(f"Error al cargar el archivo YAML: {yaml_error}")
+#                     time.sleep(retry_interval)
+#                     continue
+
+#                 # Validar que existan las claves necesarias
+#                 try:
+#                     rtsp_url = config["camera"]["rtsp_url"]
+                    
+#                     # Etiquetas a pintar definidas en 'label'
+#                     labels_to_draw = [label.strip() for label in config["camera"].get("label", "").split(",")]
+
+#                     # Obtener todas las áreas
+#                     areas = config["camera"]["coordinates"]
+#                 except KeyError as key_error:
+#                     print(f"Clave faltante en el archivo YAML: {key_error}")
+#                     time.sleep(retry_interval)
+#                     continue
+
+#                 # Manejo del flujo RTSP
+#                 if cap is None or not cap.isOpened():
+#                     cap = cv2.VideoCapture(rtsp_url)
+#                     if not cap.isOpened():
+#                         print(f"No se pudo abrir el video feed: {rtsp_url}. Reintentando en {retry_interval} segundos...")
+#                         time.sleep(retry_interval)
+#                         continue
+
+#                 ret, frame = cap.read()
+#                 if not ret:
+#                     print(f"Error al leer el flujo de video: {rtsp_url}. Reiniciando conexión...")
+#                     cap.release()
+#                     cap = None
+#                     break
+
+#                 # Redimensionar el frame a la resolución deseada
+#                 frame = cv2.resize(frame, (target_width, target_height))
+
+#                 # Dibujar las cajas y realizar inferencias para cada área
+#                 for area_name, area_config in areas.items():
+#                     try:
+#                         # Obtener las coordenadas de la caja
+#                         area_x = float(area_config["x"])
+#                         area_y = float(area_config["y"])
+#                         area_width = float(area_config["width"])
+#                         area_height = float(area_config["height"])
+
+#                         # Obtener la probabilidad mínima específica para el área
+#                         min_probability = float(list(area_config.values())[0])  # Ejemplo: '40', '29', etc.
+
+#                         # Dimensiones originales y escaladas
+#                         width2 = 294.1226453481414
+#                         height2 = 145.45830319313836
+#                         width1 = 640
+#                         height1 = 380
+
+#                         # Escalar coordenadas a la resolución objetivo
+#                         x1 = (area_x / width2) * width1
+#                         y1 = (area_y / height2) * height1
+#                         rect_width1 = (area_width / width2) * width1
+#                         rect_height1 = (area_height / height2) * height1
+
+#                         start_point = (int(x1), int(y1))
+#                         end_point = (int(x1 + rect_width1), int(y1 + rect_height1))
+
+#                         # Dibujar la caja azul para cada área
+#                         cv2.rectangle(frame, start_point, end_point, (255, 0, 0), 2)
+#                     except KeyError as e:
+#                         print(f"Error al procesar las coordenadas de {area_name}: {e}")
+#                         continue
+
+#                     # Procesar el frame con el modelo cargado globalmente
+#                     try:
+#                         results = model(frame)
+#                     except Exception as model_error:
+#                         print(f"Error al procesar el frame con el modelo: {model_error}")
+#                         time.sleep(retry_interval)
+#                         continue
+
+#                     # Filtrar y dibujar detecciones dentro de la caja actual
+#                     for detection in results[0].boxes:
+#                         try:
+#                             # Obtener coordenadas, probabilidad y etiqueta de la detección
+#                             x1_det, y1_det, x2_det, y2_det = map(int, detection.xyxy[0])
+#                             probability = detection.conf[0] * 100
+#                             class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+#                             label = LABELS.get(class_index, "Unknown")
+
+#                             # Verificar si la detección está dentro de la caja actual
+#                             if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
+#                                 if label in labels_to_draw and probability >= min_probability:
+#                                     # Dibujar la detección
+#                                     color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
+#                                     cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
+
+#                                     # Agregar el texto de la etiqueta
+#                                     text = f"{label}: {probability:.2f}%"
+#                                     (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+#                                     text_offset_x, text_offset_y = x1_det, y1_det - 10
+#                                     box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
+#                                     cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+#                                     cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+#                         except Exception as detection_error:
+#                             print(f"Error al procesar una detección: {detection_error}")
+
+#                 # Codificar el frame como JPEG
+#                 try:
+#                     _, buffer = cv2.imencode(".jpg", frame)
+#                     frame_bytes = buffer.tobytes()
+#                     yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
+#                 except Exception as encoding_error:
+#                     print(f"Error al codificar el frame: {encoding_error}")
+#         except Exception as e:
+#             print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
+#             time.sleep(retry_interval)
+#         finally:
+#             if cap:
+#                 cap.release()
 
 
 

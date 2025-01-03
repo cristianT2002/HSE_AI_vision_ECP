@@ -6,10 +6,10 @@
         "NOMBRE_CAMARA": "Mesa",
         "IP_CAMARA": "10.10.115.231",
         "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/1",
-        "ESTADO_LUGAR_MODELO": ",Harness, A_Person",
+        "ESTADO_LUGAR_MODELO": "Harness,A_Person,White",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 114.71579210082984, \"y\": 5.076058201058201, \"width\": 59.299931365820186, \"height\": 17.989417989417987, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"Personas\": \"40\"}, \"area2\": {\"x\": 3.603294440631434, \"y\": 4.811507936507936, \"width\": 159.93011792599987, \"height\": 131.21693121693121, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"Casco Blanco\": \"40\"}, \"area3\": {\"x\": 179.40662631808823, \"y\": 7.457010582010581, \"width\": 100.92968116303734, \"height\": 133.33333333333331, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"Casco Amarillo, Verde\": \"29\"}}"
+        "COORDENADAS_AREA": "{\"area1\": {\"x\": 2.7048106320584013, \"y\": 2.69510582010582, \"width\": 115.60491670306358, \"height\": 142.85714285714283, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"5\", \"Harness\": \"46\", \"White\": \"46\"}, \"area2\": {\"x\": 122.20315717227179, \"y\": 2.69510582010582, \"width\": 98.23422973731827, \"height\": 140.2116402116402, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"White\": \"6\"}, \"area3\": {\"x\": 227.02626817245897, \"y\": 3.224206349206349, \"width\": 69.78224246583886, \"height\": 141.00529100529099, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"100\"}}"
     },
     {
         "ID": 2,
@@ -18,9 +18,9 @@
         "NOMBRE_CAMARA": "Perforador",
         "IP_CAMARA": "10.10.115.232",
         "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/2",
-        "ESTADO_LUGAR_MODELO": ",White,YellowGreen, A_Person",
+        "ESTADO_LUGAR_MODELO": "A_Person",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 14.38510014350783, \"y\": 7.7215608465608465, \"width\": 113.8079490859175, \"height\": 114.55026455026454, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"Personas\": \"40\"}, \"area2\": {\"x\": 128.49254383228302, \"y\": 27.033730158730158, \"width\": 97.03625132588755, \"height\": 116.93121693121694, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\"}, \"area3\": {\"x\": 230.3207088038934, \"y\": 25.975529100529098, \"width\": 67.98527484869282, \"height\": 119.3121693121693, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"Casco Amarillo, Verde\": \"46\"}}"
+        "COORDENADAS_AREA": "{\"area1\": {\"x\": 6.598240469208211, \"y\": 3.224206349206349, \"width\": 116.20390590877894, \"height\": 131.74603174603172, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"20\"}, \"area2\": {\"x\": 126.39608161227927, \"y\": 2.1660052910052907, \"width\": 92.84332688588007, \"height\": 138.88888888888889, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"20\"}, \"area3\": {\"x\": 222.83334373245148, \"y\": 2.9596560846560847, \"width\": 74.87365071441943, \"height\": 142.06349206349208, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"40\"}}"
     }
 ]
