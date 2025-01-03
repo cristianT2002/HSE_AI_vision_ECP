@@ -1,13 +1,29 @@
 camera:
   coordinates:
     area1:
-      Personas: '46'
+      Personas: '40'
       camara: Mesa
-      height: 141.53439153439152
+      height: 17.989417989417987
       punto: IESCO_T661_ECP
-      width: 287.51481874337054
-      x: 6.598240469208211
-      y: 3.224206349206349
+      width: 59.299931365820186
+      x: 114.71579210082984
+      y: 5.076058201058201
+    area2:
+      Casco Blanco: '40'
+      camara: Mesa
+      height: 131.21693121693121
+      punto: IESCO_T661_ECP
+      width: 159.93011792599987
+      x: 3.603294440631434
+      y: 4.811507936507936
+    area3:
+      Casco Amarillo, Verde: '29'
+      camara: Mesa
+      height: 133.33333333333331
+      punto: IESCO_T661_ECP
+      width: 100.92968116303734
+      x: 179.40662631808823
+      y: 7.457010582010581
   ip: 10.10.115.231
   label: ',Harness, A_Person'
   name camera: Mesa

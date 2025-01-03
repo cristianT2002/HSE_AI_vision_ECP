@@ -1,15 +1,30 @@
 camera:
   coordinates:
     area1:
-      Personas: '25'
+      Personas: '40'
       camara: Perforador
-      height: 139.41798941798942
+      height: 114.55026455026454
       punto: IESCO_T661_ECP
-      width: 277.33200224620947
-      x: 13.486616334934796
-      y: 5.340608465608465
+      width: 113.8079490859175
+      x: 14.38510014350783
+      y: 7.7215608465608465
+    area2:
+      camara: Perforador
+      height: 116.93121693121694
+      punto: IESCO_T661_ECP
+      width: 97.03625132588755
+      x: 128.49254383228302
+      y: 27.033730158730158
+    area3:
+      Casco Amarillo, Verde: '46'
+      camara: Perforador
+      height: 119.3121693121693
+      punto: IESCO_T661_ECP
+      width: 67.98527484869282
+      x: 230.3207088038934
+      y: 25.975529100529098
   ip: 10.10.115.232
-  label: ',No_Helmet,White,YellowGreen, A_Person'
+  label: ',White,YellowGreen, A_Person'
   name camera: Perforador
   password: 4xUR3_2017
   place: POZO11
