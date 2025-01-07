@@ -36,7 +36,7 @@ def monitor_database(db_config):
             cursor.execute(db_config["query_yaml"])
             cameras = cursor.fetchall()
 
-            print("Datos obtenidos de la base de datos:", cameras)
+            # print("Datos obtenidos de la base de datos:", cameras)
 
             # Comparar datos actuales con datos previos
             if cameras != previous_data:

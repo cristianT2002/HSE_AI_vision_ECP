@@ -1,33 +1,22 @@
 camera:
   coordinates:
     area1:
-      A_Person: '5'
-      Harness: '46'
-      White: '46'
       camara: Mesa
-      height: 142.85714285714283
+      height: 144.7089947089947
       punto: IESCO_T661_ECP
-      width: 115.60491670306358
-      x: 2.7048106320584013
-      y: 2.69510582010582
-    area2:
-      White: '6'
-      camara: Mesa
-      height: 140.2116402116402
-      punto: IESCO_T661_ECP
-      width: 98.23422973731827
-      x: 122.20315717227179
-      y: 2.69510582010582
+      width: 104.5236163973295
+      x: 1.5068322206276907
+      y: 2.1660052910052907
     area3:
-      A_Person: '100'
+      No_Helmet: '7'
       camara: Mesa
-      height: 141.00529100529099
+      height: 146.56084656084656
       punto: IESCO_T661_ECP
-      width: 69.78224246583886
-      x: 227.02626817245897
-      y: 3.224206349206349
+      width: 97.33574592874524
+      x: 198.57428090097957
+      y: 1.1078042328042328
   ip: 10.10.115.231
-  label: Harness,A_Person,White
+  label: ',A_Person,No_Helmet,White,YellowGreen'
   name camera: Mesa
   password: 4xUR3_2017
   place: POZO11

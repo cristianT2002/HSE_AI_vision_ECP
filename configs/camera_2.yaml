@@ -26,7 +26,7 @@ camera:
       x: 192.58438884382602
       y: 3.224206349206349
   ip: 10.10.115.232
-  label: ''
+  label: ',A_Person,No_Helmet'
   name camera: Perforador
   password: 4xUR3_2017
   place: POZO11

@@ -5,11 +5,11 @@
         "PUNTO": "IESCO_T661_ECP",
         "NOMBRE_CAMARA": "Mesa",
         "IP_CAMARA": "10.10.115.231",
-        "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/1",
-        "ESTADO_LUGAR_MODELO": "Harness,A_Person,White",
+        "URL_CAMARA_SERVER": "http://192.168.0.54:5000/video_feed/1",
+        "ESTADO_LUGAR_MODELO": ",A_Person,No_Helmet,White,YellowGreen",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 2.7048106320584013, \"y\": 2.69510582010582, \"width\": 115.60491670306358, \"height\": 142.85714285714283, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"5\", \"Harness\": \"46\", \"White\": \"46\"}, \"area2\": {\"x\": 122.20315717227179, \"y\": 2.69510582010582, \"width\": 98.23422973731827, \"height\": 140.2116402116402, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"White\": \"6\"}, \"area3\": {\"x\": 227.02626817245897, \"y\": 3.224206349206349, \"width\": 69.78224246583886, \"height\": 141.00529100529099, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"100\"}}"
+        "COORDENADAS_AREA": "{\"area3\": {\"x\": 198.57428090097957, \"y\": 1.1078042328042328, \"width\": 97.33574592874524, \"height\": 146.56084656084656, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"No_Helmet\": \"7\"}, \"area1\": {\"x\": 1.5068322206276907, \"y\": 2.1660052910052907, \"width\": 104.5236163973295, \"height\": 144.7089947089947, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}}"
     },
     {
         "ID": 2,
@@ -17,8 +17,8 @@
         "PUNTO": "IESCO_T661_ECP",
         "NOMBRE_CAMARA": "Perforador",
         "IP_CAMARA": "10.10.115.232",
-        "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/2",
-        "ESTADO_LUGAR_MODELO": "",
+        "URL_CAMARA_SERVER": "http://192.168.0.54:5000/video_feed/2",
+        "ESTADO_LUGAR_MODELO": ",A_Person,No_Helmet",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
         "COORDENADAS_AREA": "{\"area2\": {\"x\": 102.73600798652274, \"y\": 3.224206349206349, \"width\": 84.15798340300742, \"height\": 140.2116402116402, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"No_Helmet\": \"9\", \"A_Person\": \"10\"}, \"area3\": {\"x\": 192.58438884382602, \"y\": 3.224206349206349, \"width\": 101.52867036875276, \"height\": 142.06349206349205, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"3\"}, \"area1\": {\"x\": 3.9027890434891117, \"y\": 3.224206349206349, \"width\": 83.85848880014974, \"height\": 141.26984126984127, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"Harness\": \"9\"}}"
