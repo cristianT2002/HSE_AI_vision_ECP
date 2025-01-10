@@ -44,6 +44,14 @@ hora_sin_detecciones_segundos = 0
 deteccion_confirmada = False
 
 
+tiempos_limite = {
+    "area1": 5,  # Tiempo límite para área 1
+    "area2": 35,  # Tiempo límite para área 2
+    "area3": 10  # Tiempo límite para área 3
+}
+
+tiempo_deteccion_por_area = {}
+
 def generate_frames(config_path, retry_interval=5):
     global detecciones_obtenidas, detecciones_obtenidas_actual, deteccion_confirmada
     global ahora1, ahora2
@@ -140,6 +148,8 @@ def generate_frames(config_path, retry_interval=5):
 
                         time_in_area = 0
 
+                        # print("areas", area_name)
+
 
                         for detection in results[0].boxes:
                             try:
@@ -155,8 +165,9 @@ def generate_frames(config_path, retry_interval=5):
                                     min_probability = float(area_config[label])
 
                                     # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
-                                    if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
-                                        if probability >= min_probability:
+                                    if probability >= min_probability:
+                                        if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
+                                        
                                             # Dibujar la detección
                                             color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
 
@@ -168,6 +179,22 @@ def generate_frames(config_path, retry_interval=5):
 
                                             detecciones_obtenidas = True
 
+                                            now = time.time()
+
+                                            # Inicializar tiempo si no existe
+                                            if (area_name, label) not in tiempo_deteccion_por_area:
+                                                tiempo_deteccion_por_area[(area_name, label)] = now
+
+                                                print(f"tiempo_deteccion_por_area, {area_name}, {label}: {tiempo_deteccion_por_area[(area_name, label)]}")
+
+                                            tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
+
+                                            # Usar tiempo límite específico para el área
+                                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):  # Default 5s si no está definido
+                                                print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
+                                                # Reiniciar contador
+                                                tiempo_deteccion_por_area[(area_name, label)] = time.time()
+
                                             # Condicional para pintar del label  
                                             if label in config["camera"]["label"]:
 
@@ -176,43 +203,9 @@ def generate_frames(config_path, retry_interval=5):
                                                 cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
 
 
-
-                                    
-                                            if detecciones_obtenidas:
-
-                                                if not detecciones_obtenidas_actual:
-                                                    hora_primera_deteccion_segundos = tiempo_actual_segundos
-                                                    detecciones_obtenidas_actual = True
-
-                                                    print("dbandera", hora_primera_deteccion_segundos)
-
-                                            tiempo_deteccion_acumulado += tiempo_actual_segundos - hora_primera_deteccion_segundos
-                                            hora_primera_deteccion_segundos = tiempo_actual_segundos
-                                            tiempo_no_deteccion_acumulado = 0
-
-                                            print("tiempo_deteccion_acumulado:", tiempo_deteccion_acumulado)
-                                            print("deteccion confirmada:", deteccion_confirmada)
-
-                                            if tiempo_deteccion_acumulado >= 5 and not deteccion_confirmada:
-                                                deteccion_confirmada = True
-                                                no_deteccion_confirmada = False
-                                                ahora1 = datetime.datetime.now().strftime("%H:%M:%S")
-                                                hora_primera_deteccion_segundos_almacenado = hora_primera_deteccion_segundos
-
-                                    
-                                            if tiempo_deteccion_acumulado >= 5 and not deteccion_confirmada:
-                                                hora_primera_deteccion_segundos_almacenado = hora_primera_deteccion_segundos
-                                                print("hora_primera_deteccion_segundos_almacenado actualizado a:", hora_primera_deteccion_segundos_almacenado)
-
                                         else:
-                                            if detecciones_obtenidas_actual:  # Primera no detección en este ciclo
-                                                hora_sin_detecciones_segundos = tiempo_actual_segundos
-                                                detecciones_obtenidas_actual = False
-
-                                            tiempo_no_deteccion_acumulado += tiempo_actual_segundos - hora_sin_detecciones_segundos
-                                            hora_sin_detecciones_segundos = tiempo_actual_segundos
-                                            tiempo_deteccion_acumulado = 0  
-
+                                            # Resetear el tiempo si sale del área
+                                            tiempo_deteccion_por_area.pop((area_name, label), None)
 
                             except Exception as detection_error:
                                 print(f"Error al procesar una detección en {area_name}: {detection_error}")
