@@ -165,6 +165,7 @@ def generate_frames(config_path, retry_interval=5):
                                             (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
                                             text_offset_x, text_offset_y = x1_det, y1_det - 10
                                             box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
+
                                             detecciones_obtenidas = True
 
                                             # Condicional para pintar del label  
@@ -173,6 +174,9 @@ def generate_frames(config_path, retry_interval=5):
                                                 cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
                                                 cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
                                                 cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+
+
+
                                     
                                             if detecciones_obtenidas:
 
@@ -180,34 +184,34 @@ def generate_frames(config_path, retry_interval=5):
                                                     hora_primera_deteccion_segundos = tiempo_actual_segundos
                                                     detecciones_obtenidas_actual = True
 
-                                                    print("dbandera", detecciones_obtenidas_actual)
+                                                    print("dbandera", hora_primera_deteccion_segundos)
 
-                                                tiempo_deteccion_acumulado += tiempo_actual_segundos - hora_primera_deteccion_segundos
-                                                hora_primera_deteccion_segundos = tiempo_actual_segundos
-                                                tiempo_no_deteccion_acumulado = 0
+                                            tiempo_deteccion_acumulado += tiempo_actual_segundos - hora_primera_deteccion_segundos
+                                            hora_primera_deteccion_segundos = tiempo_actual_segundos
+                                            tiempo_no_deteccion_acumulado = 0
 
-                                                print("tiempo_deteccion_acumulado:", tiempo_deteccion_acumulado)
-                                                print("deteccion confirmada:", deteccion_confirmada)
+                                            print("tiempo_deteccion_acumulado:", tiempo_deteccion_acumulado)
+                                            print("deteccion confirmada:", deteccion_confirmada)
 
-                                                if tiempo_deteccion_acumulado >= 5 and not deteccion_confirmada:
-                                                    deteccion_confirmada = True
-                                                    no_deteccion_confirmada = False
-                                                    ahora1 = datetime.datetime.now().strftime("%H:%M:%S")
-                                                    hora_primera_deteccion_segundos_almacenado = hora_primera_deteccion_segundos
+                                            if tiempo_deteccion_acumulado >= 5 and not deteccion_confirmada:
+                                                deteccion_confirmada = True
+                                                no_deteccion_confirmada = False
+                                                ahora1 = datetime.datetime.now().strftime("%H:%M:%S")
+                                                hora_primera_deteccion_segundos_almacenado = hora_primera_deteccion_segundos
 
-                                        
-                                                if tiempo_deteccion_acumulado >= 5 and not deteccion_confirmada:
-                                                    hora_primera_deteccion_segundos_almacenado = hora_primera_deteccion_segundos
-                                                    print("hora_primera_deteccion_segundos_almacenado actualizado a:", hora_primera_deteccion_segundos_almacenado)
+                                    
+                                            if tiempo_deteccion_acumulado >= 5 and not deteccion_confirmada:
+                                                hora_primera_deteccion_segundos_almacenado = hora_primera_deteccion_segundos
+                                                print("hora_primera_deteccion_segundos_almacenado actualizado a:", hora_primera_deteccion_segundos_almacenado)
 
-                                            else:
-                                                if detecciones_obtenidas_actual:  # Primera no detección en este ciclo
-                                                    hora_sin_detecciones_segundos = tiempo_actual_segundos
-                                                    detecciones_obtenidas_actual = False
-
-                                                tiempo_no_deteccion_acumulado += tiempo_actual_segundos - hora_sin_detecciones_segundos
+                                        else:
+                                            if detecciones_obtenidas_actual:  # Primera no detección en este ciclo
                                                 hora_sin_detecciones_segundos = tiempo_actual_segundos
-                                                tiempo_deteccion_acumulado = 0  
+                                                detecciones_obtenidas_actual = False
+
+                                            tiempo_no_deteccion_acumulado += tiempo_actual_segundos - hora_sin_detecciones_segundos
+                                            hora_sin_detecciones_segundos = tiempo_actual_segundos
+                                            tiempo_deteccion_acumulado = 0  
 
 
                             except Exception as detection_error:

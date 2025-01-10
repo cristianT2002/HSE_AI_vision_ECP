@@ -1,22 +1,19 @@
 camera:
   coordinates:
     area1:
-      A_Person: '99'
-      No_Helmet: '12'
       camara: Mesa
-      height: 146.805289189462
+      height: 139.94708994708995
       punto: IESCO_T661_ECP
-      width: 120.3942293958006
-      x: 2.588201685473504
-      y: 0.9727970122135864
+      width: 107.2190678230486
+      x: 5.6997566606351775
+      y: 2.69510582010582
     area2:
-      White: '12'
       camara: Mesa
-      height: 143.65600080750986
+      height: 139.41798941798942
       punto: IESCO_T661_ECP
-      width: 166.1934009427225
-      x: 127.64462219682903
-      y: 1.2150499646714443
+      width: 78.46758594871153
+      x: 117.71073812940662
+      y: 2.69510582010582
   ip: 10.10.115.231
   label: null
   name camera: Mesa
@@ -25,7 +22,7 @@ camera:
   point: IESCO_T661_ECP
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@10.10.115.231:554/Streaming/Channels/102
-  time_areas: '{"area1": "5", "area2": "7", "area3": "10"}'
+  time_areas: '{"area1": "10", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person
