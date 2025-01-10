@@ -25,7 +25,7 @@ def fetch_camera_data():
 
     try:
         # Ajusta la consulta a tu esquema de base de datos
-        query = "SELECT ID, LUGAR, PUNTO, NOMBRE_CAMARA, IP_CAMARA, USUARIO, CONTRASENA, COORDENADAS_AREA, ESTADO_LUGAR_MODELO FROM Cameras"
+        query = "SELECT ID, LUGAR, PUNTO, NOMBRE_CAMARA, IP_CAMARA, USUARIO, CONTRASENA, COORDENADAS_AREA, ESTADO_LUGAR_MODELO, TIME_AREAS FROM Cameras"
         cursor.execute(query)
         rows = cursor.fetchall()
 
@@ -59,6 +59,7 @@ def generate_camera_yaml(data):
         username = camera["USUARIO"]
         password = camera["CONTRASENA"]
         coordinates = camera["COORDENADAS_AREA"]  # Se espera que sea un string JSON
+        times_areas = camera["TIME_AREAS"]
 
         # Convertir coordinates a un diccionario Python
         try:
@@ -82,6 +83,7 @@ def generate_camera_yaml(data):
                 "name camera": name_cam,
                 "coordinates": coordinates_dict,
                 "label": camera["ESTADO_LUGAR_MODELO"],
+                "time_areas": times_areas
             },
             "model": {
                 "path": f"models/{model}"

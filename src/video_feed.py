@@ -1,5 +1,8 @@
 from flask import Flask, Response
 from ultralytics import YOLO
+import time
+from datetime import time as dtime
+import datetime
 import cv2
 import os
 import time
@@ -32,13 +35,35 @@ COLORS = {
     "YellowGreen": (150, 50, 255) # Morado
 }
 
+detectiones_obtenidas = None
+detecciones_obtenidas_actual = False
+tiempo_deteccion_acumulado = 0
+tiempo_no_deteccion_acumulado = 0
+hora_primera_deteccion_segundos_almacenado = 0
+hora_sin_detecciones_segundos = 0
+deteccion_confirmada = False
+
+
 def generate_frames(config_path, retry_interval=5):
+    global detecciones_obtenidas, detecciones_obtenidas_actual, deteccion_confirmada
+    global ahora1, ahora2
+    global tiempo_deteccion_acumulado, tiempo_no_deteccion_acumulado
+    global hora_primera_deteccion_segundos, hora_sin_detecciones_segundos
+    global hora_primera_deteccion_segundos_almacenado
     """
     Genera frames desde un RTSP utilizando YOLO para inferencias.
     Dibuja cajas y procesa detecciones para area1, area2 y area3,
     utilizando las probabilidades y etiquetas específicas de cada área.
     """
     target_width, target_height = 640, 380  # Resolución deseada
+
+    def obtener_segundos_actuales():
+        ahora = datetime.datetime.now()
+        return ahora.hour * 3600 + ahora.minute * 60 + ahora.second
+    
+    tiempo_actual_segundos = obtener_segundos_actuales()
+
+ 
 
     while True:
         try:
@@ -87,6 +112,8 @@ def generate_frames(config_path, retry_interval=5):
                 width1 = 640
                 height1 = 380
 
+                detecciones_obtenidas = False
+
                 # Procesar cada área: area1, area2, area3
                 for area_name, area_config in areas.items():
                     try:
@@ -111,6 +138,9 @@ def generate_frames(config_path, retry_interval=5):
                         # Procesar el frame con el modelo
                         results = model(frame, verbose=False)
 
+                        time_in_area = 0
+
+
                         for detection in results[0].boxes:
                             try:
                                 # Obtener coordenadas, probabilidad y etiqueta de la detección
@@ -118,6 +148,7 @@ def generate_frames(config_path, retry_interval=5):
                                 probability = detection.conf[0] * 100
                                 class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
                                 label = LABELS.get(class_index, "Unknown")
+
 
                                 # Verificar si la etiqueta está permitida en el área actual
                                 if label in area_config:
@@ -134,16 +165,51 @@ def generate_frames(config_path, retry_interval=5):
                                             (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
                                             text_offset_x, text_offset_y = x1_det, y1_det - 10
                                             box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
+                                            detecciones_obtenidas = True
 
-                                            print("config", config["camera"]["label"])
-                                            print("label", label)
-                                            
                                             # Condicional para pintar del label  
                                             if label in config["camera"]["label"]:
+
                                                 cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
                                                 cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
                                                 cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-                                            
+                                    
+                                            if detecciones_obtenidas:
+
+                                                if not detecciones_obtenidas_actual:
+                                                    hora_primera_deteccion_segundos = tiempo_actual_segundos
+                                                    detecciones_obtenidas_actual = True
+
+                                                    print("dbandera", detecciones_obtenidas_actual)
+
+                                                tiempo_deteccion_acumulado += tiempo_actual_segundos - hora_primera_deteccion_segundos
+                                                hora_primera_deteccion_segundos = tiempo_actual_segundos
+                                                tiempo_no_deteccion_acumulado = 0
+
+                                                print("tiempo_deteccion_acumulado:", tiempo_deteccion_acumulado)
+                                                print("deteccion confirmada:", deteccion_confirmada)
+
+                                                if tiempo_deteccion_acumulado >= 5 and not deteccion_confirmada:
+                                                    deteccion_confirmada = True
+                                                    no_deteccion_confirmada = False
+                                                    ahora1 = datetime.datetime.now().strftime("%H:%M:%S")
+                                                    hora_primera_deteccion_segundos_almacenado = hora_primera_deteccion_segundos
+
+                                        
+                                                if tiempo_deteccion_acumulado >= 5 and not deteccion_confirmada:
+                                                    hora_primera_deteccion_segundos_almacenado = hora_primera_deteccion_segundos
+                                                    print("hora_primera_deteccion_segundos_almacenado actualizado a:", hora_primera_deteccion_segundos_almacenado)
+
+                                            else:
+                                                if detecciones_obtenidas_actual:  # Primera no detección en este ciclo
+                                                    hora_sin_detecciones_segundos = tiempo_actual_segundos
+                                                    detecciones_obtenidas_actual = False
+
+                                                tiempo_no_deteccion_acumulado += tiempo_actual_segundos - hora_sin_detecciones_segundos
+                                                hora_sin_detecciones_segundos = tiempo_actual_segundos
+                                                tiempo_deteccion_acumulado = 0  
+
+
                             except Exception as detection_error:
                                 print(f"Error al procesar una detección en {area_name}: {detection_error}")
 
@@ -178,7 +244,7 @@ def save_feed_url_to_database(camera_id, url):
 
     try:
         update_query = """
-            UPDATE IP_Videofeed
+            UPDATE IP_Videofeed2
             SET URL_CAMARA_SERVER = %s
             WHERE ID = %s
         """

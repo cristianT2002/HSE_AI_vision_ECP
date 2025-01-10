@@ -4,5 +4,6 @@ database:
   user: "ax_monitor"
   password: "axure.2024"
   database_name: "hseVideoAnalytics"
-  query_yaml: "SELECT ID, LUGAR, PUNTO, NOMBRE_CAMARA, IP_CAMARA, USUARIO, CONTRASENA, ESTADO_LUGAR_MODELO, COORDENADAS_AREA FROM IP_Videofeed;"
-  query_json: "SELECT * FROM IP_Videofeed;"
+  query_yaml: "SELECT ID, LUGAR, PUNTO, NOMBRE_CAMARA, IP_CAMARA, USUARIO, CONTRASENA, ESTADO_LUGAR_MODELO, COORDENADAS_AREA, TIME_AREAS FROM IP_Videofeed2;"
+  query_json: "SELECT * FROM IP_Videofeed2;"
+

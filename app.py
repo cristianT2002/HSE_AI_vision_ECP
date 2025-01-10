@@ -31,7 +31,6 @@ def monitor_database(db_config):
             # Establece una nueva conexión en cada iteración
             connection = connect_to_db(db_config)
 
-            print("Conectado a la base de datos. Consultando cambios...")
             cursor = connection.cursor(dictionary=True)
             cursor.execute(db_config["query_yaml"])
             cameras = cursor.fetchall()
@@ -40,7 +39,6 @@ def monitor_database(db_config):
 
             # Comparar datos actuales con datos previos
             if cameras != previous_data:
-                print("Se detectaron cambios en la base de datos. Actualizando archivos YAML y JSON...")
 
                 # Actualizar archivos YAML
                 generate_camera_yaml(cameras)
@@ -53,8 +51,7 @@ def monitor_database(db_config):
                 # Actualizar el array de datos previos
                 previous_data = cameras
             else:
-                print("No se detectaron cambios en la base de datos.")
-
+                print("")
         except Exception as e:
             print(f"Error monitoreando la base de datos: {e}")
 
@@ -70,10 +67,8 @@ if __name__ == "__main__":
     db_config = load_yaml_config("configs/database.yaml")["database"]
 
     # Iniciar el servidor Flask en un hilo separado
-    print("Iniciando el servidor Flask para video feeds...")
     flask_thread = threading.Thread(target=start_flask_server, daemon=True)
     flask_thread.start()
 
     # Iniciar el monitoreo de la base de datos en el hilo principal
-    print("Iniciando monitoreo de la base de datos...")
     monitor_database(db_config)
