@@ -71,7 +71,7 @@ def generate_frames(config_path, retry_interval=5):
  
 
     while True:
-        try:
+        # try:
             cap = None
             while True:
                 # Recargar la configuración del YAML en cada iteración
@@ -90,6 +90,18 @@ def generate_frames(config_path, retry_interval=5):
                     rtsp_url = config["camera"]["rtsp_url"]
                     areas = config["camera"]["coordinates"]
                     tiempos_limite = config['camera']["time_areas"]
+
+                    # Convertir el string a un diccionario
+                    tiempos_limite = json.loads(tiempos_limite)
+                    info_notifications = config['camera']["info_notifications"]
+                    if info_notifications:
+                        try:
+                            info_notifications = json.loads(info_notifications)
+                            # print(info_notifications)
+                        except json.JSONDecodeError as e:
+                            print(f"Error decodificando JSON: {e}")
+                    
+
 
                     # Convertir valores de tiempos_limite a float
                     if isinstance(tiempos_limite, str):
@@ -231,12 +243,12 @@ def generate_frames(config_path, retry_interval=5):
                     yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
                 except Exception as encoding_error:
                     print(f"Error al codificar el frame: {encoding_error}")
-        except Exception as e:
-            print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
-            time.sleep(retry_interval)
-        finally:
-            if cap:
-                cap.release()
+        # except Exception as e:
+        #     print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
+        #     time.sleep(retry_interval)
+        # finally:
+        #     if cap:
+        #         cap.release()
 
 
 

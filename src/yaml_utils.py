@@ -51,6 +51,7 @@ def generate_camera_yaml(data):
     existing_files = set(os.listdir(CONFIGS_FOLDER))
 
     for camera in data:
+        print(camera)
         camera_id = camera["ID"]
         place_cam = camera["LUGAR"]
         ponit_int = camera["PUNTO"]
@@ -92,6 +93,7 @@ def generate_camera_yaml(data):
             },
             "labels": ["A_Person", "Harness", "No_Helmet", "White", "YellowGreen"]
         }
+        
 
         output_file = os.path.join(CONFIGS_FOLDER, f"camera_{camera_id}.yaml")
         with open(output_file, "w", encoding="utf-8") as file:
