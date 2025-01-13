@@ -71,7 +71,7 @@ def generate_frames(config_path, retry_interval=5):
  
 
     while True:
-        try:
+        # try:
             cap = None
             while True:
                 # Recargar la configuración del YAML en cada iteración
@@ -93,8 +93,15 @@ def generate_frames(config_path, retry_interval=5):
                     # Convertir el string a un diccionario
                     tiempos_limite = json.loads(tiempos_limite)
                     info_notifications = config['camera']["info_notifications"]
-                    info_notifications = json.loads(info_notifications)
-                    print("Info Notifications", info_notifications)
+                    if info_notifications:
+                        try:
+                            info_notifications = json.loads(info_notifications)
+                            # print(info_notifications)
+                        except json.JSONDecodeError as e:
+                            print(f"Error decodificando JSON: {e}")
+                    else:
+                        print("Los datos son None o vacíos, no se puede procesar.")
+                    
                 except KeyError as key_error:
                     print(f"Clave faltante en el archivo YAML: {key_error}")
                     time.sleep(retry_interval)
@@ -194,6 +201,7 @@ def generate_frames(config_path, retry_interval=5):
                                             tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
 
                                             # Usar tiempo límite específico para el área
+                                            print(tiempos_limite)
                                             if tiempo_acumulado >= tiempos_limite.get(area_name, 5):  # Default 5s si no está definido
                                                 print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
                                                 # Reiniciar contador
@@ -225,12 +233,12 @@ def generate_frames(config_path, retry_interval=5):
                     yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
                 except Exception as encoding_error:
                     print(f"Error al codificar el frame: {encoding_error}")
-        except Exception as e:
-            print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
-            time.sleep(retry_interval)
-        finally:
-            if cap:
-                cap.release()
+        # except Exception as e:
+        #     print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
+        #     time.sleep(retry_interval)
+        # finally:
+        #     if cap:
+        #         cap.release()
 
 
 
