@@ -9,6 +9,7 @@ import time
 from src.load_config import load_yaml_config
 import socket
 from src.db_utils import connect_to_db, close_connection
+import json
 
 
 app = Flask(__name__)
@@ -42,13 +43,9 @@ tiempo_no_deteccion_acumulado = 0
 hora_primera_deteccion_segundos_almacenado = 0
 hora_sin_detecciones_segundos = 0
 deteccion_confirmada = False
+tiempos_limite = {}
 
 
-tiempos_limite = {
-    "area1": 4,  # Tiempo límite para área 1
-    "area2": 3,  # Tiempo límite para área 2
-    "area3": 10  # Tiempo límite para área 3
-}
 
 tiempo_deteccion_por_area = {}
 
@@ -72,8 +69,9 @@ def generate_frames(config_path, retry_interval=5):
     tiempo_actual_segundos = obtener_segundos_actuales()
 
  
+
     while True:
-        try:
+        # try:
             cap = None
             while True:
                 # Recargar la configuración del YAML en cada iteración
@@ -81,6 +79,7 @@ def generate_frames(config_path, retry_interval=5):
                     config = load_yaml_config(config_path)
                     # print(f"Configuración cargada desde {config_path}: {config}")  # Debug
                     rtsp_url = config["camera"]["rtsp_url"]
+                    
                 except Exception as yaml_error:
                     print(f"Error al cargar el archivo YAML: {yaml_error}")
                     time.sleep(retry_interval)
@@ -90,6 +89,25 @@ def generate_frames(config_path, retry_interval=5):
                 try:
                     rtsp_url = config["camera"]["rtsp_url"]
                     areas = config["camera"]["coordinates"]
+                    tiempos_limite = config['camera']["time_areas"]
+
+                    # Convertir el string a un diccionario
+                    tiempos_limite = json.loads(tiempos_limite)
+                    info_notifications = config['camera']["info_notifications"]
+                    if info_notifications:
+                        try:
+                            info_notifications = json.loads(info_notifications)
+                            # print(info_notifications)
+                        except json.JSONDecodeError as e:
+                            print(f"Error decodificando JSON: {e}")
+                    
+
+
+                    # Convertir valores de tiempos_limite a float
+                    if isinstance(tiempos_limite, str):
+                        tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
+                    tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+
                 except KeyError as key_error:
                     print(f"Clave faltante en el archivo YAML: {key_error}")
                     time.sleep(retry_interval)
@@ -120,7 +138,12 @@ def generate_frames(config_path, retry_interval=5):
                 height1 = 380
 
                 detecciones_obtenidas = False
+                salidas_por_area = None
+                salidas_por_area2 = None
 
+
+
+                # Procesar cada área: area1, area2, area3
                 # Procesar cada área: area1, area2, area3
                 for area_name, area_config in areas.items():
                     try:
@@ -145,11 +168,6 @@ def generate_frames(config_path, retry_interval=5):
                         # Procesar el frame con el modelo
                         results = model(frame, verbose=False)
 
-                        time_in_area = 0
-
-                        # print("areas", area_name)
-
-
                         for detection in results[0].boxes:
                             try:
                                 # Obtener coordenadas, probabilidad y etiqueta de la detección
@@ -158,28 +176,53 @@ def generate_frames(config_path, retry_interval=5):
                                 class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
                                 label = LABELS.get(class_index, "Unknown")
 
-
                                 # Verificar si la etiqueta está permitida en el área actual
                                 if label in area_config:
                                     min_probability = float(area_config[label])
+
+                                    # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
                                     if probability >= min_probability:
                                         if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
+
+                                            # Dibujar la detección
+                                            color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
+
+                                            # Agregar el texto de la etiqueta
+                                            text = f"{label}: {probability:.2f}%"
+                                            (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+                                            text_offset_x, text_offset_y = x1_det, y1_det - 10
+                                            box_coords = ((text_offset_x, text_offset_y - text_height - 5), 
+                                                        (text_offset_x + text_width + 5, text_offset_y + 5))
+
+                                            detecciones_obtenidas = True
+
                                             now = time.time()
 
-                                            # Inicializar tiempo si no existe
+                                            # Inicializar tiempo solo si no existe
                                             if (area_name, label) not in tiempo_deteccion_por_area:
                                                 tiempo_deteccion_por_area[(area_name, label)] = now
-
+                                                # print(f"Inicializando tiempo para {area_name}, {label}: {tiempo_deteccion_por_area[(area_name, label)]}")
+                                            else:
+                                                salidas_por_area = True
+                                            # Calcular tiempo acumulado
                                             tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
+                                            print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
 
-                                            # Usar tiempo límite específico para el área
-                                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):  # Default 5s si no está definido
+                                            # Verificar si el tiempo acumulado cumple el límite
+                                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                                                 print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
-                                                # Reiniciar contador
+                                                # Reiniciar el tiempo acumulado solo si se cumple el tiempo límite
                                                 tiempo_deteccion_por_area[(area_name, label)] = time.time()
+
+                                            # Condicional para pintar del label  
+                                            if label in config["camera"]["label"]:
+                                                cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
+                                                cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+                                                cv2.putText(frame, text, (text_offset_x, text_offset_y), 
+                                                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
                                         else:
-                                            # Resetear el tiempo si sale del área
-                                            tiempo_deteccion_por_area.pop((area_name, label), None)
+                                            # Si la detección sale del área, no se reinicia el tiempo, pero se omite el cálculo
+                                            salidas_por_area2 = False
 
                             except Exception as detection_error:
                                 print(f"Error al procesar una detección en {area_name}: {detection_error}")
@@ -195,12 +238,12 @@ def generate_frames(config_path, retry_interval=5):
                     yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
                 except Exception as encoding_error:
                     print(f"Error al codificar el frame: {encoding_error}")
-        except Exception as e:
-            print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
-            time.sleep(retry_interval)
-        finally:
-            if cap:
-                cap.release()
+        # except Exception as e:
+        #     print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
+        #     time.sleep(retry_interval)
+        # finally:
+        #     if cap:
+        #         cap.release()
 
 
 
@@ -254,7 +297,6 @@ def video_feed(camera_id):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-
 
 
 
