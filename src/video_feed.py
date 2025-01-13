@@ -89,7 +89,8 @@ def generate_frames(config_path, retry_interval=5):
                     rtsp_url = config["camera"]["rtsp_url"]
                     areas = config["camera"]["coordinates"]
                     tiempos_limite = config['camera']["time_areas"]
-                    print("Tiempos limite", tiempos_limite)
+                    info_notifications = config['camera']["info_notifications"]
+                    print("Info Notifications", info_notifications)
                 except KeyError as key_error:
                     print(f"Clave faltante en el archivo YAML: {key_error}")
                     time.sleep(retry_interval)

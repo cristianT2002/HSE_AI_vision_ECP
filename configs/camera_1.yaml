@@ -14,6 +14,8 @@ camera:
       width: 78.46758594871153
       x: 117.71073812940662
       y: 2.69510582010582
+  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
   ip: 10.10.115.231
   label: ''
   name camera: Mesa
