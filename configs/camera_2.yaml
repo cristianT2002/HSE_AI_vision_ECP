@@ -3,7 +3,7 @@ camera:
     area1:
       ? ''
       : '100'
-      A_Person: '100'
+      A_Person: '50'
       camara: Perforador
       height: 147.0899470899471
       punto: IESCO_T661_ECP
@@ -11,7 +11,7 @@ camera:
       x: -0.2901353965183752
       y: 1.1078042328042328
     area2:
-      A_Person: '5'
+      A_Person: '10'
       camara: Perforador
       height: 147.0899470899471
       punto: IESCO_T661_ECP
@@ -27,7 +27,7 @@ camera:
   point: IESCO_T661_ECP
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@10.10.115.232:554/Streaming/Channels/102
-  time_areas: '{"area1": "10", "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "10", "area2": "5", "area3": "10"}'
   username: admin
 labels:
 - A_Person

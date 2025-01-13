@@ -10,7 +10,8 @@ from src.load_config import load_yaml_config
 import socket
 from src.db_utils import connect_to_db, close_connection
 import json
-
+import threading
+from src.variables_globales import get_streamers, set_streamers
 
 app = Flask(__name__)
 
@@ -45,16 +46,46 @@ hora_sin_detecciones_segundos = 0
 deteccion_confirmada = False
 tiempos_limite = {}
 
-
-
 tiempo_deteccion_por_area = {}
 
-def generate_frames(config_path, retry_interval=5):
+
+        
+frame_buffer = []
+buffer_lock = threading.Lock()
+process_interval = 1 / 20.0  # Procesar a una tasa de 30 FPS (ajusta según tus necesidades)
+open_cam = False
+
+def streaming_camara1(camara_url):
+    global frame_buffer, buffer_lock
+    cap_camera = cv2.VideoCapture(camara_url, cv2.CAP_FFMPEG)
+    print("Entro a streaming")
+    while True:
+        ret, frame = cap_camera.read()
+        if not ret:
+            # cap_camera.release()  # Liberar la cámara después de terminar de usarla
+            print(f"Error al leer el flujo de video: {camara_url}. Reiniciando conexión...")
+            cap_camera = cv2.VideoCapture(camara_url)
+            # cap_camera = cv2.VideoCapture("rtsp://admin:4xUR3_2017@10.10.148.231")
+            print("Intentando reconectar")
+            continue
+        # frame = buffer.tobytes()
+        # frame_buffer.append(frame)
+        # print("Frame almacenado")
+        if frame is not None and frame.size > 0:
+            with buffer_lock:
+                # print("Frame almacenado")
+                frame_buffer.append(frame)
+                if len(frame_buffer) > 30:  # Limitar el tamaño del buffer para evitar consumo excesivo de memoria
+                    frame_buffer.pop(0)
+    
+
+def generate_frames(config_path, camera_id, retry_interval=5):
     global detecciones_obtenidas, detecciones_obtenidas_actual, deteccion_confirmada
     global ahora1, ahora2
     global tiempo_deteccion_acumulado, tiempo_no_deteccion_acumulado
     global hora_primera_deteccion_segundos, hora_sin_detecciones_segundos
     global hora_primera_deteccion_segundos_almacenado
+    global open_cam, frame_buffer, buffer_lock, frame_to_process
     """
     Genera frames desde un RTSP utilizando YOLO para inferencias.
     Dibuja cajas y procesa detecciones para area1, area2 y area3,
@@ -114,131 +145,142 @@ def generate_frames(config_path, retry_interval=5):
                     continue
 
                 # Manejo del flujo RTSP
-                if cap is None or not cap.isOpened():
-                    cap = cv2.VideoCapture(rtsp_url)
-                    if not cap.isOpened():
-                        print(f"No se pudo abrir el video feed: {rtsp_url}. Reintentando en {retry_interval} segundos...")
-                        time.sleep(retry_interval)
-                        continue
+                # if cap is None or not cap.isOpened():
+                #     cap = cv2.VideoCapture(rtsp_url)
+                #     if not cap.isOpened():
+                #         print(f"No se pudo abrir el video feed: {rtsp_url}. Reintentando en {retry_interval} segundos...")
+                #         time.sleep(retry_interval)
+                #         continue
+                # print("Camara: ", rtsp_url)
+                # if open_cam == False:
+                #     open_cam = True
+                #     hilo_streaming_cam = threading.Thread(name="hilo_streaming_cam", target=streaming_camara1, args=(rtsp_url,))
+                #     hilo_streaming_cam.start()
+                    
+                start_time = time.time()
+                frame_to_process = None
+                streamers = get_streamers()
+                print("Id camara: ",camera_id)
+                print("Streamers: ",streamers)
+                info_buffer = streamers[camera_id]
+                # print("Buffer: ", len(frame_buffer))
+                with info_buffer.buffer_lock:
+                    if info_buffer.frame_buffer:
+                        frame_to_process = info_buffer.frame_buffer.pop(0)
+                
+                # print("Frame procesado: ",frame_to_process)
+                if frame_to_process is not None:
+                    
+                    frame = cv2.resize(frame_to_process, (target_width, target_height))
 
-                ret, frame = cap.read()
-                if not ret:
-                    print(f"Error al leer el flujo de video: {rtsp_url}. Reiniciando conexión...")
-                    cap.release()
-                    cap = None
-                    break
+                    # Dimensiones originales de las imágenes
+                    width2 = 294.1226453481414
+                    height2 = 145.45830319313836
+                    width1 = 640
+                    height1 = 380
 
-                # Redimensionar el frame a la resolución deseada
-                frame = cv2.resize(frame, (target_width, target_height))
+                    detecciones_obtenidas = False
+                    
+                    # Procesar cada área: area1, area2, area3
+                    for area_name, area_config in areas.items():
+                        try:
+                            # Obtener las coordenadas y dimensiones del área actual
+                            area_x = float(area_config["x"])
+                            area_y = float(area_config["y"])
+                            area_width = float(area_config["width"])
+                            area_height = float(area_config["height"])
 
-                # Dimensiones originales de las imágenes
-                width2 = 294.1226453481414
-                height2 = 145.45830319313836
-                width1 = 640
-                height1 = 380
+                            # Escalar las coordenadas a la resolución objetivo
+                            x1 = (area_x / width2) * width1
+                            y1 = (area_y / height2) * height1
+                            rect_width1 = (area_width / width2) * width1
+                            rect_height1 = (area_height / height2) * height1
 
-                detecciones_obtenidas = False
+                            start_point = (int(x1), int(y1))
+                            end_point = (int(x1 + rect_width1), int(y1 + rect_height1))
 
-                # Procesar cada área: area1, area2, area3
-                for area_name, area_config in areas.items():
+                            # Dibujar la caja azul
+                            cv2.rectangle(frame, start_point, end_point, (255, 0, 0), 2)
+
+                            # Procesar el frame con el modelo
+                            results = model(frame, verbose=False)
+
+                            time_in_area = 0
+
+                            # print("areas", area_name)
+
+
+                            for detection in results[0].boxes:
+                                try:
+                                    # Obtener coordenadas, probabilidad y etiqueta de la detección
+                                    x1_det, y1_det, x2_det, y2_det = map(int, detection.xyxy[0])
+                                    probability = detection.conf[0] * 100
+                                    class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+                                    label = LABELS.get(class_index, "Unknown")
+
+
+                                    # Verificar si la etiqueta está permitida en el área actual
+                                    if label in area_config:
+                                        min_probability = float(area_config[label])
+
+                                        # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
+                                        if probability >= min_probability:
+                                            if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
+                                            
+                                                # Dibujar la detección
+                                                color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
+
+                                                # Agregar el texto de la etiqueta
+                                                text = f"{label}: {probability:.2f}%"
+                                                (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+                                                text_offset_x, text_offset_y = x1_det, y1_det - 10
+                                                box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
+
+                                                detecciones_obtenidas = True
+
+                                                now = time.time()
+
+                                                # Inicializar tiempo si no existe
+                                                if (area_name, label) not in tiempo_deteccion_por_area:
+                                                    tiempo_deteccion_por_area[(area_name, label)] = now
+
+                                                    print(f"tiempo_deteccion_por_area, {area_name}, {label}: {tiempo_deteccion_por_area[(area_name, label)]}")
+
+                                                tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
+
+                                                # Usar tiempo límite específico para el área
+                                                print(tiempos_limite)
+                                                if tiempo_acumulado >= tiempos_limite.get(area_name, 5):  # Default 5s si no está definido
+                                                    print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
+                                                    # Reiniciar contador
+                                                    tiempo_deteccion_por_area[(area_name, label)] = time.time()
+
+                                                # Condicional para pintar del label  
+                                                if label in config["camera"]["label"]:
+
+                                                    cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
+                                                    cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+                                                    cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+
+
+                                            else:
+                                                # Resetear el tiempo si sale del área
+                                                tiempo_deteccion_por_area.pop((area_name, label), None)
+
+                                except Exception as detection_error:
+                                    print(f"Error al procesar una detección en {area_name}: {detection_error}")
+
+                        except Exception as area_error:
+                            print(f"Error al procesar {area_name}: {area_error}")
+                            continue
+
+                    # Codificar el frame como JPEG
                     try:
-                        # Obtener las coordenadas y dimensiones del área actual
-                        area_x = float(area_config["x"])
-                        area_y = float(area_config["y"])
-                        area_width = float(area_config["width"])
-                        area_height = float(area_config["height"])
-
-                        # Escalar las coordenadas a la resolución objetivo
-                        x1 = (area_x / width2) * width1
-                        y1 = (area_y / height2) * height1
-                        rect_width1 = (area_width / width2) * width1
-                        rect_height1 = (area_height / height2) * height1
-
-                        start_point = (int(x1), int(y1))
-                        end_point = (int(x1 + rect_width1), int(y1 + rect_height1))
-
-                        # Dibujar la caja azul
-                        cv2.rectangle(frame, start_point, end_point, (255, 0, 0), 2)
-
-                        # Procesar el frame con el modelo
-                        results = model(frame, verbose=False)
-
-                        time_in_area = 0
-
-                        # print("areas", area_name)
-
-
-                        for detection in results[0].boxes:
-                            try:
-                                # Obtener coordenadas, probabilidad y etiqueta de la detección
-                                x1_det, y1_det, x2_det, y2_det = map(int, detection.xyxy[0])
-                                probability = detection.conf[0] * 100
-                                class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
-                                label = LABELS.get(class_index, "Unknown")
-
-
-                                # Verificar si la etiqueta está permitida en el área actual
-                                if label in area_config:
-                                    min_probability = float(area_config[label])
-
-                                    # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
-                                    if probability >= min_probability:
-                                        if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
-                                        
-                                            # Dibujar la detección
-                                            color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
-
-                                            # Agregar el texto de la etiqueta
-                                            text = f"{label}: {probability:.2f}%"
-                                            (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-                                            text_offset_x, text_offset_y = x1_det, y1_det - 10
-                                            box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
-
-                                            detecciones_obtenidas = True
-
-                                            now = time.time()
-
-                                            # Inicializar tiempo si no existe
-                                            if (area_name, label) not in tiempo_deteccion_por_area:
-                                                tiempo_deteccion_por_area[(area_name, label)] = now
-
-                                                print(f"tiempo_deteccion_por_area, {area_name}, {label}: {tiempo_deteccion_por_area[(area_name, label)]}")
-
-                                            tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
-
-                                            # Usar tiempo límite específico para el área
-                                            print(tiempos_limite)
-                                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):  # Default 5s si no está definido
-                                                print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
-                                                # Reiniciar contador
-                                                tiempo_deteccion_por_area[(area_name, label)] = time.time()
-
-                                            # Condicional para pintar del label  
-                                            if label in config["camera"]["label"]:
-
-                                                cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
-                                                cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
-                                                cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-
-
-                                        else:
-                                            # Resetear el tiempo si sale del área
-                                            tiempo_deteccion_por_area.pop((area_name, label), None)
-
-                            except Exception as detection_error:
-                                print(f"Error al procesar una detección en {area_name}: {detection_error}")
-
-                    except Exception as area_error:
-                        print(f"Error al procesar {area_name}: {area_error}")
-                        continue
-
-                # Codificar el frame como JPEG
-                try:
-                    _, buffer = cv2.imencode(".jpg", frame)
-                    frame_bytes = buffer.tobytes()
-                    yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
-                except Exception as encoding_error:
-                    print(f"Error al codificar el frame: {encoding_error}")
+                        _, buffer = cv2.imencode(".jpg", frame)
+                        frame_bytes = buffer.tobytes()
+                        yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
+                    except Exception as encoding_error:
+                        print(f"Error al codificar el frame: {encoding_error}")
         # except Exception as e:
         #     print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
         #     time.sleep(retry_interval)
@@ -291,14 +333,10 @@ def video_feed(camera_id):
         # Guardar la URL en la base de datos
         save_feed_url_to_database(camera_id, feed_url)
 
-        return Response(generate_frames(config_path), mimetype="multipart/x-mixed-replace; boundary=frame")
+        return Response(generate_frames(config_path, camera_id), mimetype="multipart/x-mixed-replace; boundary=frame")
     except Exception as e:
         print(f"Error en video_feed: {e}")
         return f"Error al procesar la solicitud de la cámara {camera_id}.", 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-
-
-
-

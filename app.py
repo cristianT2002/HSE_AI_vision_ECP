@@ -6,6 +6,9 @@ from src.db_utils import connect_to_db, close_connection
 from src.yaml_utils import generate_camera_yaml
 from src.json_utils import generate_json
 from src.video_feed import app  # Importamos Flask app desde video_feed.py
+from src.buffers_camaras import start_streaming_from_configs
+from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads
+
 
 def load_yaml_config(path):
     """
@@ -69,6 +72,10 @@ if __name__ == "__main__":
     # Iniciar el servidor Flask en un hilo separado
     flask_thread = threading.Thread(target=start_flask_server, daemon=True)
     flask_thread.start()
+    
+    # Llamar a la función para iniciar el streaming
+    streamers, threads = start_streaming_from_configs()
+    print("Streamers: ",streamers[2].camara_url)
 
     # Iniciar el monitoreo de la base de datos en el hilo principal
     monitor_database(db_config)
