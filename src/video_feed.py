@@ -42,7 +42,7 @@ tiempo_no_deteccion_acumulado = 0
 hora_primera_deteccion_segundos_almacenado = 0
 hora_sin_detecciones_segundos = 0
 deteccion_confirmada = False
-
+tiempos_limite = {}
 
 
 
