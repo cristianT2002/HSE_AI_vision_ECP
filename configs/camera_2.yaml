@@ -1,30 +1,35 @@
 camera:
   coordinates:
+    ? ''
+    : ? ''
+      : '10'
     area1:
+      ? ''
+      : '10'
       A_Person: '10'
-      camara: Mesa
-      height: 139.94708994708995
+      camara: Perforador
+      height: 148.94179894179894
       punto: IESCO_T661_ECP
-      width: 107.2190678230486
-      x: 5.6997566606351775
-      y: 2.69510582010582
+      width: 141.36145254882385
+      x: 0.3088538091969801
+      y: 0.31415343915343913
     area2:
       A_Person: '10'
-      camara: Mesa
-      height: 139.41798941798942
+      camara: Perforador
+      height: 148.67724867724868
       punto: IESCO_T661_ECP
-      width: 258.46758594871153
-      x: 117.71073812940662
-      y: 2.69510582010582
+      width: 155.73719348599235
+      x: 143.4672739751669
+      y: 0.0496031746031746
   ip: 10.10.115.232
-  label: A_Person
+  label: ''
   name camera: Perforador
   password: 4xUR3_2017
   place: POZO11
   point: IESCO_T661_ECP
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@10.10.115.232:554/Streaming/Channels/102
-  time_areas: '{"area1": "50", "area2": "80", "area3":"30"}'
+  time_areas: '{"area1": "10", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person

@@ -11,7 +11,7 @@
         "CONTRASENA": "4xUR3_2017",
         "COORDENADAS_AREA": "{\"area1\": {\"x\": 5.6997566606351775, \"y\": 2.69510582010582, \"width\": 107.2190678230486, \"height\": 139.94708994708995, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}, \"area2\": {\"x\": 117.71073812940662, \"y\": 2.69510582010582, \"width\": 78.46758594871153, \"height\": 139.41798941798942, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}}",
         "TIME_AREAS": "{\"area1\": \"1\", \"area2\": \"9\", \"area3\": \"10\"}",
-        "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}"
+        "INFO_NOTIFICATIONS": "{\"Email\": false, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}"
     },
     {
         "ID": 2,
@@ -20,11 +20,11 @@
         "NOMBRE_CAMARA": "Perforador",
         "IP_CAMARA": "10.10.115.232",
         "URL_CAMARA_SERVER": "http://10.212.134.15:5000/video_feed/2",
-        "ESTADO_LUGAR_MODELO": "A_Person",
+        "ESTADO_LUGAR_MODELO": "",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 5.6997566606351775, \"y\": 2.69510582010582, \"width\": 107.2190678230486, \"height\": 139.94708994708995, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\"}, \"area2\": {\"x\": 117.71073812940662, \"y\": 2.69510582010582, \"width\": 258.46758594871153, \"height\": 139.41798941798942, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\"}}",
-        "TIME_AREAS": "{\"area1\": \"50\", \"area2\": \"80\", \"area3\":\"30\"}",
+        "COORDENADAS_AREA": "{\"area1\": {\"x\": 0.3088538091969801, \"y\": 0.31415343915343913, \"width\": 141.36145254882385, \"height\": 148.94179894179894, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\", \"\": \"10\"}, \"area2\": {\"x\": 143.4672739751669, \"y\": 0.0496031746031746, \"width\": 155.73719348599235, \"height\": 148.67724867724868, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\"}, \"\": {\"\": \"10\"}}",
+        "TIME_AREAS": "{\"area1\": \"10\", \"area2\": \"10\", \"area3\": \"10\"}",
         "INFO_NOTIFICATIONS": null
     }
 ]
