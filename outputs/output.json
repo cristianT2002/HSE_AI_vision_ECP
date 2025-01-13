@@ -19,11 +19,11 @@
         "PUNTO": "IESCO_T661_ECP",
         "NOMBRE_CAMARA": "Perforador",
         "IP_CAMARA": "10.10.115.232",
-        "URL_CAMARA_SERVER": "http://10.212.134.15:5000/video_feed/2",
+        "URL_CAMARA_SERVER": "http://10.212.134.16:5000/video_feed/2",
         "ESTADO_LUGAR_MODELO": "",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 0.3088538091969801, \"y\": 0.31415343915343913, \"width\": 141.36145254882385, \"height\": 148.94179894179894, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\", \"\": \"10\"}, \"area2\": {\"x\": 143.4672739751669, \"y\": 0.0496031746031746, \"width\": 155.73719348599235, \"height\": 148.67724867724868, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\"}, \"\": {\"\": \"10\"}}",
+        "COORDENADAS_AREA": "{\"\": {\"\": \"10\"}, \"area1\": {\"x\": 1.207337617770013, \"y\": 1.6369047619047619, \"width\": 150.04679603169652, \"height\": 147.88359788359787, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\"}, \"area2\": {\"x\": 153.9495850751856, \"y\": 1.6369047619047619, \"width\": 143.7574093716853, \"height\": 147.88359788359787, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\"}}",
         "TIME_AREAS": "{\"area1\": \"10\", \"area2\": \"10\", \"area3\": \"10\"}",
         "INFO_NOTIFICATIONS": null
     }

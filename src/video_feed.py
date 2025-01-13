@@ -44,11 +44,7 @@ hora_sin_detecciones_segundos = 0
 deteccion_confirmada = False
 
 
-tiempos_limite = {
-    "area1": 5,  # Tiempo límite para área 1
-    "area2": 4,  # Tiempo límite para área 2
-    "area3": 10  # Tiempo límite para área 3
-}
+
 
 tiempo_deteccion_por_area = {}
 
