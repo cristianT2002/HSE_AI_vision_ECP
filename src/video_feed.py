@@ -9,6 +9,7 @@ import time
 from src.load_config import load_yaml_config
 import socket
 from src.db_utils import connect_to_db, close_connection
+import json
 
 
 app = Flask(__name__)
@@ -89,7 +90,10 @@ def generate_frames(config_path, retry_interval=5):
                     rtsp_url = config["camera"]["rtsp_url"]
                     areas = config["camera"]["coordinates"]
                     tiempos_limite = config['camera']["time_areas"]
+                    # Convertir el string a un diccionario
+                    tiempos_limite = json.loads(tiempos_limite)
                     info_notifications = config['camera']["info_notifications"]
+                    info_notifications = json.loads(info_notifications)
                     print("Info Notifications", info_notifications)
                 except KeyError as key_error:
                     print(f"Clave faltante en el archivo YAML: {key_error}")
