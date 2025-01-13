@@ -1,21 +1,23 @@
 camera:
   coordinates:
     area1:
-      A_Person: '8'
+      ? ''
+      : '100'
+      A_Person: '10'
       camara: Perforador
-      height: 148.94179894179894
+      height: 147.0899470899471
       punto: IESCO_T661_ECP
-      width: 8.385848880014974
-      x: 0.3088538091969801
-      y: 0.31415343915343913
+      width: 108.11755163162164
+      x: -0.2901353965183752
+      y: 1.1078042328042328
     area2:
-      A_Person: '11'
+      A_Person: '5'
       camara: Perforador
-      height: 147.35449735449737
+      height: 147.0899470899471
       punto: IESCO_T661_ECP
-      width: 286.01734572908214
-      x: 11.090659512073376
-      y: 0.5787037037037037
+      width: 187.18412678604852
+      x: 109.923878455107
+      y: 0.31415343915343913
   info_notifications: null
   ip: 10.10.115.232
   label: A_Person
@@ -25,7 +27,7 @@ camera:
   point: IESCO_T661_ECP
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@10.10.115.232:554/Streaming/Channels/102
-  time_areas: '{"area1": 5, "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "2", "area2": "4", "area3": "10"}'
   username: admin
 labels:
 - A_Person

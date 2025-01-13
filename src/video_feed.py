@@ -186,19 +186,24 @@ def generate_frames(config_path, retry_interval=5):
 
                                             now = time.time()
 
-                                            # Inicializar tiempo si no existe
+                                            # Inicializar tiempo solo si no existe
                                             if (area_name, label) not in tiempo_deteccion_por_area:
                                                 tiempo_deteccion_por_area[(area_name, label)] = now
+                                                print(f"Inicializando tiempo para {area_name}, {label}: {tiempo_deteccion_por_area[(area_name, label)]}")
+                                            else:
+                                                print(f"Tiempo previo para {area_name}, {label}: {tiempo_deteccion_por_area[(area_name, label)]}")
+                                                # print(f"tiempo_deteccion_por_area, {area_name}, {label}: {tiempo_deteccion_por_area[(area_name, label)]}")
 
-                                                print(f"tiempo_deteccion_por_area, {area_name}, {label}: {tiempo_deteccion_por_area[(area_name, label)]}")
 
+                                            # Calcular tiempo acumulado
                                             tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
 
-                                            # Usar tiempo límite específico para el área
-                                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):  # Default 5s si no está definido
+                                            print("tiempos,", tiempo_acumulado)
+
+                                            # Verificar si el tiempo acumulado cumple el límite
+                                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                                                 print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
-                                                # Reiniciar contador
-                                                tiempo_deteccion_por_area[(area_name, label)] = time.time()
+                                                tiempo_deteccion_por_area[(area_name, label)] = time.time()  # Reiniciar el contador
 
                                             # Condicional para pintar del label  
                                             if label in config["camera"]["label"]:
