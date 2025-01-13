@@ -100,8 +100,6 @@ def generate_frames(config_path, retry_interval=5):
                             # print(info_notifications)
                         except json.JSONDecodeError as e:
                             print(f"Error decodificando JSON: {e}")
-                    else:
-                        print("Los datos son None o vacíos, no se puede procesar.")
                     
 
 
