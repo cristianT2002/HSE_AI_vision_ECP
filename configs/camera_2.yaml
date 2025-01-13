@@ -3,7 +3,7 @@ camera:
     area1:
       ? ''
       : '100'
-      A_Person: '50'
+      A_Person: '10'
       camara: Perforador
       height: 147.0899470899471
       punto: IESCO_T661_ECP

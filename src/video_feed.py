@@ -130,8 +130,8 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                 start_time = time.time()
                 frame_to_process = None
                 streamers = get_streamers()
-                print("Id camara: ",camera_id)
-                print("Streamers: ",streamers)
+                # print("Id camara: ",camera_id)
+                # print("Streamers: ",streamers)
                 info_buffer = streamers[camera_id]
                 # print("Buffer: ", len(frame_buffer))
                 with info_buffer.buffer_lock:
