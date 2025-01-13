@@ -145,6 +145,7 @@ def generate_frames(config_path, retry_interval=5):
 
                 # Procesar cada área: area1, area2, area3
                 # Procesar cada área: area1, area2, area3
+                # Procesar cada área: area1, area2, area3
                 for area_name, area_config in areas.items():
                     try:
                         # Obtener las coordenadas y dimensiones del área actual
@@ -183,11 +184,9 @@ def generate_frames(config_path, retry_interval=5):
                                     # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
                                     if probability >= min_probability:
                                         if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
-
+                                            
                                             # Dibujar la detección
                                             color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
-
-                                            # Agregar el texto de la etiqueta
                                             text = f"{label}: {probability:.2f}%"
                                             (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
                                             text_offset_x, text_offset_y = x1_det, y1_det - 10
@@ -195,24 +194,19 @@ def generate_frames(config_path, retry_interval=5):
                                                         (text_offset_x + text_width + 5, text_offset_y + 5))
 
                                             detecciones_obtenidas = True
-
                                             now = time.time()
 
                                             # Inicializar tiempo solo si no existe
                                             if (area_name, label) not in tiempo_deteccion_por_area:
                                                 tiempo_deteccion_por_area[(area_name, label)] = now
-                                                # print(f"Inicializando tiempo para {area_name}, {label}: {tiempo_deteccion_por_area[(area_name, label)]}")
                                             else:
-                                                salidas_por_area = True
-                                            # Calcular tiempo acumulado
-                                            tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
-                                            print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
+                                                tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
+                                                print(f"Tiempo continuo para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
 
-                                            # Verificar si el tiempo acumulado cumple el límite
-                                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                                                print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
-                                                # Reiniciar el tiempo acumulado solo si se cumple el tiempo límite
-                                                tiempo_deteccion_por_area[(area_name, label)] = time.time()
+                                                # Verificar si el tiempo continuo cumple el límite
+                                                if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                                                    print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
+                                                    tiempo_deteccion_por_area.pop((area_name, label))  # Reiniciar el tiempo una vez cumplido
 
                                             # Condicional para pintar del label  
                                             if label in config["camera"]["label"]:
@@ -221,8 +215,8 @@ def generate_frames(config_path, retry_interval=5):
                                                 cv2.putText(frame, text, (text_offset_x, text_offset_y), 
                                                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
                                         else:
-                                            # Si la detección sale del área, no se reinicia el tiempo, pero se omite el cálculo
-                                            salidas_por_area2 = False
+                                            # Si la detección sale del área, reiniciar el tiempo
+                                            tiempo_deteccion_por_area.pop((area_name, label), None)
 
                             except Exception as detection_error:
                                 print(f"Error al procesar una detección en {area_name}: {detection_error}")
