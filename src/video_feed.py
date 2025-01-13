@@ -43,7 +43,7 @@ tiempo_no_deteccion_acumulado = 0
 hora_primera_deteccion_segundos_almacenado = 0
 hora_sin_detecciones_segundos = 0
 deteccion_confirmada = False
-
+tiempos_limite = {}
 
 
 
@@ -90,6 +90,7 @@ def generate_frames(config_path, retry_interval=5):
                     rtsp_url = config["camera"]["rtsp_url"]
                     areas = config["camera"]["coordinates"]
                     tiempos_limite = config['camera']["time_areas"]
+
                     # Convertir el string a un diccionario
                     tiempos_limite = json.loads(tiempos_limite)
                     info_notifications = config['camera']["info_notifications"]
@@ -102,6 +103,13 @@ def generate_frames(config_path, retry_interval=5):
                     else:
                         print("Los datos son None o vacíos, no se puede procesar.")
                     
+
+
+                    # Convertir valores de tiempos_limite a float
+                    if isinstance(tiempos_limite, str):
+                        tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
+                    tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+
                 except KeyError as key_error:
                     print(f"Clave faltante en el archivo YAML: {key_error}")
                     time.sleep(retry_interval)
