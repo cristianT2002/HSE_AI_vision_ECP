@@ -90,11 +90,12 @@ def generate_frames(config_path, retry_interval=5):
                     rtsp_url = config["camera"]["rtsp_url"]
                     areas = config["camera"]["coordinates"]
                     tiempos_limite = config['camera']["time_areas"]
-                    # Convertir el string a un diccionario
-                    tiempos_limite = json.loads(tiempos_limite)
-                    info_notifications = config['camera']["info_notifications"]
-                    info_notifications = json.loads(info_notifications)
-                    print("Info Notifications", info_notifications)
+
+                    # Convertir valores de tiempos_limite a float
+                    if isinstance(tiempos_limite, str):
+                        tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
+                    tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+
                 except KeyError as key_error:
                     print(f"Clave faltante en el archivo YAML: {key_error}")
                     time.sleep(retry_interval)
