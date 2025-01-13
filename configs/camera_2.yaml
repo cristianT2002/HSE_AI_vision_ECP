@@ -1,6 +1,7 @@
 camera:
   coordinates:
     area1:
+      A_Person: '10'
       camara: Mesa
       height: 139.94708994708995
       punto: IESCO_T661_ECP

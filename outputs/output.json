@@ -10,8 +10,8 @@
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
         "COORDENADAS_AREA": "{\"area1\": {\"x\": 5.6997566606351775, \"y\": 2.69510582010582, \"width\": 107.2190678230486, \"height\": 139.94708994708995, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}, \"area2\": {\"x\": 117.71073812940662, \"y\": 2.69510582010582, \"width\": 78.46758594871153, \"height\": 139.41798941798942, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}}",
-        "TIME_AREAS": "{\"area1\": \"4\", \"area2\": \"10\", \"area3\": \"10\"}",
-        "INFO_NOTIFICATIONS": "{\"Email\": false, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}"
+        "TIME_AREAS": "{\"area1\": \"1\", \"area2\": \"9\", \"area3\": \"10\"}",
+        "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}"
     },
     {
         "ID": 2,
@@ -19,11 +19,11 @@
         "PUNTO": "IESCO_T661_ECP",
         "NOMBRE_CAMARA": "Perforador",
         "IP_CAMARA": "10.10.115.232",
-        "URL_CAMARA_SERVER": "http://10.212.134.16:5000/video_feed/2",
+        "URL_CAMARA_SERVER": "http://10.212.134.15:5000/video_feed/2",
         "ESTADO_LUGAR_MODELO": "A_Person",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 5.6997566606351775, \"y\": 2.69510582010582, \"width\": 107.2190678230486, \"height\": 139.94708994708995, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\"}, \"area2\": {\"x\": 117.71073812940662, \"y\": 2.69510582010582, \"width\": 258.46758594871153, \"height\": 139.41798941798942, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\"}}",
+        "COORDENADAS_AREA": "{\"area1\": {\"x\": 5.6997566606351775, \"y\": 2.69510582010582, \"width\": 107.2190678230486, \"height\": 139.94708994708995, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\"}, \"area2\": {\"x\": 117.71073812940662, \"y\": 2.69510582010582, \"width\": 258.46758594871153, \"height\": 139.41798941798942, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\"}}",
         "TIME_AREAS": "{\"area1\": \"50\", \"area2\": \"80\", \"area3\":\"30\"}",
         "INFO_NOTIFICATIONS": null
     }

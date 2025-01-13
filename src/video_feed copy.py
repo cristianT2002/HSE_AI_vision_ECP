@@ -45,8 +45,8 @@ deteccion_confirmada = False
 
 
 tiempos_limite = {
-    "area1": 5,  # Tiempo límite para área 1
-    "area2": 4,  # Tiempo límite para área 2
+    "area1": 4,  # Tiempo límite para área 1
+    "area2": 3,  # Tiempo límite para área 2
     "area3": 10  # Tiempo límite para área 3
 }
 
@@ -72,7 +72,6 @@ def generate_frames(config_path, retry_interval=5):
     tiempo_actual_segundos = obtener_segundos_actuales()
 
  
-
     while True:
         try:
             cap = None
@@ -163,29 +162,13 @@ def generate_frames(config_path, retry_interval=5):
                                 # Verificar si la etiqueta está permitida en el área actual
                                 if label in area_config:
                                     min_probability = float(area_config[label])
-
-                                    # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
                                     if probability >= min_probability:
                                         if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
-                                        
-                                            # Dibujar la detección
-                                            color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
-
-                                            # Agregar el texto de la etiqueta
-                                            text = f"{label}: {probability:.2f}%"
-                                            (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-                                            text_offset_x, text_offset_y = x1_det, y1_det - 10
-                                            box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 5, text_offset_y + 5))
-
-                                            detecciones_obtenidas = True
-
                                             now = time.time()
 
                                             # Inicializar tiempo si no existe
                                             if (area_name, label) not in tiempo_deteccion_por_area:
                                                 tiempo_deteccion_por_area[(area_name, label)] = now
-
-                                                print(f"tiempo_deteccion_por_area, {area_name}, {label}: {tiempo_deteccion_por_area[(area_name, label)]}")
 
                                             tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
 
@@ -194,15 +177,6 @@ def generate_frames(config_path, retry_interval=5):
                                                 print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
                                                 # Reiniciar contador
                                                 tiempo_deteccion_por_area[(area_name, label)] = time.time()
-
-                                            # Condicional para pintar del label  
-                                            if label in config["camera"]["label"]:
-
-                                                cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
-                                                cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
-                                                cv2.putText(frame, text, (text_offset_x, text_offset_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-
-
                                         else:
                                             # Resetear el tiempo si sale del área
                                             tiempo_deteccion_por_area.pop((area_name, label), None)
@@ -280,6 +254,7 @@ def video_feed(camera_id):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
 
 
 
