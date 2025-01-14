@@ -41,7 +41,7 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, host='10.20.30.33', u
     
     # Insertar el video en la base de datos
     with conexion.cursor() as cursor:
-        sql = "INSERT INTO Notificaciones (nombre, video) VALUES (%s, %s)"
+        sql = "INSERT INTO Notificaciones (Nombre_Archivo, Video_Alerta) VALUES (%s, %s)"
         cursor.execute(sql, (nombre_video, contenido_video))
     
     # Confirmar cambios

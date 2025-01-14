@@ -101,42 +101,23 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                 # print("Buffer: ", len(frame_buffer))
                 with info_buffer.buffer_lock:
                     if info_buffer.frame_buffer:
-                        frame_to_process = info_buffer.frame_buffer.pop(0)
+                        if len(info_buffer.frame_buffer) > 150:
+                            frame_to_process = info_buffer.frame_buffer.pop(0)
                 
                 # print("Frame procesado: ",frame_to_process)
                 if frame_to_process is not None:
                     
-                    frame = cv2.resize(frame_to_process, (target_width, target_height))
+                            frame = cv2.resize(frame_to_process, (target_width, target_height))
 
-                    # Dimensiones originales de las imágenes
-                    width2 = 294.1226453481414
-                    height2 = 145.45830319313836
-                    width1 = 640
-                    height1 = 380
-
-                    detecciones_obtenidas = False
-                    
-            
-
-                    # Procesar cada área: area1, area2, area3
-                    for area_name, area_config in areas.items():
-                        try:
-                            # Obtener las coordenadas y dime>=nsiones del área actual
-                            area_x = float(area_config["x"])
-                            area_y = float(area_config["y"])
-                            area_width = float(area_config["width"])
-                            area_height = float(area_config["height"])
-
-                            # Escalar las coordenadas a la resolución objetivo
-                            x1 = (area_x / width2) * width1
-                            y1 = (area_y / height2) * height1
-                            rect_width1 = (area_width / width2) * width1
-                            rect_height1 = (area_height / height2) * height1
+                            # Dimensiones originales de las imágenes
+                            width2 = 294.1226453481414
+                            height2 = 145.45830319313836
+                            width1 = 640
+                            height1 = 380
 
                             detecciones_obtenidas = False
-                            salidas_por_area = None
-                            salidas_por_area2 = None
-
+                            
+                            
 
 
                             # Procesar cada área: area1, area2, area3
@@ -154,6 +135,10 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                     y1 = (area_y / height2) * height1
                                     rect_width1 = (area_width / width2) * width1
                                     rect_height1 = (area_height / height2) * height1
+
+                                    detecciones_obtenidas = False
+                                    salidas_por_area = None
+                                    salidas_por_area2 = None
 
                                     start_point = (int(x1), int(y1))
                                     end_point = (int(x1 + rect_width1), int(y1 + rect_height1))
@@ -196,11 +181,11 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                         # Inicializar tiempo solo si no existe
                                                         if (area_name, label) not in tiempo_deteccion_por_area:
                                                             tiempo_deteccion_por_area[(area_name, label)] = now
-                                                            print("entre")  # Primera vez que se detecta
+                                                            # print("entre")  # Primera vez que se detecta
                                                         else:
                                                             # Calcular tiempo acumulado
                                                             tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
-                                                            # print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
+                                                            print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
 
                                                             # Verificar si el tiempo acumulado cumple el límite
                                                             if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
@@ -235,12 +220,6 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                 yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
                             except Exception as encoding_error:
                                 print(f"Error al codificar el frame: {encoding_error}")
-                        except Exception as e:
-                            print(f"Error en generate_frames: {e}. Reintentando en {retry_interval} segundos...")
-                            time.sleep(retry_interval)
-                        finally:
-                            if cap:
-                                cap.release()
 
 
 
