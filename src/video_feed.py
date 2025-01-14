@@ -12,21 +12,9 @@ from src.db_utils import connect_to_db, close_connection
 import json
 import threading
 from src.variables_globales import get_streamers, set_streamers
+from src.model_loader import model, LABELS
 
 app = Flask(__name__)
-
-# Ruta al modelo fijo
-MODEL_PATH = os.path.join("models", "juanmodelo.pt")
-
-# Verifica si el modelo existe
-if not os.path.exists(MODEL_PATH):
-    raise FileNotFoundError(f"No se encontró el modelo en la ruta especificada: {MODEL_PATH}")
-
-# Cargar el modelo una sola vez
-model = YOLO(MODEL_PATH)
-
-# Obtener nombres de las etiquetas desde el modelo
-LABELS = model.model.names  # Diccionario de etiquetas, e.g., {0: 'A_Person', 1: 'Harness', ...}
 
 # Colores para las etiquetas
 COLORS = {
@@ -40,9 +28,7 @@ COLORS = {
 detectiones_obtenidas = None
 detecciones_obtenidas_actual = False
 tiempo_deteccion_acumulado = 0
-tiempo_no_deteccion_acumulado = 0
-hora_primera_deteccion_segundos_almacenado = 0
-hora_sin_detecciones_segundos = 0
+
 deteccion_confirmada = False
 tiempos_limite = {}
 
@@ -50,12 +36,10 @@ tiempo_deteccion_por_area = {}
 
 
 def generate_frames(config_path, camera_id, retry_interval=5):
-    global detecciones_obtenidas, detecciones_obtenidas_actual, deteccion_confirmada
-    global ahora1, ahora2
-    global tiempo_deteccion_acumulado, tiempo_no_deteccion_acumulado
-    global hora_primera_deteccion_segundos, hora_sin_detecciones_segundos
-    global hora_primera_deteccion_segundos_almacenado
-    global open_cam, frame_buffer, buffer_lock, frame_to_process
+    global detecciones_obtenidas
+    global tiempo_deteccion_acumulado
+   
+   
     """
     Genera frames desde un RTSP utilizando YOLO para inferencias.
     Dibuja cajas y procesa detecciones para area1, area2 y area3,
@@ -63,13 +47,6 @@ def generate_frames(config_path, camera_id, retry_interval=5):
     """
     target_width, target_height = 640, 380  # Resolución deseada
 
-    def obtener_segundos_actuales():
-        ahora = datetime.datetime.now()
-        return ahora.hour * 3600 + ahora.minute * 60 + ahora.second
-    
-    tiempo_actual_segundos = obtener_segundos_actuales()
-
- 
 
     while True:
         # try:
@@ -113,20 +90,7 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                     print(f"Clave faltante en el archivo YAML: {key_error}")
                     time.sleep(retry_interval)
                     continue
-
-                # Manejo del flujo RTSP
-                # if cap is None or not cap.isOpened():
-                #     cap = cv2.VideoCapture(rtsp_url)
-                #     if not cap.isOpened():
-                #         print(f"No se pudo abrir el video feed: {rtsp_url}. Reintentando en {retry_interval} segundos...")
-                #         time.sleep(retry_interval)
-                #         continue
-                # print("Camara: ", rtsp_url)
-                # if open_cam == False:
-                #     open_cam = True
-                #     hilo_streaming_cam = threading.Thread(name="hilo_streaming_cam", target=streaming_camara1, args=(rtsp_url,))
-                #     hilo_streaming_cam.start()
-                    
+    
                 start_time = time.time()
                 frame_to_process = None
                 streamers = get_streamers()
@@ -233,7 +197,7 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                         else:
                                                             # Calcular tiempo acumulado
                                                             tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
-                                                            print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
+                                                            # print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
 
                                                             # Verificar si el tiempo acumulado cumple el límite
                                                             if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
@@ -250,7 +214,7 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                     else:
                                                         # Si la detección está fuera de los límites o no cumple con la probabilidad mínima
                                                         tiempo_deteccion_por_area.pop((area_name, label), None)  # Reiniciar el tiempo al salir del área
-                                                        print(f"{label} salió de {area_name}, reiniciando el tiempo.")
+                                                        # print(f"{label} salió de {area_name}, reiniciando el tiempo.")
 
                                         except Exception as detection_error:
                                             print(f"Error al procesar una detección en {area_name}: {detection_error}")
