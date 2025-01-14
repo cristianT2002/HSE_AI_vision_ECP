@@ -12,6 +12,7 @@ from src.db_utils import connect_to_db, close_connection
 import json
 import threading
 from src.variables_globales import get_streamers, set_streamers
+from src.Tipo_notificacion import save_video_from_buffer
 
 app = Flask(__name__)
 
@@ -136,7 +137,8 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                 # print("Buffer: ", len(frame_buffer))
                 with info_buffer.buffer_lock:
                     if info_buffer.frame_buffer:
-                        frame_to_process = info_buffer.frame_buffer.pop(0)
+                        if len(info_buffer.frame_buffer) >= 150:
+                            frame_to_process = info_buffer.frame_buffer.pop(0)
                 
                 # print("Frame procesado: ",frame_to_process)
                 if frame_to_process is not None:
@@ -235,11 +237,13 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                             salidas_por_area = True
                                                         # Calcular tiempo acumulado
                                                         tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
-                                                        print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
+                                                        # print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
 
                                                         # Verificar si el tiempo acumulado cumple el límite
                                                         if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                                                             print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
+                                                            save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", 20)
+                                                            print("Tamaño del buffer: ", len(info_buffer.frame_buffer))
                                                             # Reiniciar el tiempo acumulado solo si se cumple el tiempo límite
                                                             tiempo_deteccion_por_area[(area_name, label)] = time.time()
 

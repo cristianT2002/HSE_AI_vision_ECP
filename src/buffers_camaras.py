@@ -11,10 +11,18 @@ class CameraStreamer:
         self.frame_buffer = []  # Buffer independiente
         self.buffer_lock = threading.Lock()  # Lock independiente
         self.running = True  # Para controlar el loop
+        self.buffer_size = 0
 
     def streaming(self):
         cap_camera = cv2.VideoCapture(self.camara_url, cv2.CAP_FFMPEG)
         print(f"Iniciando streaming para {self.camara_name}")
+
+        # Usar un FPS fijo para todas las cámaras
+        fixed_fps = 30  # FPS fijo
+        self.buffer_size = int(fixed_fps * 8)  # Tamaño del buffer para 8 segundos
+        self.buffer_minus = 150
+        print(f"Tamaño del buffer ajustado para 8 segundos (usando {fixed_fps} FPS): {self.buffer_size}")
+
         while self.running:
             ret, frame = cap_camera.read()
             if not ret:
@@ -24,12 +32,14 @@ class CameraStreamer:
                 print("Intentando reconectar...")
                 continue
             
-            if frame is not None and frame.size > 0:
-                with self.buffer_lock:
-                    self.frame_buffer.append(frame)
-                    if len(self.frame_buffer) > 30:  # Limitar el tamaño del buffer
-                        self.frame_buffer.pop(0)
-        
+            
+            with self.buffer_lock:
+                # print(f"Guardando frame en el buffer para {self.camara_name}")
+                self.frame_buffer.append(frame)
+                if len(self.frame_buffer) > self.buffer_size :  # Limitar el tamaño del buffer
+                    self.frame_buffer.pop(0)
+                
+            
         cap_camera.release()
 
     def stop(self):
