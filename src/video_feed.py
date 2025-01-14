@@ -3,6 +3,7 @@ from ultralytics import YOLO
 import time
 from datetime import time as dtime
 import datetime
+from datetime import datetime
 import cv2
 import os
 import time
@@ -32,6 +33,10 @@ tiempo_deteccion_acumulado = 0
 
 deteccion_confirmada = False
 tiempos_limite = {}
+NombreLabel = ""
+descripcionPersona = ""
+descripcionSinCasco = ""
+
 
 tiempo_deteccion_por_area = {}
 
@@ -69,6 +74,9 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                     rtsp_url = config["camera"]["rtsp_url"]
                     areas = config["camera"]["coordinates"]
                     tiempos_limite = config['camera']["time_areas"]
+                    sitio = config['camera']["point"]
+                    nombre_camera = config['camera']["name camera"]
+                    
 
                     # Convertir el string a un diccionario
                     tiempos_limite = json.loads(tiempos_limite)
@@ -194,7 +202,6 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                         # Inicializar tiempo solo si no existe
                                                         if (area_name, label) not in tiempo_deteccion_por_area:
                                                             tiempo_deteccion_por_area[(area_name, label)] = now
-                                                            print("entre")  # Primera vez que se detecta
                                                         else:
                                                             # Calcular tiempo acumulado
                                                             tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
@@ -202,9 +209,38 @@ def generate_frames(config_path, camera_id, retry_interval=5):
 
                                                             # Verificar si el tiempo acumulado cumple el límite
                                                             if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                                                                print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
+                                                                fecha_actual = datetime.now().strftime("%d/%m/%Y")
+                                                                hora_actual = datetime.now().strftime("%H:%M:%S")
+
+                                                                # print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
                                                                 save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", 20)
-                                                                print("Tamaño del buffer: ", len(info_buffer.frame_buffer))
+
+                                                                descripcionPersona = f"Se detectó una Persona en {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
+                                                                descripcionCasco = f"Se detectó una Persona sin {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
+
+
+                                                                if label == "A_Person":
+                                                                    NombreLabel = "Personas"
+                                                                    descript = descripcionPersona
+                                                                elif label == "White":
+                                                                    NombreLabel = "Casco blanco"
+                                                                    descript = descripcionCasco
+                                                                elif label == "No_Helmet":
+                                                                    NombreLabel = "Sin casco"
+                                                                elif label == "YellowGreen":
+                                                                    NombreLabel = "Casco Amarillo, Verde"
+
+                                        
+                                                            
+                                                                add_event_to_database(
+                                                                            sitio = sitio,
+                                                                            company="TechCorp",
+                                                                            fecha = fecha_actual,
+                                                                            hora= hora_actual,
+                                                                            tipo_evento= f"Detección de {NombreLabel} en {area_name}",
+                                                                            descripcion= descript
+                                                                        )
+                                                                # print("Tamaño del buffer: ", len(info_buffer.frame_buffer))
                                                                 # Reiniciar el tiempo acumulado solo si se cumple el tiempo límite
                                                                 tiempo_deteccion_por_area[(area_name, label)] = time.time()
 
@@ -265,6 +301,29 @@ def save_feed_url_to_database(camera_id, url):
     finally:
         cursor.close()
         close_connection(connection)
+
+
+def add_event_to_database(sitio, company, fecha, hora, tipo_evento, descripcion):
+    """
+    Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.
+    """
+    connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+    cursor = connection.cursor()
+
+    try:
+        insert_query = """
+            INSERT INTO Eventos (sitio, company, fecha, hora, tipo_evento, descripcion)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(insert_query, (sitio, company, fecha, hora, tipo_evento, descripcion))
+        connection.commit()
+    except Exception as e:
+        print(f"Error al añadir el evento a la base de datos: {e}")
+    finally:
+        cursor.close()
+        close_connection(connection)
+
+
 
 @app.route("/video_feed/<int:camera_id>")
 def video_feed(camera_id):
