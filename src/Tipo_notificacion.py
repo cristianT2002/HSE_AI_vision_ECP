@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import pymysql
 
 def save_video_from_buffer(frame_buffer, output_file, fps=20):
     """
@@ -26,4 +27,27 @@ def save_video_from_buffer(frame_buffer, output_file, fps=20):
 
     # Liberar el objeto VideoWriter
     out.release()
+    guardar_video_en_mariadb(output_file, output_file)
     print(f"Video guardado como {output_file}")
+    
+    
+def guardar_video_en_mariadb(nombre_archivo, nombre_video, host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
+    # Conectar a la base de datos
+    conexion = pymysql.connect(host=host, user=user, password=password, database=database)
+    
+    # try:
+    with open(nombre_archivo, 'rb') as archivo_video:
+        contenido_video = archivo_video.read()
+    
+    # Insertar el video en la base de datos
+    with conexion.cursor() as cursor:
+        sql = "INSERT INTO Notificaciones (nombre, video) VALUES (%s, %s)"
+        cursor.execute(sql, (nombre_video, contenido_video))
+    
+    # Confirmar cambios
+    conexion.commit()
+    print("Video guardado en la base de datos exitosamente.")
+    # except Exception as e:
+    #     print("Error al guardar el video:", e)
+    # finally:
+    #     conexion.close()
