@@ -240,6 +240,7 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                         tiempo_deteccion_por_area[(area_name, label)] = time.time()
 
 
+<<<<<<< HEAD
                                                 # Condicional para pintar del label  
                                                 if label in config["camera"]["label"]:
                                                     cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
@@ -250,6 +251,15 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                 # Si la detección está fuera de los límites o no cumple con la probabilidad mínima
                                                 tiempo_deteccion_por_area.pop((area_name, label), None)  # Reiniciar el tiempo al salir del área
                                                 # print(f"{label} salió de {area_name}, reiniciando el tiempo.")
+=======
+                                                            # Verificar si el tiempo acumulado cumple el límite
+                                                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                                                                print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
+                                                                # save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", 20)
+                                                                print("Tamaño del buffer: ", len(info_buffer.frame_buffer))
+                                                                # Reiniciar el tiempo acumulado solo si se cumple el tiempo límite
+                                                                tiempo_deteccion_por_area[(area_name, label)] = time.time()
+>>>>>>> feature/carlos
 
                                 except Exception as detection_error:
                                     print(f"Error al procesar una detección en {area_name}: {detection_error}")
