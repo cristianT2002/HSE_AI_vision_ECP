@@ -51,3 +51,37 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, host='10.20.30.33', u
     #     print("Error al guardar el video:", e)
     # finally:
     #     conexion.close()
+    
+def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
+    # Conectar a la base de datos
+    conexion = pymysql.connect(host=host, user=user, password=password, database=database)
+    
+    try:
+        with conexion.cursor() as cursor:
+            # Consulta para obtener el video y el nombre del archivo
+            sql = "SELECT Video_Alerta, Nombre_Archivo FROM Notificaciones WHERE id_notificacion = %s"
+            cursor.execute(sql, (id_video,))
+            resultado = cursor.fetchone()
+            
+            if resultado:
+                video_data = resultado[0]  # Contenido del video
+                nombre_archivo = resultado[1]  # Nombre del archivo
+                
+                # Agregar el string adicional al nombre del archivo antes de la extensión
+                nombre_base, extension = nombre_archivo.rsplit('.', 1)
+                nuevo_nombre_archivo = f"{nombre_base}_{string_adicional}.{extension}"
+                
+                # Guardar el video con el nuevo nombre
+                with open(nuevo_nombre_archivo, 'wb') as archivo_salida:
+                    archivo_salida.write(video_data)
+                print(f"Video recuperado y guardado como {nuevo_nombre_archivo}.")
+            else:
+                print("No se encontró un video con ese ID.")
+    except Exception as e:
+        print("Error al recuperar el video:", e)
+    finally:
+        conexion.close()
+
+        
+# Recuperar y guardar el video desde la base de datos
+recuperar_video_de_mariadb(7, 'recuperado')

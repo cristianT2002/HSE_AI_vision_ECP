@@ -79,3 +79,4 @@ if __name__ == "__main__":
 
     # Iniciar el monitoreo de la base de datos en el hilo principal
     monitor_database(db_config)
+    
