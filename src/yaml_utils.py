@@ -25,7 +25,7 @@ def fetch_camera_data():
 
     try:
         # Ajusta la consulta a tu esquema de base de datos
-        query = "SELECT ID, LUGAR, PUNTO, NOMBRE_CAMARA, IP_CAMARA, USUARIO, CONTRASENA, COORDENADAS_AREA, ESTADO_LUGAR_MODELO, TIME_AREAS, INFO_NOTIFICATIONS FROM IP_Videofeed2"
+        query = "SELECT ID, LUGAR, PUNTO, NOMBRE_CAMARA, IP_CAMARA, USUARIO, CONTRASENA, COORDENADAS_AREA, ESTADO_LUGAR_MODELO, TIME_AREAS, INFO_NOTIFICATIONS, DESTINATARIOS FROM IP_Videofeed2"
         cursor.execute(query)
         rows = cursor.fetchall()
 
