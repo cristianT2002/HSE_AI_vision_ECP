@@ -194,36 +194,33 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                 else:
                                                     # Calcular tiempo acumulado
                                                     tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
-                                                    # print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
+                                                    print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
 
                                                     # Verificar si el tiempo acumulado cumple el límite
                                                     if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                                                         fecha_actual = datetime.now().strftime("%d/%m/%Y")
                                                         hora_actual = datetime.now().strftime("%H:%M:%S")
 
-                                                        print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
-                                                        # save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", 20)
+                                                        # print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
+                                                        save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", 20)
                                                         
                                                         descripcionPersona = f"Se detectó una Persona en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
-                                                        descripcionSinCasco = f"Se detectó una Persona sin casco en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
-                                                        descripcionCascoBlanco = f"Se detectó una persona con Casco Blanco en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
-                                                        descripcionCascoAmarilloVerde = f"Se detectó una persona con Casco Amarillo o Verde en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
+                                                        descripcionCasco = f"Se detectó una Persona sin casco en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
 
 
                                                         if label == "A_Person":
                                                             NombreLabel = "Personas"
                                                             descript = descripcionPersona
                                                         elif label == "White":
-                                                            NombreLabel = "Persona con casco blanco"
-                                                            descript = descripcionCascoBlanco
+                                                            NombreLabel = "Casco blanco"
+                                                            descript = descripcionCasco
                                                         elif label == "No_Helmet":
-                                                            NombreLabel = "Persona Sin casco"
-                                                            descript = descripcionSinCasco
+                                                            NombreLabel = "Sin casco"
                                                         elif label == "YellowGreen":
-                                                            NombreLabel = "Persona con casco Amarillo o Verde"
-                                                            descript = descripcionCascoAmarilloVerde
+                                                            NombreLabel = "Casco Amarillo, Verde"
 
                                 
+                                                    
                                                         add_event_to_database(
                                                                     sitio = sitio,
                                                                     company="TechCorp",
