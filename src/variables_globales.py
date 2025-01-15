@@ -23,3 +23,4 @@ def get_id():
 def set_id(id_edit):
     global id
     id = id_edit
+    print("el id es: ", id)
