@@ -112,7 +112,7 @@ def monitor_database_and_start_detections(db_config):
                     # Si ya existe un hilo para esta cámara, no lo vuelvas a iniciar
                     if camera_id in detecciones_threads and detecciones_threads[camera_id].is_alive():
                         continue
-
+                    print("Info camara: ",config_path, camera_id)
                     # Iniciar un nuevo hilo para detecciones
                     thread = threading.Thread(
                         target=procesar_detecciones,
