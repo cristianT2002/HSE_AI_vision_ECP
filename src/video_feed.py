@@ -190,7 +190,7 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                             # Verificar si el tiempo acumulado cumple el límite
                                                             if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                                                                 print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
-                                                                save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", 20)
+                                                                # save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", 20)
                                                                 print("Tamaño del buffer: ", len(info_buffer.frame_buffer))
                                                                 # Reiniciar el tiempo acumulado solo si se cumple el tiempo límite
                                                                 tiempo_deteccion_por_area[(area_name, label)] = time.time()
