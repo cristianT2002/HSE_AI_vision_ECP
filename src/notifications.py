@@ -39,6 +39,14 @@ def procesar_detecciones(config_path, camera_id):
                     # print(info_notifications)
                 except json.JSONDecodeError as e:
                     print(f"Error decodificando JSON: {e}")
+                    
+            emails = config['camera']["info_emails"]
+            if emails:
+                try:
+                    emails = json.loads(emails)
+                    # print(emails)
+                except json.JSONDecodeError as e:
+                    print(f"Error decodificando JSON: {e}")
         except Exception as e:
             print(f"Error al cargar configuración: {e}")
             return
@@ -132,10 +140,10 @@ def procesar_detecciones(config_path, camera_id):
                                                         # print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
                                                         
                                                         
-                                                        descripcionPersona = f"Se detectó una Persona en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
-                                                        descripcionSinCasco = f"Se detectó una Persona sin casco en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
-                                                        descripcionCascoBlanco = f"Se detectó una persona con Casco Blanco en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
-                                                        descripcionCascoAmarilloVerde = f"Se detectó una persona con Casco Amarillo o Verde en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
+                                                        descripcionPersona = f"Se detectó una Persona en el {area_name}  en la cámara {nombre_camera}"
+                                                        descripcionSinCasco = f"Se detectó una Persona sin casco en el {area_name}  en la cámara {nombre_camera}"
+                                                        descripcionCascoBlanco = f"Se detectó una persona con Casco Blanco en el {area_name}  en la cámara {nombre_camera}"
+                                                        descripcionCascoAmarilloVerde = f"Se detectó una persona con Casco Amarillo o Verde en el {area_name}  en la cámara {nombre_camera}"
 
 
                                                         if label == "A_Person":
@@ -168,9 +176,9 @@ def procesar_detecciones(config_path, camera_id):
                                                         tiempo_deteccion_por_area[(area_name, label)] = time.time()
                                                         
                                                         if info_notifications['Video'] == True:
-                                                            save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", 20, info_notifications['Email'])
+                                                            save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", info_notifications['Email'], emails)
                                                         elif info_notifications['Imagen'] == True:
-                                                        print("Info notificaciones: ", info_notifications)
+                                                            print("Info notificaciones: ", info_notifications)
                                                         
 
                                                         
