@@ -73,24 +73,47 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                 try:
                     rtsp_url = config["camera"]["rtsp_url"]
                     areas = config["camera"]["coordinates"]
+                    tiempos_limite = config['camera']["time_areas"]
+                    sitio = config['camera']["point"]
+                    nombre_camera = config['camera']["name camera"]
                     
 
+                    # Convertir el string a un diccionario
+                    tiempos_limite = json.loads(tiempos_limite)
+                    info_notifications = config['camera']["info_notifications"]
+                    if info_notifications:
+                        try:
+                            info_notifications = json.loads(info_notifications)
+                            # print(info_notifications)
+                        except json.JSONDecodeError as e:
+                            print(f"Error decodificando JSON: {e}")
+                    
+
+
+                    # Convertir valores de tiempos_limite a float
+                    if isinstance(tiempos_limite, str):
+                        tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
+                    tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
 
                 except KeyError as key_error:
                     print(f"Clave faltante en el archivo YAML: {key_error}")
                     time.sleep(retry_interval)
                     continue
     
+                start_time = time.time()
                 frame_to_process = None
                 streamers = get_streamers()
-                
+                # print("Id camara: ",camera_id)
+                # print("Streamers: ",streamers)
                 info_buffer = streamers[camera_id]
                 # print("Buffer: ", len(frame_buffer))
                 with info_buffer.buffer_lock:
                     if info_buffer.frame_buffer:
-                        if len(info_buffer.frame_buffer) > 150:
-                            frame_to_process = info_buffer.frame_buffer.pop(0)
+                        frame_to_process = info_buffer.frame_buffer.pop(0)
 
+
+
+                
                 # print("Frame procesado: ",frame_to_process)
                 if frame_to_process is not None:
                     
@@ -102,7 +125,12 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                     width1 = 640
                     height1 = 380
 
+                    detecciones_obtenidas = False
                     
+                    # Procesar cada área: area1, area2, area3
+
+                            # Procesar cada área: area1, area2, area3
+                            # Procesar cada área: area1, area2, area3
                     for area_name, area_config in areas.items():
                         try:
                             # Obtener las coordenadas y dimensiones del área actual
@@ -157,14 +185,68 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                 box_coords = ((text_offset_x, text_offset_y - text_height - 5), 
                                                             (text_offset_x + text_width + 5, text_offset_y + 5))
 
-                                                
+                                                detecciones_obtenidas = True
+                                                now = time.time()
+
+                                                # Inicializar tiempo solo si no existe
+                                                if (area_name, label) not in tiempo_deteccion_por_area:
+                                                    tiempo_deteccion_por_area[(area_name, label)] = now
+                                                else:
+                                                    # Calcular tiempo acumulado
+                                                    tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
+                                                    print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
+
+                                                    # Verificar si el tiempo acumulado cumple el límite
+                                                    if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                                                        fecha_actual = datetime.now().strftime("%d/%m/%Y")
+                                                        hora_actual = datetime.now().strftime("%H:%M:%S")
+
+                                                        # print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
+                                                        save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", 20)
+                                                        
+                                                        descripcionPersona = f"Se detectó una Persona en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
+                                                        descripcionCasco = f"Se detectó una Persona sin casco en el {area_name} con una probabilidad de {probability:.2f}% en la cámara {nombre_camera}"
+
+
+                                                        if label == "A_Person":
+                                                            NombreLabel = "Personas"
+                                                            descript = descripcionPersona
+                                                        elif label == "White":
+                                                            NombreLabel = "Casco blanco"
+                                                            descript = descripcionCasco
+                                                        elif label == "No_Helmet":
+                                                            NombreLabel = "Sin casco"
+                                                        elif label == "YellowGreen":
+                                                            NombreLabel = "Casco Amarillo, Verde"
+
+                                
+                                                    
+                                                        add_event_to_database(
+                                                                    sitio = sitio,
+                                                                    company="TechCorp",
+                                                                    fecha = fecha_actual,
+                                                                    hora= hora_actual,
+                                                                    tipo_evento= f"Detección de {NombreLabel} en {area_name}",
+                                                                    descripcion= descript
+                                                                )
+                                                        
+                                                        id_registro = get_last_event_id()
+                                                        set_id(id_registro)
+                                                        # print("Tamaño del buffer: ", len(info_buffer.frame_buffer))
+                                                        # Reiniciar el tiempo acumulado solo si se cumple el tiempo límite
+                                                        tiempo_deteccion_por_area[(area_name, label)] = time.time()
+
+
                                                 # Condicional para pintar del label  
                                                 if label in config["camera"]["label"]:
                                                     cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
                                                     cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
                                                     cv2.putText(frame, text, (text_offset_x, text_offset_y), 
                                                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-                                            
+                                            else:
+                                                # Si la detección está fuera de los límites o no cumple con la probabilidad mínima
+                                                tiempo_deteccion_por_area.pop((area_name, label), None)  # Reiniciar el tiempo al salir del área
+                                                # print(f"{label} salió de {area_name}, reiniciando el tiempo.")
 
                                 except Exception as detection_error:
                                     print(f"Error al procesar una detección en {area_name}: {detection_error}")
@@ -202,6 +284,80 @@ def save_feed_url_to_database(camera_id, url):
         print(f"URL {url} guardada correctamente para la cámara {camera_id}")
     except Exception as e:
         print(f"Error al guardar la URL en la base de datos: {e}")
+    finally:
+        cursor.close()
+        close_connection(connection)
+
+def get_last_event_id():
+    """
+    Obtiene el ID del último registro en la tabla 'Eventos'.
+    """
+    connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+    cursor = connection.cursor()
+
+    try:
+        query = "SELECT id_evento FROM Eventos ORDER BY id_evento DESC LIMIT 1"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        if result:
+            last_id = result[0]
+            # print(f"El último ID en la tabla 'Eventos' es: {last_id}")
+            return last_id
+        else:
+            print("No se encontraron registros en la tabla 'Eventos'.")
+            return None
+    except Exception as e:
+        print(f"Error al obtener el último ID: {e}")
+        return None
+    finally:
+        cursor.close()
+        close_connection(connection)
+
+
+
+
+def get_last_event_id():
+    """
+    Obtiene el ID del último registro en la tabla 'Eventos'.
+    """
+    connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+    cursor = connection.cursor()
+
+    try:
+        query = "SELECT id_evento FROM Eventos ORDER BY id_evento DESC LIMIT 1"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        if result:
+            last_id = result[0]
+            # print(f"El último ID en la tabla 'Eventos' es: {last_id}")
+            return last_id
+        else:
+            print("No se encontraron registros en la tabla 'Eventos'.")
+            return None
+    except Exception as e:
+        print(f"Error al obtener el último ID: {e}")
+        return None
+    finally:
+        cursor.close()
+        close_connection(connection)
+
+
+def add_event_to_database(sitio, company, fecha, hora, tipo_evento, descripcion):
+    """
+    Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.
+    """
+    connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+    cursor = connection.cursor()
+
+    try:
+        insert_query = """
+            INSERT INTO Eventos (sitio, company, fecha, hora, tipo_evento, descripcion)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(insert_query, (sitio, company, fecha, hora, tipo_evento, descripcion))
+        connection.commit()
+    except Exception as e:
+        print(f"Error al añadir el evento a la base de datos: {e}")
     finally:
         cursor.close()
         close_connection(connection)

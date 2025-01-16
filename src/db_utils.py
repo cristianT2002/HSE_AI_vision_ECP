@@ -12,7 +12,6 @@ def connect_to_db(config):
             password=config["password"],
             database=config["database_name"]
         )
-        print("Conexión a la base de datos establecida.")
         return connection
     except mysql.connector.Error as err:
         print(f"Error al conectar a la base de datos: {err}")
@@ -24,4 +23,3 @@ def close_connection(connection):
     """
     if connection.is_connected():
         connection.close()
-        print("Conexión a la base de datos cerrada.")

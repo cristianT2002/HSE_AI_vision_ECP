@@ -1,11 +1,9 @@
 import os
 import yaml
-import time
-# import socket
-from src.db_utils import connect_to_db, close_connection
+import json
+from src.db_utils import connect_to_db, close_connection 
 
 CONFIGS_FOLDER = "configs"
-DATABASE_CONFIG_FILE = "configs/database.yaml"
 
 def load_yaml_config(path):
     """
@@ -18,6 +16,31 @@ def load_yaml_config(path):
         print(f"Error cargando el archivo YAML: {e}")
         raise
 
+def fetch_camera_data():
+    """
+    Conecta a la base de datos y obtiene los datos de las cámaras.
+    """
+    connection = connect_to_db()  # Conexión a la base de datos
+    cursor = connection.cursor()
+
+    try:
+        # Ajusta la consulta a tu esquema de base de datos
+        query = "SELECT ID, LUGAR, PUNTO, NOMBRE_CAMARA, IP_CAMARA, USUARIO, CONTRASENA, COORDENADAS_AREA, ESTADO_LUGAR_MODELO, TIME_AREAS, INFO_NOTIFICATIONS, DESTINATARIOS FROM IP_Videofeed2"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        # Convertir los resultados en una lista de diccionarios
+        columns = [col[0] for col in cursor.description]
+        data = [dict(zip(columns, row)) for row in rows]
+
+        return data
+    except Exception as e:
+        print(f"Error obteniendo datos de la base de datos: {e}")
+        return []
+    finally:
+        cursor.close()
+        close_connection(connection)
+
 def generate_camera_yaml(data):
     """
     Genera un archivo YAML por cada cámara en la base de datos.
@@ -28,6 +51,7 @@ def generate_camera_yaml(data):
     existing_files = set(os.listdir(CONFIGS_FOLDER))
 
     for camera in data:
+        print(camera)
         camera_id = camera["ID"]
         place_cam = camera["LUGAR"]
         ponit_int = camera["PUNTO"]
@@ -35,9 +59,17 @@ def generate_camera_yaml(data):
         ip_camera = camera["IP_CAMARA"]
         username = camera["USUARIO"]
         password = camera["CONTRASENA"]
-        probability = camera["PROBABILIDAD"]
-        coordinates = camera["COORDENADAS_AREA"]
-        state_place_model = camera["ESTADO_LUGAR_MODELO"]
+        coordinates = camera["COORDENADAS_AREA"]  # Se espera que sea un string JSON
+        times_areas = camera["TIME_AREAS"]
+        info_notifications = camera["INFO_NOTIFICATIONS"]
+
+        # Convertir coordinates a un diccionario Python
+        try:
+            coordinates_dict = json.loads(coordinates)
+        except json.JSONDecodeError:
+            print(f"Error: `COORDENADAS_AREA` no es un JSON válido para la cámara {camera_id}.")
+            continue
+
         rtsp_url = f"rtsp://{username}:{password}@{ip_camera}:554/Streaming/Channels/102"
         model = "juanmodelo.pt"
 
@@ -51,17 +83,17 @@ def generate_camera_yaml(data):
                 "point": ponit_int,
                 "place": place_cam,
                 "name camera": name_cam,
-                "probability": probability,
-                "coordinates": coordinates,
-                "label": state_place_model
-
-
+                "coordinates": coordinates_dict,
+                "label": camera["ESTADO_LUGAR_MODELO"],
+                "time_areas": times_areas,
+                "info_notifications": info_notifications
             },
             "model": {
                 "path": f"models/{model}"
             },
             "labels": ["A_Person", "Harness", "No_Helmet", "White", "YellowGreen"]
         }
+        
 
         output_file = os.path.join(CONFIGS_FOLDER, f"camera_{camera_id}.yaml")
         with open(output_file, "w", encoding="utf-8") as file:
@@ -77,9 +109,10 @@ def generate_camera_yaml(data):
             os.remove(file_path)
             print(f"Archivo YAML eliminado: {file_path}")
 
-
 if __name__ == "__main__":
-
-    
-# monitor_database()
-    print("1") 
+    # Obtener datos de la base de datos
+    camera_data = fetch_camera_data()
+    if camera_data:
+        generate_camera_yaml(camera_data)
+    else:
+        print("No se encontraron datos para generar los archivos YAML.")
