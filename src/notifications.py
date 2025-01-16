@@ -170,7 +170,7 @@ def procesar_detecciones(config_path, camera_id):
                                                         if info_notifications['Video'] == True:
                                                             save_video_from_buffer(info_buffer.frame_buffer, f"{area_name}_{label}.mp4", 20, info_notifications['Email'])
                                                         elif info_notifications['Imagen'] == True:
-                                                        print("Info notificaciones: ", info_notifications)
+                                                            print("Info notificaciones: ", info_notifications)
                                                         
 
                                                         

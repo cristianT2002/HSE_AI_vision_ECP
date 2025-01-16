@@ -16,14 +16,14 @@ camera:
       y: 2.69510582010582
   info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
     false}'
-  ip: 10.10.115.231
+  ip: 10.10.138.231
   label: ''
   name camera: Mesa
   password: 4xUR3_2017
   place: POZO11
   point: IESCO_T661_ECP
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@10.10.115.231:554/Streaming/Channels/102
+  rtsp_url: rtsp://admin:4xUR3_2017@10.10.138.231:554/Streaming/Channels/102
   time_areas: '{"area1": "1", "area2": "9", "area3": "10"}'
   username: admin
 labels:
