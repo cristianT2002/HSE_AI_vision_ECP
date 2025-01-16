@@ -199,12 +199,7 @@ def procesar_detecciones(config_path, camera_id):
 
                                                         
 
-                                                # # Condicional para pintar del label  
-                                                # if label in config["camera"]["label"]:
-                                                #     cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
-                                                #     cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
-                                                #     cv2.putText(frame, text, (text_offset_x, text_offset_y), 
-                                                #                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                                                        
                                             else:
                                                 # Si la detección está fuera de los límites o no cumple con la probabilidad mínima
                                                 tiempo_deteccion_por_area.pop((area_name, label), None)  # Reiniciar el tiempo al salir del área
