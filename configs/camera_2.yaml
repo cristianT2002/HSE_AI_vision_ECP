@@ -16,9 +16,9 @@ camera:
       width: 81.16303737443067
       x: 217.74193548387095
       y: 0.5787037037037037
-  info_emails: '["nelson.ceron@axuretechnologies.com"]'
+  info_emails: '{}'
   info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
-    true}'
+    false'
   ip: 10.10.138.232
   label: A_Person
   name camera: Perforador
