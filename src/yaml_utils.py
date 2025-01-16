@@ -62,6 +62,7 @@ def generate_camera_yaml(data):
         coordinates = camera["COORDENADAS_AREA"]  # Se espera que sea un string JSON
         times_areas = camera["TIME_AREAS"]
         info_notifications = camera["INFO_NOTIFICATIONS"]
+        info_emails = camera["DESTINATARIOS"]
 
         # Convertir coordinates a un diccionario Python
         try:
@@ -86,7 +87,8 @@ def generate_camera_yaml(data):
                 "coordinates": coordinates_dict,
                 "label": camera["ESTADO_LUGAR_MODELO"],
                 "time_areas": times_areas,
-                "info_notifications": info_notifications
+                "info_notifications": info_notifications,
+                "info_emails": info_emails
             },
             "model": {
                 "path": f"models/{model}"

@@ -10,7 +10,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 import io
 
-def save_video_from_buffer(frame_buffer, output_file, fps=20):
+def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails,  fps=20):
     """
     Guarda un video MP4 a partir de un buffer de frames.
 
@@ -35,11 +35,11 @@ def save_video_from_buffer(frame_buffer, output_file, fps=20):
 
     # Liberar el objeto VideoWriter
     out.release()
-    guardar_video_en_mariadb(output_file, output_file)
+    guardar_video_en_mariadb(output_file, output_file, envio_correo, lista_emails)
     print(f"Video guardado como {output_file}")
     
     
-def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
+def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
     # Conectar a la base de datos
     conexion = pymysql.connect(host=host, user=user, password=password, database=database, cursorclass=pymysql.cursors.DictCursor)
     ultimo_registro = get_id()
@@ -60,6 +60,8 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, host='1
                 fecha_notification = resultado['fecha']
                 mensaje_notification = resultado['descripcion']
                 estado_notification = 'pendiente'
+                sitio_notificacion = resultado['sitio']
+                company_notificacion = resultado['company']
                 
                 with open(nombre_archivo, 'rb') as archivo_video:
                     contenido_video = archivo_video.read()
@@ -72,7 +74,8 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, host='1
                 # Confirmar cambios
                 conexion.commit()
                 print("Video guardado en la base de datos exitosamente.")
-                send_email_with_outlook(envio_correo, 'Envio Token de HSE-Video-Analytics')
+                if envio_correo == True:
+                    send_email_with_outlook("Add_Video", lista_emails, fecha_notification, mensaje_notification, nombre_video, sitio_notificacion, company_notificacion)
                 
                 # Aquí puedes usar los datos como necesites
             else:
@@ -123,55 +126,83 @@ def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33'
 recuperar_video_de_mariadb(7, 'recuperado')
 
 # Función para enviar correos
-def send_email_with_outlook(destinatario, token):
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 
+def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_video, sitio_notificacion, company_notificacion):
     # Configuración del servidor SMTP de Office 365
     smtp_server = 'smtp.office365.com'
     smtp_port = 587
     username = 'apic.rto@axuretechnologies.com'
     password = '4xUR3_2017'
-    print(destinatario)
-    # Dirección de correo del remitente y destinatario
+
+    # Dirección de correo del remitente
     from_address = 'apic.rto@axuretechnologies.com'
-    to_address = destinatario
-    # 'edwin.granados@axuretechnologies.com'
-    # , 'carlos.saavedra@axuretechnologies.com'
+
+    # Si destinatarios es una lista, conviértela en una cadena separada por comas
+    if isinstance(destinatario, list):
+        to_address = ', '.join(destinatario)
+    else:
+        to_address = destinatario  # Suponiendo que ya es una cadena
 
     # Asunto y cuerpo del correo
-    subject = "Envio Token de HSE-Video-Analytics"
+    subject = "Alerta Detectada en HSE-Video-Analytics"
     # Crear el objeto del mensaje
     msg = MIMEMultipart()
     msg['From'] = from_address
     msg['To'] = to_address
-    print(msg['To'])
     msg['Subject'] = subject
-    
+
     body_template = f"""
-            <html>
-            <body>
-                <p>Token: {token}<br>
-                
-            </body>
-            </html>
-        """
+        <html>
+        <body>
+            <p><b>Evento Detectado:</b> {mensaje}</p>
+            <p><strong>Sitio:</strong> {sitio_notificacion}</p>
+            <p><strong>Empresa:</strong> {company_notificacion}</p>
+            <p><strong>Fecha:</strong> {fecha}</p>
+            <br>
+            <p>Por favor, revise los detalles del evento y tome las acciones necesarias.</p>
+            <p> <b>Favor Descargar el video adjunto.</b></p>
+        </body>
+        </html>
+    """
+    # Agregar el cuerpo del mensaje al correo
+    msg.attach(MIMEText(body_template, 'html'))
 
-    # Conectar al servidor SMTP
-    try:
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()  # Habilitar el modo seguro (TLS)
-        server.login(username, password)
+    if img_or_video == "Add_Video":
+        # Adjuntar el video al correo
+        try:
+            with open(nombre_video, 'rb') as attachment:
+                part = MIMEBase('video', 'mp4')  # Especificar el tipo MIME del archivo adjunto
+                part.set_payload(attachment.read())
 
-        
-        # Agregar el cuerpo del mensaje al correo
-        msg.attach(MIMEText(body_template, 'html'))
+            # Codificar el archivo en base64
+            encoders.encode_base64(part)
 
-        # Enviar el mensaje
-        server.sendmail(from_address, to_address, msg.as_string())
-        print('Correo enviado exitosamente.')
+            # Agregar encabezados al archivo adjunto
+            part.add_header(
+                'Content-Disposition',
+                f'attachment; filename="{nombre_video}"'  # Nombre del archivo
+            )
 
-    except Exception as e:
-        print('Error al enviar el correo:', e)
+            # Adjuntar el archivo al mensaje
+            msg.attach(part)
 
-    finally:
-        # Cerrar la conexión con el servidor
-        server.quit()
+            # Conectar al servidor SMTP
+            server = smtplib.SMTP(smtp_server, smtp_port)
+            server.starttls()  # Habilitar el modo seguro (TLS)
+            server.login(username, password)
+
+            # Enviar el mensaje
+            server.sendmail(from_address, to_address, msg.as_string())
+            print('Correo enviado exitosamente con video adjunto.')
+
+        except Exception as e:
+            print('Error al enviar el correo:', e)
+
+        finally:
+            # Cerrar la conexión con el servidor
+            server.quit()
