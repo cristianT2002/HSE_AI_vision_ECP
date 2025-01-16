@@ -1,7 +1,7 @@
 camera:
   coordinates:
     area1:
-      A_Person: '17'
+      A_Person: '20'
       camara: Perforador
       height: 148.14814814814815
       punto: IESCO_T661_ECP
@@ -9,22 +9,24 @@ camera:
       x: 0.3088538091969801
       y: 1.1078042328042328
     area2:
-      A_Person: '17'
+      A_Person: '20'
       camara: Perforador
       height: 149.20634920634922
       punto: IESCO_T661_ECP
       width: 81.16303737443067
       x: 217.74193548387095
       y: 0.5787037037037037
-  info_notifications: null
-  ip: 10.10.115.232
+  info_emails: '["nelson.ceron@axuretechnologies.com"]'
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
+    true}'
+  ip: 10.10.138.232
   label: A_Person
   name camera: Perforador
   password: 4xUR3_2017
   place: POZO11
   point: IESCO_T661_ECP
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@10.10.115.232:554/Streaming/Channels/102
+  rtsp_url: rtsp://admin:4xUR3_2017@10.10.138.232:554/Streaming/Channels/102
   time_areas: '{"area1": "20", "area2": "10", "area3": "10"}'
   username: admin
 labels:
