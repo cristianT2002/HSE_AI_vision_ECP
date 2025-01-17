@@ -14,9 +14,9 @@ camera:
       width: 78.46758594871153
       x: 117.71073812940662
       y: 2.69510582010582
-  info_emails: '{}'
-  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
-    false}'
+  info_emails: '["nelsos@gmail.com", "ssaas"]'
+  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
+    true}'
   ip: 10.10.138.231
   label: ''
   name camera: Mesa

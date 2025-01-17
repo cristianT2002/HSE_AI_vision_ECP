@@ -11,6 +11,7 @@ from src.variables_globales import get_streamers, set_streamers, set_id
 from src.Tipo_notificacion import save_video_from_buffer, guardar_imagen_en_mariadb
 
 def procesar_detecciones(config_path, camera_id):
+    
     tiempo_deteccion_por_area = {}
     
     # Colores para las etiquetas
@@ -47,7 +48,7 @@ def procesar_detecciones(config_path, camera_id):
                     info_notifications = json.loads(info_notifications)
                     # print(info_notifications)
                 except json.JSONDecodeError as e:
-                    print(f"Error decodificando JSON: {e}")
+                    print(f"Error decodificando JSON de notificaciones: {e}")
                     
             emails = config['camera']["info_emails"]
             if emails:
@@ -55,7 +56,7 @@ def procesar_detecciones(config_path, camera_id):
                     emails = json.loads(emails)
                     # print(emails)
                 except json.JSONDecodeError as e:
-                    print(f"Error decodificando JSON: {e}")
+                    print(f"Error decodificando JSON de correos: {e}")
         except Exception as e:
             print(f"Error al cargar configuración: {e}")
             return
@@ -119,7 +120,8 @@ def procesar_detecciones(config_path, camera_id):
                                         if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
 
                                             if probability >= min_probability:
-                                                # print(f"Se detectó {label} con una probabilidad de {probability:.2f}% en el área {area_name}")
+                                                print("Detectando en camara: ", camera_id)
+                                                print(f"Se detectó {label} con una probabilidad de {probability:.2f}% en el área {area_name}")
                                                 # Dibujar la detección
                                                 color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
 
@@ -139,7 +141,7 @@ def procesar_detecciones(config_path, camera_id):
                                                 else:
                                                     # Calcular tiempo acumulado
                                                     tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
-                                                    # print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
+                                                    print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
 
                                                     # Verificar si el tiempo acumulado cumple el límite
                                                     if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
@@ -190,7 +192,13 @@ def procesar_detecciones(config_path, camera_id):
                                                         if info_notifications['Video'] == True:
                                                             save_video_from_buffer(info_buffer.frame_buffer, f"videos_{area_name}_{label}.mp4", info_notifications['Email'], emails)
                                                         elif info_notifications['Imagen'] == True:
-                                                            nombre_img = f"imagenes/img_{area_name}_{label}.jpg"
+                                                            nombre_img = f"Imgs/img_{area_name}_{label}.jpg"
+                                                            
+                                                            # Crear el directorio si no existe
+                                                            directorio = os.path.dirname(nombre_img)
+                                                            if not os.path.exists(directorio):
+                                                                os.makedirs(directorio)
+                                                            
                                                             # Guardar el frame como una imagen
                                                             cv2.imwrite(nombre_img, frame)
                                                             guardar_imagen_en_mariadb(nombre_img, info_notifications['Email'], emails)
@@ -205,9 +213,12 @@ def procesar_detecciones(config_path, camera_id):
                                                 tiempo_deteccion_por_area.pop((area_name, label), None)  # Reiniciar el tiempo al salir del área
                                                 # print(f"{label} salió de {area_name}, reiniciando el tiempo.")
 
-
                         except Exception as detection_error:
                             print(f"Error al procesar una detección en {area_name}: {detection_error}")
+                        
+                        # # Volver a escribir el frame procesado en el buffer en la misma posición
+                        # with info_buffer.buffer_lock:
+                        #     info_buffer.frame_buffer[0] = frame  # Sobrescribir el frame en la misma posición
                 except Exception as area_error:
                     print(f"Error al procesar {area_name}: {area_error}")
                     
