@@ -8,8 +8,8 @@ camera:
       width: 278.23048605478255
       x: 10.49167030635802
       y: 4.811507936507936
-  info_emails: '["edwin.granados@axuretechnologies.com", "cristian.tascon@axuretechnologies.com",
-    "nelson.ceron@axuretechnologies.com"]'
+  info_emails: '["cristian.tascon@axuretechnologies.com", "nelson.ceron@axuretechnologies.com",
+    "edwin.granados@axuretechnologies.com"]'
   info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
   ip: 10.10.138.231

@@ -94,12 +94,12 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
                 with open(nombre_archivo, 'rb') as archivo_video:
                     contenido_video = archivo_video.read()
                 
-                nombre_archivo_video = os.path.basename(nombre_archivo)
+                # nombre_archivo_video = os.path.basename(nombre_archivo)
                 print("NOmbre del video: ",nombre_archivo)
                 # Insertar el video en la base de datos
                 with conexion.cursor() as cursor:
                     sql = "INSERT INTO Notificaciones (id_evento, fecha_envio, mensaje, estado, Nombre_Archivo, Video_Alerta) VALUES (%s,%s, %s,%s,%s, %s)"
-                    cursor.execute(sql, (id_a_buscar, fecha_notification, mensaje_notification, estado_notification,nombre_archivo_video, contenido_video))
+                    cursor.execute(sql, (id_a_buscar, fecha_notification, mensaje_notification, estado_notification,nombre_archivo, contenido_video))
                 
                 # Confirmar cambios
                 conexion.commit()
@@ -145,7 +145,7 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
                 
                 print("Nombre de la imagen:", nombre_archivo)
                 
-                nombre_archivo = os.path.basename(nombre_archivo)
+                # nombre_archivo = os.path.basename(nombre_archivo)
                 # Insertar la imagen en la base de datos
                 with conexion.cursor() as cursor:
                     sql = "INSERT INTO Notificaciones (id_evento, fecha_envio, mensaje, estado, Nombre_Archivo, Imagen_Alerta) VALUES (%s, %s, %s, %s, %s, %s)"
@@ -212,11 +212,12 @@ def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_a
     # Dirección de correo del remitente
     from_address = 'apic.rto@axuretechnologies.com'
 
-    # Si destinatarios es una lista, conviértela en una cadena separada por comas
     if isinstance(destinatario, list):
-        to_address = ', '.join(destinatario)
+        to_address_display = ', '.join(destinatario)  # Para mostrar en el encabezado
+        to_address = destinatario  # Mantenerlo como lista para sendmail
     else:
-        to_address = destinatario  # Suponiendo que ya es una cadena
+        to_address_display = destinatario
+        to_address = [destinatario]  # Convertirlo en lista para sendmail
 
     print("destinatarios: ", destinatario)
     # Asunto y cuerpo del correo
@@ -224,7 +225,7 @@ def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_a
     # Crear el objeto del mensaje
     msg = MIMEMultipart()
     msg['From'] = from_address
-    msg['To'] = to_address
+    msg['To'] = to_address_display
     msg['Subject'] = subject
 
     body_template = f"""

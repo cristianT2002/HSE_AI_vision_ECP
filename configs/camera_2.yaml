@@ -1,17 +1,19 @@
 camera:
   coordinates:
     area1:
+      A_Person: '20'
       camara: Perforador
       height: 139.41798941798942
       punto: IESCO_T661_ECP
       width: 267.14918574904846
       x: 7.197229674923566
       y: 4.546957671957672
-  info_emails: '[]'
+  info_emails: '["cristian.tascon@axuretechnologies.com", "nelson.ceron@axuretechnologies.com",
+    "edwin.granados@axuretechnologies.com"]'
   info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
   ip: 10.10.138.232
-  label: ''
+  label: A_Person
   name camera: Perforador
   password: 4xUR3_2017
   place: POZO11
