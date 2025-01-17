@@ -190,9 +190,9 @@ def procesar_detecciones(config_path, camera_id):
                                                         cv2.putText(frame, text, (text_offset_x, text_offset_y), 
                                                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
                                                         if info_notifications['Video'] == True:
-                                                            save_video_from_buffer(info_buffer.frame_buffer, f"videos_{area_name}_{label}.mp4", info_notifications['Email'], emails)
+                                                            save_video_from_buffer(info_buffer.frame_buffer, f"videos_{area_name}_{label}_{nombre_camera}.mp4", info_notifications['Email'], emails)
                                                         elif info_notifications['Imagen'] == True:
-                                                            nombre_img = f"Imgs/img_{area_name}_{label}.jpg"
+                                                            nombre_img = f"Imgs/img_{area_name}_{label}_{nombre_camera}.jpg"
                                                             
                                                             # Crear el directorio si no existe
                                                             directorio = os.path.dirname(nombre_img)

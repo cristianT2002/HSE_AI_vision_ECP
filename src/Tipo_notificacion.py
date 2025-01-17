@@ -20,6 +20,7 @@ from email import encoders
 def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails, fps=20):
     """
     Guarda un video MP4 a partir de un buffer de frames en una carpeta llamada 'Videos'.
+    Si el nombre del archivo ya existe, agrega un sufijo numérico para evitar sobrescribirlo.
 
     :param frame_buffer: Lista de frames (cada frame debe ser una matriz de NumPy).
     :param output_file: Nombre del archivo de salida (debe terminar en .mp4).
@@ -35,8 +36,16 @@ def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails
     videos_dir = os.path.join(os.getcwd(), "Videos")
     os.makedirs(videos_dir, exist_ok=True)
 
-    # Construir la ruta completa del archivo de salida
+    # Construir la ruta inicial del archivo
+    base_name, extension = os.path.splitext(output_file)
     output_path = os.path.join(videos_dir, output_file)
+
+    # Verificar si el archivo ya existe y agregar un sufijo numérico si es necesario
+    counter = 1
+    while os.path.exists(output_path):
+        output_file = f"{base_name}_{counter}{extension}"
+        output_path = os.path.join(videos_dir, output_file)
+        counter += 1
 
     # Obtener las dimensiones del primer frame
     height, width, channels = frame_buffer[0].shape
@@ -82,20 +91,21 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
                 estado_notification = 'pendiente'
                 sitio_notificacion = resultado['sitio']
                 company_notificacion = resultado['company']
-                print("NOmbre del video: ",nombre_archivo)
                 with open(nombre_archivo, 'rb') as archivo_video:
                     contenido_video = archivo_video.read()
                 
+                nombre_archivo_video = os.path.basename(nombre_archivo)
+                print("NOmbre del video: ",nombre_archivo)
                 # Insertar el video en la base de datos
                 with conexion.cursor() as cursor:
                     sql = "INSERT INTO Notificaciones (id_evento, fecha_envio, mensaje, estado, Nombre_Archivo, Video_Alerta) VALUES (%s,%s, %s,%s,%s, %s)"
-                    cursor.execute(sql, (id_a_buscar, fecha_notification, mensaje_notification, estado_notification,nombre_video, contenido_video))
+                    cursor.execute(sql, (id_a_buscar, fecha_notification, mensaje_notification, estado_notification,nombre_archivo_video, contenido_video))
                 
                 # Confirmar cambios
                 conexion.commit()
                 print("Video guardado en la base de datos exitosamente.")
                 if envio_correo == True:
-                    send_email_with_outlook("Add_Video", lista_emails, fecha_notification, mensaje_notification, nombre_video, sitio_notificacion, company_notificacion)
+                    send_email_with_outlook("Add_Video", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
                 
                 # Aquí puedes usar los datos como necesites
             else:
@@ -128,12 +138,14 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
                 estado_notification = 'pendiente'
                 sitio_notificacion = resultado['sitio']
                 company_notificacion = resultado['company']
-                print("Nombre de la imagen:", nombre_archivo)
                 
                 # Leer el contenido de la imagen como binario
                 with open(nombre_archivo, 'rb') as archivo_imagen:
                     contenido_imagen = archivo_imagen.read()
                 
+                print("Nombre de la imagen:", nombre_archivo)
+                
+                nombre_archivo = os.path.basename(nombre_archivo)
                 # Insertar la imagen en la base de datos
                 with conexion.cursor() as cursor:
                     sql = "INSERT INTO Notificaciones (id_evento, fecha_envio, mensaje, estado, Nombre_Archivo, Imagen_Alerta) VALUES (%s, %s, %s, %s, %s, %s)"
@@ -206,6 +218,7 @@ def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_a
     else:
         to_address = destinatario  # Suponiendo que ya es una cadena
 
+    print("destinatarios: ", destinatario)
     # Asunto y cuerpo del correo
     subject = "Alerta Detectada en HSE-Video-Analytics"
     # Crear el objeto del mensaje
