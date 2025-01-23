@@ -1,26 +1,30 @@
 camera:
   coordinates:
     area1:
+      A_Person: '15'
       camara: Perforador
-      height: 112.6984126984127
+      height: 142.55998689706004
       punto: IESCO_T661_ECP
-      width: 199.16391090035563
-      x: 31.15679790353778
-      y: 6.977513227513227
+      width: 53.10341630742131
+      x: 2.651462476243452
+      y: 3.189746949471788
     area2:
+      No_Helmet: '15'
       camara: Perforador
-      height: 103.43915343915344
+      height: 36.95029072148064
       punto: IESCO_T661_ECP
-      width: 42.8277282086479
-      x: 250.6863417982155
-      y: 36.07804232804233
+      width: 145.07022667222918
+      x: 65.2482269503546
+      y: 107.75120792727868
     area3:
+      A_Person: '5'
+      White: '5'
       camara: Perforador
-      height: 24.074074074074076
+      height: 143.3461632953894
       punto: IESCO_T661_ECP
-      width: 92.24433768016473
-      x: 147.95969301803206
-      y: 123.90873015873015
+      width: 79.21012376581837
+      x: 217.14179761739211
+      y: 2.6656293505855375
   info_emails: '["cristian.tascon@.com", "nelson.ceron@axuretechnologies.com"]'
   info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
@@ -32,7 +36,7 @@ camera:
   point: IESCO_T661_ECP
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@10.10.138.232:554/Streaming/Channels/102
-  time_areas: '{"area1": "3", "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "3", "area2": "5", "area3": "8"}'
   username: admin
 labels:
 - A_Person

@@ -25,10 +25,10 @@ camera:
       x: 204.97844527882074
       y: 3.189746949471788
   info_emails: '["xsd<aSA", "rhrthrhrhrh"]'
-  info_notifications: '{"Email": false, "Imagen": false, "Page_HSE": true, "Video":
-    true}'
+  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
   ip: 10.10.138.231
-  label: A_Person
+  label: A_Person,YellowGreen,White
   name camera: Mesa1
   password: 4xUR3_2017
   place: POZO11
