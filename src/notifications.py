@@ -9,6 +9,7 @@ from src.variables_globales import get_streamers
 from src.db_utils import connect_to_db, close_connection
 from src.variables_globales import get_streamers, set_streamers, set_id
 from src.Tipo_notificacion import save_video_from_buffer, guardar_imagen_en_mariadb
+import socket
 
 def procesar_detecciones(config_path, camera_id):
     
@@ -22,6 +23,14 @@ def procesar_detecciones(config_path, camera_id):
         "White": (120, 120, 120),   # Gris
         "YellowGreen": (150, 50, 255) # Morado
     }
+    host_ip = socket.gethostbyname(socket.gethostname())
+    
+    ################ Ip servidor #################### 
+    # host_ip = "10.212.134.13"
+
+    feed_url = f"http://{host_ip}:5000/video_feed/{camera_id}"
+
+    save_feed_url_to_database(camera_id, feed_url)
     while True:
         """
         Procesa las detecciones de objetos en cada área definida y las imprime en consola.
@@ -221,7 +230,30 @@ def procesar_detecciones(config_path, camera_id):
                         #     info_buffer.frame_buffer[0] = frame  # Sobrescribir el frame en la misma posición
                 except Exception as area_error:
                     print(f"Error al procesar {area_name}: {area_error}")
-                    
+
+def save_feed_url_to_database(camera_id, url):
+    """
+    Guarda la URL del video feed en la columna URL_CAMARA_SERVER de la base de datos.
+    """
+    connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+    cursor = connection.cursor()
+
+    try:
+        update_query = """
+            UPDATE IP_Videofeed2
+            SET URL_CAMARA_SERVER = %s
+            WHERE ID = %s
+        """
+        cursor.execute(update_query, (url, camera_id))
+        connection.commit()
+        print(f"URL {url} guardada correctamente para la cámara {camera_id}")
+    except Exception as e:
+        print(f"Error al guardar la URL en la base de datos: {e}")
+    finally:
+        cursor.close()
+        close_connection(connection)
+
+
 def add_event_to_database(sitio, company, fecha, hora, tipo_evento, descripcion):
     """
     Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.

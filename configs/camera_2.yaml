@@ -25,7 +25,11 @@ camera:
       width: 79.21012376581837
       x: 217.14179761739211
       y: 2.6656293505855375
+<<<<<<< HEAD
   info_emails: ''
+=======
+  info_emails: '["cristian.tascon@.com", "nelson.ceron@axuretechnologies.com"]'
+>>>>>>> db2f6aafd911c9db9e6da0697d15f4036afd51e0
   info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
   ip: 10.10.138.232
