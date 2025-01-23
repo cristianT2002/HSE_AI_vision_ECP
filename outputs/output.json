@@ -3,16 +3,16 @@
         "ID": 1,
         "LUGAR": "POZO11",
         "PUNTO": "IESCO_T661_ECP",
-        "NOMBRE_CAMARA": "Mesa",
+        "NOMBRE_CAMARA": "Mesa1",
         "IP_CAMARA": "10.10.138.231",
-        "URL_CAMARA_SERVER": "http://127.0.1.1:5000/video_feed/1",
-        "ESTADO_LUGAR_MODELO": "A_Person",
+        "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/1",
+        "ESTADO_LUGAR_MODELO": "White",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 10.49167030635802, \"y\": 4.811507936507936, \"width\": 278.23048605478255, \"height\": 132.8042328042328, \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"20\"}}",
-        "TIME_AREAS": "{\"area1\": \"3\", \"area2\": \"10\", \"area3\": \"10\"}",
+        "COORDENADAS_AREA": "{\"area1\": {\"x\": 1.8063268234853682, \"y\": 1.1822089947089947, \"width\": 163.8235477631497, \"height\": 146.03174603174602, \"camara\": \"Mesa1\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"11\", \"No_Helmet\": \"28\", \"White\": \"12\"}, \"area2\": {\"x\": 170.4217882323579, \"y\": 1.1822089947089947, \"width\": 127.28520621451301, \"height\": 147.61904761904762, \"camara\": \"Mesa1\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"12\"}}",
+        "TIME_AREAS": "{\"area1\": \"10\", \"area2\": \"10\", \"area3\": \"10\"}",
         "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": false, \"Page_HSE\": true, \"Video\": true}",
-        "DESTINATARIOS": "[\"cristian.tascon@axuretechnologies.com\", \"nelson.ceron@axuretechnologies.com\", \"edwin.granados@axuretechnologies.com\"]"
+        "DESTINATARIOS": ""
     },
     {
         "ID": 2,
@@ -20,13 +20,13 @@
         "PUNTO": "IESCO_T661_ECP",
         "NOMBRE_CAMARA": "Perforador",
         "IP_CAMARA": "10.10.138.232",
-        "URL_CAMARA_SERVER": "http://10.212.134.11:5000/video_feed/2",
-        "ESTADO_LUGAR_MODELO": "A_Person",
+        "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/2",
+        "ESTADO_LUGAR_MODELO": "",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 7.197229674923566, \"y\": 4.546957671957672, \"width\": 267.14918574904846, \"height\": 139.41798941798942, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\",  \"A_Person\": \"20\"}}",
-        "TIME_AREAS": "{\"area1\": \"3\", \"area2\": \"10\", \"area3\": \"10\"}",
+        "COORDENADAS_AREA": "{\"area3\": {\"x\": 217.14179761739211, \"y\": 2.6656293505855375, \"width\": 79.21012376581837, \"height\": 143.3461632953894, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"5\", \"White\": \"5\"}, \"area2\": {\"x\": 65.2482269503546, \"y\": 107.75120792727868, \"width\": 145.07022667222918, \"height\": 36.95029072148064, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"No_Helmet\": \"15\"}, \"area1\": {\"x\": 2.651462476243452, \"y\": 3.189746949471788, \"width\": 53.10341630742131, \"height\": 142.55998689706004, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"15\"}}",
+        "TIME_AREAS": "{\"area1\": \"3\", \"area2\": \"5\", \"area3\": \"8\"}",
         "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": false, \"Page_HSE\": true, \"Video\": true}",
-        "DESTINATARIOS": "[\"cristian.tascon@axuretechnologies.com\", \"nelson.ceron@axuretechnologies.com\", \"edwin.granados@axuretechnologies.com\"]"
+        "DESTINATARIOS": ""
     }
 ]

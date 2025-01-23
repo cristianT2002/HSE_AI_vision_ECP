@@ -132,6 +132,17 @@ def monitor_database_and_start_detections(db_config):
         time.sleep(5)
 
 if __name__ == "__main__":
+    
+    # Vaciar la carpeta de videos
+    # Verifica si la carpeta existe
+    if os.path.exists("Videos"):
+        # Itera sobre los elementos de la carpeta
+        for elemento in os.listdir("Videos"):
+            elemento_ruta = os.path.join("Videos", elemento)
+            # Elimina archivos
+            if os.path.isfile(elemento_ruta) or os.path.islink(elemento_ruta):
+                os.unlink(elemento_ruta)
+    
     # Cargar configuración desde database.yaml
     db_config = load_yaml_config("configs/database.yaml")["database"]
 

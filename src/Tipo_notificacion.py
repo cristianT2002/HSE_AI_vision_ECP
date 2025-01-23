@@ -65,13 +65,61 @@ def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails
     guardar_video_en_mariadb(output_path, output_path, envio_correo, lista_emails)
     print(f"Video guardado como {output_path}")
     
-
+def borrar_primer_registro(host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
+    # Conectar a la base de datos
+    conexion = pymysql.connect(host=host, user=user, password=password, database=database, cursorclass=pymysql.cursors.DictCursor)
+    
+    try:
+        with conexion.cursor() as cursor:
+            # Obtener el ID del primer registro (más antiguo) en Notificaciones
+            sql_select = "SELECT id_notificacion, id_evento FROM Notificaciones ORDER BY id_notificacion ASC LIMIT 1"
+            cursor.execute(sql_select)
+            resultado = cursor.fetchone()
+            
+            if resultado:
+                id_a_borrar = resultado['id_notificacion']
+                id_a_borrar_evento = resultado['id_evento']
+                print(f"ID del primer registro a eliminar: {id_a_borrar}")
+                print(f"ID del evento asociado a eliminar: {id_a_borrar_evento}")
+                
+                # Borrar el registro en Notificaciones
+                sql_delete_notificaciones = "DELETE FROM Notificaciones WHERE id_notificacion = %s"
+                cursor.execute(sql_delete_notificaciones, (id_a_borrar,))
+                
+                # Borrar el registro en Eventos
+                sql_delete_eventos = "DELETE FROM Eventos WHERE id_evento = %s"
+                cursor.execute(sql_delete_eventos, (id_a_borrar_evento,))
+                
+                # Confirmar cambios
+                conexion.commit()
+                print(f"Registro con ID {id_a_borrar} en Notificaciones y evento con ID {id_a_borrar_evento} en Eventos eliminados exitosamente.")
+            else:
+                print("No hay registros en la tabla Notificaciones.")
+    except Exception as e:
+        print("Error al borrar el primer registro:", e)
+    finally:
+        conexion.close()
 
     
 def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
     # Conectar a la base de datos
     conexion = pymysql.connect(host=host, user=user, password=password, database=database, cursorclass=pymysql.cursors.DictCursor)
     ultimo_registro = get_id()
+    
+    # Contar el número de registros en la tabla Notificaciones
+    with conexion.cursor() as cursor:
+        sql_count = "SELECT COUNT(*) AS total_registros FROM Notificaciones"
+        cursor.execute(sql_count)
+        resultado_count = cursor.fetchone()
+        total_registros = resultado_count['total_registros']
+    
+    print(f"Total de registros en la tabla Notificaciones: {total_registros}")
+    
+    # Verificar si el número de registros es mayor a 30
+    if total_registros > 15:
+        print("Se ha alcanzado el límite de registros en la tabla Notificaciones.")
+        # Llamar a la función
+        borrar_primer_registro()
     
     try:
         # Obtener el último registro con el ID de get_id()

@@ -1,26 +1,35 @@
 camera:
   coordinates:
     area1:
-      A_Person: '20'
-      camara: Mesa
-      height: 132.8042328042328
+      A_Person: '11'
+      No_Helmet: '28'
+      White: '12'
+      camara: Mesa1
+      height: 146.03174603174602
       punto: IESCO_T661_ECP
-      width: 278.23048605478255
-      x: 10.49167030635802
-      y: 4.811507936507936
-  info_emails: '["cristian.tascon@axuretechnologies.com", "nelson.ceron@axuretechnologies.com",
-    "edwin.granados@axuretechnologies.com"]'
+      width: 163.8235477631497
+      x: 1.8063268234853682
+      y: 1.1822089947089947
+    area2:
+      A_Person: '12'
+      camara: Mesa1
+      height: 147.61904761904762
+      punto: IESCO_T661_ECP
+      width: 127.28520621451301
+      x: 170.4217882323579
+      y: 1.1822089947089947
+  info_emails: ''
   info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
   ip: 10.10.138.231
-  label: A_Person
-  name camera: Mesa
+  label: White
+  name camera: Mesa1
   password: 4xUR3_2017
   place: POZO11
   point: IESCO_T661_ECP
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@10.10.138.231:554/Streaming/Channels/102
-  time_areas: '{"area1": "3", "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "10", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person
