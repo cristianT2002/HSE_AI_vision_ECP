@@ -10,6 +10,7 @@ from src.db_utils import connect_to_db, close_connection
 from src.variables_globales import get_streamers, set_streamers, set_id
 from src.Tipo_notificacion import save_video_from_buffer, guardar_imagen_en_mariadb
 import socket
+import numpy as np
 
 def procesar_detecciones(config_path, camera_id):
     
@@ -92,23 +93,24 @@ def procesar_detecciones(config_path, camera_id):
 
             for area_name, area_config in areas.items():
                 try:
-                    # Escalar coordenadas del área
-                    area_x = float(area_config["x"])
-                    area_y = float(area_config["y"])
-                    area_width = float(area_config["width"])
-                    area_height = float(area_config["height"])
+                    # Escalar los puntos del polígono
+                    original_points = area_config["points"]
+                    scaled_points = [
+                        {
+                            "x": (point["x"] / width2) * width1,
+                            "y": (point["y"] / height2) * height1
+                        }
+                        for point in original_points
+                    ]
 
-                    x1 = (area_x / width2) * width1
-                    y1 = (area_y / height2) * height1
-                    rect_width1 = (area_width / width2) * width1
-                    rect_height1 = (area_height / height2) * height1
+                    # Convertir puntos escalados al formato requerido por OpenCV
+                    pts = np.array(
+                        [[int(point["x"]), int(point["y"])] for point in scaled_points],
+                        dtype=np.int32
+                    ).reshape((-1, 1, 2))
 
-                    detecciones_obtenidas = False
-                    salidas_por_area = None
-                    salidas_por_area2 = None
-                    
-                    start_point = (int(x1), int(y1))
-                    end_point = (int(x1 + rect_width1), int(y1 + rect_height1))
+                    # Dibujar el polígono escalado en el frame
+                    cv2.polylines(frame, [pts], isClosed=True, color=(255, 0, 0), thickness=2)
 
                     # Procesar el frame con el modelo
                     results = model(frame, verbose=False)
@@ -117,6 +119,7 @@ def procesar_detecciones(config_path, camera_id):
                         try:
                                     # Obtener coordenadas, probabilidad y etiqueta de la detección
                                     x1_det, y1_det, x2_det, y2_det = map(int, detection.xyxy[0])
+                                    point = (x1_det, y1_det)
                                     probability = detection.conf[0] * 100
                                     class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
                                     label = LABELS.get(class_index, "Unknown")
@@ -124,10 +127,10 @@ def procesar_detecciones(config_path, camera_id):
                                     # Verificar si la etiqueta está permitida en el área actual
                                     if label in area_config:
                                         min_probability = float(area_config[label])
-
+                                        # Usar cv2.pointPolygonTest para verificar si el punto está dentro del polígono
+                                        inside = cv2.pointPolygonTest(pts, point, False)
                                         # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
-                                        if start_point[0] <= x1_det <= end_point[0] and start_point[1] <= y1_det <= end_point[1]:
-
+                                        if inside >= 0 :
                                             if probability >= min_probability:
                                                 print("Detectando en camara: ", camera_id)
                                                 print(f"Se detectó {label} con una probabilidad de {probability:.2f}% en el área {area_name}")
@@ -220,7 +223,7 @@ def procesar_detecciones(config_path, camera_id):
                                             else:
                                                 # Si la detección está fuera de los límites o no cumple con la probabilidad mínima
                                                 tiempo_deteccion_por_area.pop((area_name, label), None)  # Reiniciar el tiempo al salir del área
-                                                # print(f"{label} salió de {area_name}, reiniciando el tiempo.")
+                                                print(f"{label} salió de {area_name}, reiniciando el tiempo.")
 
                         except Exception as detection_error:
                             print(f"Error al procesar una detección en {area_name}: {detection_error}")

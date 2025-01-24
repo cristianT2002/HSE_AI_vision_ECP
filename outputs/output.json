@@ -3,44 +3,30 @@
         "ID": 1,
         "LUGAR": "POZO11",
         "PUNTO": "IESCO_T661_ECP",
-        "NOMBRE_CAMARA": "Mesa1",
-        "IP_CAMARA": "10.10.138.231",
-        "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/1",
-<<<<<<< HEAD
-        "ESTADO_LUGAR_MODELO": "White",
+        "NOMBRE_CAMARA": "Mesa",
+        "IP_CAMARA": "172.29.5.230",
+        "URL_CAMARA_SERVER": "http://10.212.134.13:5000/video_feed/1",
+        "ESTADO_LUGAR_MODELO": "",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 1.8063268234853682, \"y\": 1.1822089947089947, \"width\": 163.8235477631497, \"height\": 146.03174603174602, \"camara\": \"Mesa1\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"11\", \"No_Helmet\": \"28\", \"White\": \"12\"}, \"area2\": {\"x\": 170.4217882323579, \"y\": 1.1822089947089947, \"width\": 127.28520621451301, \"height\": 147.61904761904762, \"camara\": \"Mesa1\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"12\"}}",
-        "TIME_AREAS": "{\"area1\": \"10\", \"area2\": \"10\", \"area3\": \"10\"}",
+        "COORDENADAS_AREA": "{\"area1\": {\"points\": [{\"x\": 14.38510014350783, \"y\": 3.2986111111111107}, {\"x\": 63.202720409309286, \"y\": 4.092261904761904}, {\"x\": 116.21326511511823, \"y\": 144.56845238095238}, {\"x\": 56.913333749298054, \"y\": 146.94940476190476}, {\"x\": 4.801272852062144, \"y\": 5.150462962962963}], \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"Harness\": \"20\"}, \"area2\": {\"points\": [{\"x\": 93.15218069507705, \"y\": 21.023478835978835}, {\"x\": 192.8838834466837, \"y\": 37.954695767195766}, {\"x\": 249.78785798964248, \"y\": 93.24570105820105}, {\"x\": 226.72677356960128, \"y\": 142.1875}, {\"x\": 135.08142509515193, \"y\": 142.45205026455025}, {\"x\": 113.51781368939913, \"y\": 100.91765873015872}, {\"x\": 106.03044861795719, \"y\": 75.52083333333333}], \"camara\": \"Mesa\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"20\", \"White\": \"20\", \"YellowGreen\": \"20\"}}",
+        "TIME_AREAS": "{\"area1\": 5, \"area2\": 5, \"area3\": \"10\"}",
         "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": false, \"Page_HSE\": true, \"Video\": true}",
-        "DESTINATARIOS": ""
-=======
-        "ESTADO_LUGAR_MODELO": "A_Person,YellowGreen,White",
-        "USUARIO": "admin",
-        "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"x\": 4.13479812728874, \"y\": 2.1415117516992876, \"width\": 105.91016548463355, \"height\": 142.03586929817376, \"camara\": \"Mesa1\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"12\"}, \"area2\": {\"x\": 117.7583089973578, \"y\": 3.975923347801163, \"width\": 82.47346219811803, \"height\": 138.36704610597002, \"camara\": \"Mesa1\", \"punto\": \"IESCO_T661_ECP\", \"YellowGreen\": \"12\"}, \"area3\": {\"x\": 204.97844527882074, \"y\": 3.189746949471788, \"width\": 91.96681036480783, \"height\": 143.87028089427565, \"camara\": \"Mesa1\", \"punto\": \"IESCO_T661_ECP\", \"White\": \"12\"}}",
-        "TIME_AREAS": "{\"area1\": \"3\", \"area2\": \"5\", \"area3\": \"6\"}",
-        "INFO_NOTIFICATIONS": "{\"Email\": false, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}",
-        "DESTINATARIOS": "[\"xsd<aSA\", \"rhrthrhrhrh\"]"
->>>>>>> db2f6aafd911c9db9e6da0697d15f4036afd51e0
+        "DESTINATARIOS": "[\"cristian.tascon@axuretechnologies.com\"]"
     },
     {
         "ID": 2,
         "LUGAR": "POZO11",
         "PUNTO": "IESCO_T661_ECP",
-        "NOMBRE_CAMARA": "Perforador",
-        "IP_CAMARA": "10.10.138.232",
-        "URL_CAMARA_SERVER": "http://172.30.37.80:5000/video_feed/2",
+        "NOMBRE_CAMARA": "Planchada",
+        "IP_CAMARA": "172.29.5.231",
+        "URL_CAMARA_SERVER": "http://10.212.134.13:5000/video_feed/2",
         "ESTADO_LUGAR_MODELO": "",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area3\": {\"x\": 217.14179761739211, \"y\": 2.6656293505855375, \"width\": 79.21012376581837, \"height\": 143.3461632953894, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"5\", \"White\": \"5\"}, \"area2\": {\"x\": 65.2482269503546, \"y\": 107.75120792727868, \"width\": 145.07022667222918, \"height\": 36.95029072148064, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"No_Helmet\": \"15\"}, \"area1\": {\"x\": 2.651462476243452, \"y\": 3.189746949471788, \"width\": 53.10341630742131, \"height\": 142.55998689706004, \"camara\": \"Perforador\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"15\"}}",
-        "TIME_AREAS": "{\"area1\": \"3\", \"area2\": \"5\", \"area3\": \"8\"}",
+        "COORDENADAS_AREA": "{\"area1\": {\"points\": [{\"x\": 152.90135396518374, \"y\": 48.53670634920635}, {\"x\": 230.47045610532226, \"y\": 64.67427248677248}, {\"x\": 201.11998502526984, \"y\": 132.92824074074073}, {\"x\": 176.56142759094027, \"y\": 148.8012566137566}, {\"x\": 75.03275722218756, \"y\": 148.53670634920636}, {\"x\": 64.55044612216884, \"y\": 128.6954365079365}, {\"x\": 87.01254133649466, \"y\": 112.55787037037037}, {\"x\": 146.6119673051725, \"y\": 74.19808201058201}], \"camara\": \"Planchada\", \"punto\": \"IESCO_T661_ECP\", \"A_Person\": \"10\"}}",
+        "TIME_AREAS": "{\"area1\": \"4\", \"area2\": \"10\", \"area3\": \"10\"}",
         "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": false, \"Page_HSE\": true, \"Video\": true}",
-<<<<<<< HEAD
-        "DESTINATARIOS": ""
-=======
-        "DESTINATARIOS": "[\"cristian.tascon@.com\", \"nelson.ceron@axuretechnologies.com\"]"
->>>>>>> db2f6aafd911c9db9e6da0697d15f4036afd51e0
+        "DESTINATARIOS": "[]"
     }
 ]
