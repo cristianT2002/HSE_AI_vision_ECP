@@ -1,31 +1,70 @@
 camera:
   coordinates:
     area1:
-      camara: Mesa
-      height: 139.94708994708995
+<<<<<<< HEAD
+      A_Person: '11'
+      No_Helmet: '28'
+      White: '12'
+      camara: Mesa1
+      height: 146.03174603174602
       punto: IESCO_T661_ECP
-      width: 107.2190678230486
-      x: 5.6997566606351775
-      y: 2.69510582010582
+      width: 163.8235477631497
+      x: 1.8063268234853682
+      y: 1.1822089947089947
     area2:
-      camara: Mesa
-      height: 139.41798941798942
+      A_Person: '12'
+      camara: Mesa1
+      height: 147.61904761904762
       punto: IESCO_T661_ECP
-      width: 78.46758594871153
-      x: 117.71073812940662
-      y: 2.69510582010582
-  info_emails: '["nelson.ceron@axuretechnologies.com"]'
+      width: 127.28520621451301
+      x: 170.4217882323579
+      y: 1.1822089947089947
+  info_emails: ''
+  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
+    true}'
+  ip: 10.10.138.231
+  label: White
+=======
+      A_Person: '12'
+      camara: Mesa1
+      height: 142.03586929817376
+      punto: IESCO_T661_ECP
+      width: 105.91016548463355
+      x: 4.13479812728874
+      y: 2.1415117516992876
+    area2:
+      YellowGreen: '12'
+      camara: Mesa1
+      height: 138.36704610597002
+      punto: IESCO_T661_ECP
+      width: 82.47346219811803
+      x: 117.7583089973578
+      y: 3.975923347801163
+    area3:
+      White: '12'
+      camara: Mesa1
+      height: 143.87028089427565
+      punto: IESCO_T661_ECP
+      width: 91.96681036480783
+      x: 204.97844527882074
+      y: 3.189746949471788
+  info_emails: '["xsd<aSA", "rhrthrhrhrh"]'
   info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 10.10.138.231
-  label: ''
-  name camera: Mesa
+  label: A_Person,YellowGreen,White
+>>>>>>> db2f6aafd911c9db9e6da0697d15f4036afd51e0
+  name camera: Mesa1
   password: 4xUR3_2017
   place: POZO11
   point: IESCO_T661_ECP
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@10.10.138.231:554/Streaming/Channels/102
-  time_areas: '{"area1": "1", "area2": "9", "area3": "10"}'
+<<<<<<< HEAD
+  time_areas: '{"area1": "10", "area2": "10", "area3": "10"}'
+=======
+  time_areas: '{"area1": "3", "area2": "5", "area3": "6"}'
+>>>>>>> db2f6aafd911c9db9e6da0697d15f4036afd51e0
   username: admin
 labels:
 - A_Person
