@@ -36,9 +36,9 @@ camera:
       - x: 106.03044861795719
         y: 75.52083333333333
       punto: IESCO_T661_ECP
-  info_emails: '["cristian.tascon@axuretechnologies.com"]'
-  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
-    true}'
+  info_emails: '[]'
+  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
   ip: 172.29.5.230
   label: ''
   name camera: Mesa
@@ -47,7 +47,7 @@ camera:
   point: IESCO_T661_ECP
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": 5, "area2": 5, "area3": "10"}'
+  time_areas: '{"area1": "10", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person

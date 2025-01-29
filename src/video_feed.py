@@ -195,7 +195,7 @@ def save_feed_url_to_database(camera_id, url):
 
     try:
         update_query = """
-            UPDATE IP_Videofeed2
+            UPDATE IP_Videofeed3
             SET URL_CAMARA_SERVER = %s
             WHERE ID = %s
         """
