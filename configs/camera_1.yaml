@@ -1,11 +1,11 @@
 camera:
   coordinates:
     area1:
-      A_Person: 5
-      Harness: '5'
+      A_Person: 50
+      Harness: '10'
       No_Helmet: '20'
       White: 50
-      YellowGreen: '5'
+      YellowGreen: '30'
       camara: Mesa
       points:
       - x: 58.86004866787296
