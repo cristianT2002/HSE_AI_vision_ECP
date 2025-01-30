@@ -1,11 +1,11 @@
 camera:
   coordinates:
     area1:
-      A_Person: 50
-      Harness: '10'
+      A_Person: 5
+      Harness: '5'
       No_Helmet: '20'
       White: 50
-      YellowGreen: '30'
+      YellowGreen: '5'
       camara: Mesa
       points:
       - x: 58.86004866787296
@@ -20,10 +20,10 @@ camera:
         y: 21.527777777777775
       punto: TORITO_OESTE1_GEOPARK
     area2:
-      A_Person: '50'
-      No_Helmet: '20'
-      White: '50'
-      YellowGreen: '50'
+      A_Person: '2'
+      No_Helmet: '10'
+      White: '20'
+      YellowGreen: '20'
       camara: Mesa
       points:
       - x: 115.16503400511635
@@ -59,4 +59,4 @@ labels:
 - White
 - YellowGreen
 model:
-  path: models/juanmodelo.pt
+  path: models/best.pt

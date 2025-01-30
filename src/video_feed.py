@@ -138,7 +138,8 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                     probability = detection.conf[0] * 100
                                     class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
                                     label = LABELS.get(class_index, "Unknown")
-
+                                    print("label: ", label, "Probabilidad: ", probability)
+                                    print("Area: ", area_config)
                                     # Verificar si la etiqueta está permitida en el área actual
                                     if label in area_config:
                                         min_probability = float(area_config[label])
