@@ -41,4 +41,4 @@ labels:
 - White
 - YellowGreen
 model:
-  path: models/juanmodelo.pt
+  path: models/best.pt
