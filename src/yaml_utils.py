@@ -66,6 +66,7 @@ def generate_camera_yaml(data):
 
         # Convertir coordinates a un diccionario Python
         try:
+            print(coordinates)
             coordinates_dict = json.loads(coordinates)
         except json.JSONDecodeError:
             print(f"Error: `COORDENADAS_AREA` no es un JSON válido para la cámara {camera_id}.")

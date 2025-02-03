@@ -98,6 +98,7 @@ def monitor_database_and_start_detections(db_config):
 
             # Actualizar YAML si hay cambios en la base de datos
             if cameras != previous_data:
+                print("Datos obtenidos de la base de datos:", cameras)
                 generate_camera_yaml(cameras)  # Actualizar YAML
                 cursor.execute(db_config["query_json"])
                 data = cursor.fetchall()
@@ -114,13 +115,13 @@ def monitor_database_and_start_detections(db_config):
                         continue
                     print("Info camara: ",config_path, camera_id)
                     # Iniciar un nuevo hilo para detecciones
-                    # thread = threading.Thread(
-                    #     target=procesar_detecciones,
-                    #     args=(config_path, camera_id),
-                    #     daemon=True
-                    # )
-                    # detecciones_threads[camera_id] = thread
-                    # thread.start()
+                    thread = threading.Thread(
+                        target=procesar_detecciones,
+                        args=(config_path, camera_id),
+                        daemon=True
+                    )
+                    detecciones_threads[camera_id] = thread
+                    thread.start()
                     print(f"Hilo de detección iniciado para la cámara {camera_id}.")
 
         except Exception as e:
