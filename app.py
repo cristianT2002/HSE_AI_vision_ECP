@@ -114,13 +114,13 @@ def monitor_database_and_start_detections(db_config):
                         continue
                     print("Info camara: ",config_path, camera_id)
                     # Iniciar un nuevo hilo para detecciones
-                    thread = threading.Thread(
-                        target=procesar_detecciones,
-                        args=(config_path, camera_id),
-                        daemon=True
-                    )
-                    detecciones_threads[camera_id] = thread
-                    thread.start()
+                    # thread = threading.Thread(
+                    #     target=procesar_detecciones,
+                    #     args=(config_path, camera_id),
+                    #     daemon=True
+                    # )
+                    # detecciones_threads[camera_id] = thread
+                    # thread.start()
                     print(f"Hilo de detección iniciado para la cámara {camera_id}.")
 
         except Exception as e:
