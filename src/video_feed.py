@@ -91,8 +91,12 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                 # print("Buffer: ", len(frame_buffer))
                 with info_buffer.buffer_lock:
                     if info_buffer.frame_buffer:
+                        # Si hay suficientes frames en el buffer, tomar el más reciente
                         if len(info_buffer.frame_buffer) > 150:
-                            frame_to_process = info_buffer.frame_buffer.pop(0)
+                            frame_to_process = info_buffer.frame_buffer.popleft()  # Toma el frame más antiguo eficientemente
+                        # else:
+                        #     frame_to_process = info_buffer.frame_buffer[-1]  # Toma el último frame sin eliminarlo
+
 
                 # print("Frame procesado: ",frame_to_process)
                 if frame_to_process is not None:
