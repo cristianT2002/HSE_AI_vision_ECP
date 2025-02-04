@@ -1,7 +1,7 @@
 camera:
   coordinates:
     area1:
-      YellowGreen: '5'
+      No_Harness: '50'
       camara: Mesa
       points:
       - x: 58.86004866787296
@@ -17,7 +17,8 @@ camera:
       punto: TORITO_OESTE1_GEOPARK
     area2:
       A_Person: '2'
-      No_Helmet: '10'
+      No_Helmet: '50'
+      White: '40'
       camara: Mesa
       points:
       - x: 115.16503400511635
@@ -53,4 +54,4 @@ labels:
 - White
 - YellowGreen
 model:
-  path: models/best.pt
+  path: models/best_final.pt

@@ -2,48 +2,44 @@ import os
 import yaml
 import threading
 import cv2
+from collections import deque
 from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads
+
 
 class CameraStreamer:
     def __init__(self, camara_name, camara_url):
         self.camara_name = camara_name
         self.camara_url = camara_url
-        self.frame_buffer = []  # Buffer independiente
-        self.buffer_lock = threading.Lock()  # Lock independiente
-        self.running = True  # Para controlar el loop
-        self.buffer_size = 0
+        self.frame_buffer = deque(maxlen=240)  # Buffer optimizado
+        self.buffer_lock = threading.Lock()
+        self.running = True
 
     def streaming(self):
         cap_camera = cv2.VideoCapture(self.camara_url, cv2.CAP_FFMPEG)
-        print(f"Iniciando streaming para {self.camara_name}")
+        cap_camera.set(cv2.CAP_PROP_BUFFERSIZE, 1)  # Evita delay en la captura
+        cap_camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        cap_camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        cap_camera.set(cv2.CAP_PROP_FPS, 30)
+        cap_camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'XVID'))
 
-        # Usar un FPS fijo para todas las cámaras
-        fixed_fps = 30  # FPS fijo
-        self.buffer_size = int(fixed_fps * 8)  # Tamaño del buffer para 8 segundos
-        self.buffer_minus = 150
-        print(f"Tamaño del buffer ajustado para 8 segundos (usando {fixed_fps} FPS): {self.buffer_size}")
+        print(f"Iniciando streaming para {self.camara_name}")
 
         while self.running:
             ret, frame = cap_camera.read()
             if not ret:
-                print(f"Error al leer el flujo de video: {self.camara_url}. Reiniciando conexión...")
+                print(f"Error en {self.camara_name}, reconectando...")
                 cap_camera.release()
                 cap_camera = cv2.VideoCapture(self.camara_url)
-                print("Intentando reconectar...")
                 continue
-            
-            
+
+            frame = cv2.resize(frame, (640, 480))  # Reducir resolución
+
             with self.buffer_lock:
-                # print(f"Guardando frame en el buffer para {self.camara_name}")
-                self.frame_buffer.append(frame)
-                if len(self.frame_buffer) > self.buffer_size :  # Limitar el tamaño del buffer
-                    self.frame_buffer.pop(0)
-                
-            
+                self.frame_buffer.append(frame)  # Buffer optimizado
+        
         cap_camera.release()
 
     def stop(self):
-        """Detener el streaming."""
         self.running = False
 
 

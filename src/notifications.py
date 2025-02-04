@@ -82,9 +82,10 @@ def procesar_detecciones(config_path, camera_id):
         frame_to_process = None
 
         with info_buffer.buffer_lock:
-            if info_buffer.frame_buffer:
-                if len(info_buffer.frame_buffer) > 150:
-                    frame_to_process = info_buffer.frame_buffer.pop(0)
+                    if info_buffer.frame_buffer:
+                        # Si hay suficientes frames en el buffer, tomar el más reciente
+                        if len(info_buffer.frame_buffer) > 150:
+                            frame_to_process = info_buffer.frame_buffer.popleft()  # Toma el frame más antiguo eficientemente
 
         if frame_to_process is not None:
             frame = cv2.resize(frame_to_process, (target_width, target_height))

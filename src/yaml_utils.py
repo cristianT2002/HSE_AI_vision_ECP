@@ -66,13 +66,14 @@ def generate_camera_yaml(data):
 
         # Convertir coordinates a un diccionario Python
         try:
+            print(coordinates)
             coordinates_dict = json.loads(coordinates)
         except json.JSONDecodeError:
             print(f"Error: `COORDENADAS_AREA` no es un JSON válido para la cámara {camera_id}.")
             continue
 
         rtsp_url = f"rtsp://{username}:{password}@{ip_camera}:554/Streaming/Channels/102"
-        model = "best.pt"
+        model = "best_final.pt"
 
         camera_config = {
             "camera": {
