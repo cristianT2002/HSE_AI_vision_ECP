@@ -73,7 +73,7 @@ def generate_camera_yaml(data):
             continue
 
         rtsp_url = f"rtsp://{username}:{password}@{ip_camera}:554/Streaming/Channels/102"
-        model = "best_final.pt"
+        model = "best_ultimo.pt"
 
         camera_config = {
             "camera": {

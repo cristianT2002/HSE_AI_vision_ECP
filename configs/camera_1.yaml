@@ -54,4 +54,4 @@ labels:
 - White
 - YellowGreen
 model:
-  path: models/best_final.pt
+  path: models/best_ultimo.pt
