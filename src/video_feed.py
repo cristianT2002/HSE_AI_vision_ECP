@@ -19,15 +19,15 @@ from src.model_loader import model, LABELS
 
 app = Flask(__name__)
 
-# Colores para las etiquetas
+# Colores para las etiquetas    El color significa que es una alerta si la llega a detectar
 COLORS = {
     "A_Person": (255, 0, 0),  # Azul
-    "Green": (0, 255, 0),   # Verde
+    "Green": (0, 0, 255),   # Rojo
     "Harness": (0, 255, 206),   # Verde
     "No_Harness": (0, 0, 255),   # Rojo
     "No_Helmet": (0, 0, 255), # Rojo
     "White": (120, 120, 120),   # Gris
-    "Yellow": (255, 255, 0), # Amarillo
+    "Yellow": (0, 0, 255), # Rojo
     "Loading_Machine": (0, 100, 19), # Verde Bosque Oscuro
     "Mud_Bucket": (255, 171, 171), # Rosa Suave
     "Orange": (0, 128, 255), # Naranja
