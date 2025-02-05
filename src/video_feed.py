@@ -19,13 +19,19 @@ from src.model_loader import model, LABELS
 
 app = Flask(__name__)
 
-# Colores para las etiquetas
+# Colores para las etiquetas    El color significa que es una alerta si la llega a detectar
 COLORS = {
     "A_Person": (255, 0, 0),  # Azul
-    "Harness": (0, 255, 0),   # Verde
+    "Green": (0, 0, 255),   # Rojo
+    "Harness": (0, 255, 206),   # Verde
+    "No_Harness": (0, 0, 255),   # Rojo
     "No_Helmet": (0, 0, 255), # Rojo
     "White": (120, 120, 120),   # Gris
-    "YellowGreen": (150, 50, 255) # Morado
+    "Yellow": (0, 0, 255), # Rojo
+    "Loading_Machine": (0, 100, 19), # Verde Bosque Oscuro
+    "Mud_Bucket": (255, 171, 171), # Rosa Suave
+    "Orange": (0, 128, 255), # Naranja
+    
 }
 
 detectiones_obtenidas = None
@@ -158,11 +164,11 @@ def generate_frames(config_path, camera_id, retry_interval=5):
                                                 color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
 
                                                 # Agregar el texto de la etiqueta
-                                                text = f"{label}: {probability:.2f}%"
-                                                (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+                                                text = f"{label}: {probability:.0f}%"
+                                                (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
                                                 text_offset_x, text_offset_y = x1_det, y1_det - 10
                                                 box_coords = ((text_offset_x, text_offset_y - text_height - 5), 
-                                                            (text_offset_x + text_width + 5, text_offset_y + 5))
+                                                            (text_offset_x + text_width + 25, text_offset_y + 5))
 
                                                 
                                                 # Condicional para pintar del label  
