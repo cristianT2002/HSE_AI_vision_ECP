@@ -25,7 +25,7 @@ camera:
   info_notifications: '{"Email": false, "Imagen": false, "Page_HSE": true, "Video":
     true}'
   ip: 172.29.5.231
-  label: YellowGreen,A_Person,Harness,No_Helmet,White
+  label: A_Person
   name camera: Planchada
   password: 4xUR3_2017
   place: POZO11

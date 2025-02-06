@@ -1,51 +1,64 @@
 camera:
   coordinates:
     area1:
-      No_Harness: '50'
+      A_Person: '38'
+      Harness: '38'
       camara: Mesa
       points:
-      - x: 58.86004866787296
-        y: 22.32142857142857
-      - x: 16.03232045922506
-        y: 31.316137566137563
-      - x: 47.17975915642353
-        y: 141.10449735449734
-      - x: 98.39333624508642
-        y: 136.60714285714286
-      - x: 57.961564859299926
-        y: 21.527777777777775
+      - x: 5.550009359206339
+        y: 25.785383597883598
+      - x: 5.550009359206339
+        y: 25.785383597883598
+      - x: 50.174705185000306
+        y: 148.27215608465607
+      - x: 113.36806638797029
+        y: 139.0128968253968
+      - x: 67.54539215074561
+        y: 2.2404100529100526
+      - x: 1.956074124914207
+        y: 6.2086640211640205
+      - x: 5.250514756348661
+        y: 26.57903439153439
       punto: TORITO_OESTE1_GEOPARK
     area2:
-      A_Person: '2'
-      No_Helmet: '50'
-      White: '40'
+      A_Person: '22'
+      No_Helmet: '22'
+      White: '22'
       camara: Mesa
       points:
-      - x: 115.16503400511635
-        y: 134.51554232804233
-      - x: 104.08373369938228
+      - x: 93.60142259936357
         y: 17.055224867724867
-      - x: 272.3997005053971
-        y: 13.880621693121693
-      - x: 282.2830223997005
-        y: 146.42030423280423
-      - x: 115.76402321083171
+      - x: 209.20633930242715
+        y: 15.997023809523808
+      - x: 229.5719722967492
+        y: 62.82242063492063
+      - x: 275.6941411368316
+        y: 69.7007275132275
+      - x: 291.8668496911462
+        y: 131.87003968253967
+      - x: 236.16085355961812
+        y: 147.74305555555554
+      - x: 171.17052473950207
+        y: 147.213955026455
+      - x: 108.27665813938977
         y: 146.94940476190476
-      - x: 114.566044799401
-        y: 132.92824074074073
+      - x: 92.10394958507518
+        y: 94.56845238095238
+      - x: 91.50496037935983
+        y: 39.27744708994709
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '[]'
-  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
-    true}'
+  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
   ip: 172.29.5.230
-  label: A_Person,A_Person,A_Person,Harness,No_Helmet,No_Helmet,No_Helmet,White,White,White
+  label: A_Person, Harness
   name camera: Mesa
   password: 4xUR3_2017
   place: POZO11
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": 5, "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "38", "area2": "59", "area3": "10"}'
   username: admin
 labels:
 - A_Person
