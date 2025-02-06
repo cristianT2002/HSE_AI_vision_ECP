@@ -168,6 +168,22 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
     # Conectar a la base de datos
     conexion = pymysql.connect(host=host, user=user, password=password, database=database, cursorclass=pymysql.cursors.DictCursor)
     
+    # Contar el número de registros en la tabla Notificaciones
+    with conexion.cursor() as cursor:
+        sql_count = "SELECT COUNT(*) AS total_registros FROM Notificaciones"
+        cursor.execute(sql_count)
+        resultado_count = cursor.fetchone()
+        total_registros = resultado_count['total_registros']
+    
+    print(f"Total de registros en la tabla Notificaciones: {total_registros}")
+    
+    # Verificar si el número de registros es mayor a 30
+    if total_registros > 15:
+        print("Se ha alcanzado el límite de registros en la tabla Notificaciones.")
+        # Llamar a la función
+        borrar_primer_registro()
+    
+    
     try:
         # Obtener el último registro con el ID de get_id()
         id_a_buscar = get_id()  # Asegúrate de que esta función esté definida
