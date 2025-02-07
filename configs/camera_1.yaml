@@ -1,29 +1,25 @@
 camera:
   coordinates:
     area1:
-      A_Person: '38'
-      Harness: '38'
+      A_Person: '22'
+      Harness: '20'
+      Yellow: '20'
       camara: Mesa
       points:
-      - x: 5.550009359206339
-        y: 25.785383597883598
-      - x: 5.550009359206339
-        y: 25.785383597883598
-      - x: 50.174705185000306
+      - x: 1.6565795220565296
+        y: 3.5631613756613754
+      - x: 78.92618705933737
+        y: 7.002314814814814
+      - x: 103.7842390965246
         y: 148.27215608465607
-      - x: 113.36806638797029
-        y: 139.0128968253968
-      - x: 67.54539215074561
-        y: 2.2404100529100526
-      - x: 1.956074124914207
-        y: 6.2086640211640205
-      - x: 5.250514756348661
-        y: 26.57903439153439
+      - x: 10.64141760778686
+        y: 148.00760582010582
       punto: TORITO_OESTE1_GEOPARK
     area2:
       A_Person: '22'
       No_Helmet: '22'
       White: '22'
+      Yellow: '22'
       camara: Mesa
       points:
       - x: 93.60142259936357
@@ -51,14 +47,14 @@ camera:
   info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 172.29.5.230
-  label: A_Person, Harness
+  label: Yellow, No_Helmet, White
   name camera: Mesa
   password: 4xUR3_2017
   place: POZO11
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "38", "area2": "59", "area3": "10"}'
+  time_areas: '{"area1": "60", "area2": "60", "area3": "60"}'
   username: admin
 labels:
 - A_Person

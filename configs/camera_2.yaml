@@ -25,14 +25,14 @@ camera:
   info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 172.29.5.231
-  label: A_Person
+  label: A_Person, Harness
   name camera: Planchada
   password: 4xUR3_2017
   place: POZO11
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
-  time_areas: '{"area1": "55", "area2": "55", "area3": "55"}'
+  time_areas: '{"area1": "35", "area2": "51", "area3": "65"}'
   username: admin
 labels:
 - A_Person
