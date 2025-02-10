@@ -126,7 +126,6 @@ def procesar_detecciones(config_path, camera_id):
                         try:
                                     # Obtener coordenadas, probabilidad y etiqueta de la detección
                                     x1_det, y1_det, x2_det, y2_det = map(int, detection.xyxy[0])
-                                    point = (x1_det, y1_det)
                                     probability = detection.conf[0] * 100
                                     class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
                                     label = LABELS.get(class_index, "Unknown")
@@ -135,10 +134,20 @@ def procesar_detecciones(config_path, camera_id):
                                     if label in area_config:
                                         min_probability = float(area_config[label])
                                         # Usar cv2.pointPolygonTest para verificar si el punto está dentro del polígono
+                                        # Si se trata del area3 y la etiqueta es "A_Person", usamos el punto central inferior
+                                        if area_name == "area3" and label == "A_Person":
+                                            point = (int((x1_det + x2_det) / 2), y2_det)
+                                            cv2.circle(frame, point, 5, (0, 0, 255), -1)
+                                        else:
+                                            # Para las demás áreas o etiquetas, se sigue utilizando el punto superior izquierdo
+                                            point = (x1_det, y1_det)
+
                                         inside = cv2.pointPolygonTest(pts, point, False)
                                         # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
                                         if inside >= 0 :
                                             if probability >= min_probability:
+                                                print("AREASSSSS: ", area_name)
+
                                                 print("Detectando en camara: ", camera_id)
                                                 print(f"Se detectó {label} con una probabilidad de {probability:.2f}% en el área {area_name}")
                                                 # Dibujar la detección
