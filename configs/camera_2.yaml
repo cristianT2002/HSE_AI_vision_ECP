@@ -1,38 +1,33 @@
 camera:
   coordinates:
     area1:
-      A_Person: '22'
+      A_Person: '15'
+      Loading_Machine: '50'
       camara: Planchada
       points:
-      - x: 153.5003431708991
-        y: 42.691798941798936
-      - x: 256.22699195108254
-        y: 63.326719576719576
-      - x: 224.78005865102637
-        y: 141.10449735449734
-      - x: 210.10482311100017
-        y: 149.30555555555554
-      - x: 133.73369938229237
-        y: 149.0410052910053
-      - x: 78.32719785362201
-        y: 148.776455026455
-      - x: 64.25095151931116
-        y: 120.73412698412697
-      - x: 114.86553940225868
-        y: 80.52248677248677
+      - x: 172.78684736138393
+        y: 58.419118719197456
+      - x: 67.24880738185239
+        y: 139.04668863550202
+      - x: 185.7810204519569
+        y: 148.56522119506576
+      - x: 230.15136759049867
+        y: 70.4572628386457
+      - x: 173.4207094633631
+        y: 59.258989239158964
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '[]'
-  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
-    false}'
+  info_notifications: '{"Email": false, "Imagen": false, "Page_HSE": true, "Video":
+    true}'
   ip: 172.29.5.231
-  label: A_Person
+  label: A_Person, Loading_Machine
   name camera: Planchada
   password: 4xUR3_2017
   place: POZO11
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
-  time_areas: '{"area1": "55", "area2": "55", "area3": "55"}'
+  time_areas: '{"area1": "15", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person
