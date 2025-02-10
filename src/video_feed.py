@@ -27,7 +27,7 @@ COLORS = {
     "No_Harness": (0, 0, 255),   # Rojo
     "No_Helmet": (0, 0, 255), # Rojo
     "White": (120, 120, 120),   # Gris
-    "Yellow": (0, 0, 255), # Rojo
+    "Yellow": (0, 255, 255), # Rojo
     "Loading_Machine": (0, 100, 19), # Verde Bosque Oscuro
     "Mud_Bucket": (255, 171, 171), # Rosa Suave
     "Orange": (0, 128, 255), # Naranja
