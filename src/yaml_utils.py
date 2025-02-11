@@ -25,7 +25,7 @@ def fetch_camera_data():
 
     try:
         # Ajusta la consulta a tu esquema de base de datos
-        query = "SELECT ID, LUGAR, PUNTO, NOMBRE_CAMARA, IP_CAMARA, USUARIO, CONTRASENA, COORDENADAS_AREA, ESTADO_LUGAR_MODELO, TIME_AREAS, INFO_NOTIFICATIONS, DESTINATARIOS FROM IP_Videofeed2"
+        query = "SELECT ID, LUGAR, PUNTO, NOMBRE_CAMARA, IP_CAMARA, USUARIO, CONTRASENA, COORDENADAS_AREA, ESTADO_LUGAR_MODELO, TIME_AREAS, INFO_NOTIFICATIONS, DESTINATARIOS FROM IP_Videofeed3"
         cursor.execute(query)
         rows = cursor.fetchall()
 
@@ -66,13 +66,14 @@ def generate_camera_yaml(data):
 
         # Convertir coordinates a un diccionario Python
         try:
+            print(coordinates)
             coordinates_dict = json.loads(coordinates)
         except json.JSONDecodeError:
             print(f"Error: `COORDENADAS_AREA` no es un JSON válido para la cámara {camera_id}.")
             continue
 
         rtsp_url = f"rtsp://{username}:{password}@{ip_camera}:554/Streaming/Channels/102"
-        model = "juanmodelo.pt"
+        model = "best_ultimo.pt"
 
         camera_config = {
             "camera": {

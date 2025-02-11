@@ -1,111 +1,110 @@
 import os
 import yaml
-import threading
 import cv2
-from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads
+import time
+import multiprocessing as mp
+from multiprocessing import Manager
+from collections import deque
+from src.variables_globales import get_streamers, set_streamers, get_processes, set_processes
 
 class CameraStreamer:
-    def __init__(self, camara_name, camara_url):
+    def __init__(self, camara_name, camara_url, shared_buffers, camara_number):
         self.camara_name = camara_name
         self.camara_url = camara_url
-        self.frame_buffer = []  # Buffer independiente
-        self.buffer_lock = threading.Lock()  # Lock independiente
-        self.running = True  # Para controlar el loop
-        self.buffer_size = 0
+        self.shared_buffers = shared_buffers
+        self.camara_number = camara_number
+        self.running = True
 
     def streaming(self):
         cap_camera = cv2.VideoCapture(self.camara_url, cv2.CAP_FFMPEG)
-        print(f"Iniciando streaming para {self.camara_name}")
+        cap_camera.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        cap_camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        cap_camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        cap_camera.set(cv2.CAP_PROP_FPS, 30)
+        cap_camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'XVID'))
 
-        # Usar un FPS fijo para todas las cámaras
-        fixed_fps = 30  # FPS fijo
-        self.buffer_size = int(fixed_fps * 8)  # Tamaño del buffer para 8 segundos
-        self.buffer_minus = 150
-        print(f"Tamaño del buffer ajustado para 8 segundos (usando {fixed_fps} FPS): {self.buffer_size}")
+        print(f"📡 Iniciando streaming para {self.camara_name}")
 
         while self.running:
             ret, frame = cap_camera.read()
             if not ret:
-                print(f"Error al leer el flujo de video: {self.camara_url}. Reiniciando conexión...")
+                print(f"⚠️ Error en {self.camara_name}, reconectando...")
                 cap_camera.release()
-                cap_camera = cv2.VideoCapture(self.camara_url)
-                print("Intentando reconectar...")
+                cap_camera = cv2.VideoCapture(self.camara_url, cv2.CAP_FFMPEG)
                 continue
-            
-            
-            with self.buffer_lock:
-                # print(f"Guardando frame en el buffer para {self.camara_name}")
-                self.frame_buffer.append(frame)
-                if len(self.frame_buffer) > self.buffer_size :  # Limitar el tamaño del buffer
-                    self.frame_buffer.pop(0)
-                
-            
+
+            frame = cv2.resize(frame, (640, 480))
+
+            # Acceder al buffer compartido
+            buffer = self.shared_buffers[self.camara_number]
+
+            # Agregar frame al buffer compartido
+            if len(buffer) >= 120:
+                buffer.pop(0)  # Eliminar el frame más antiguo si ya está lleno
+            buffer.append(frame)
+
+            time.sleep(0.005)
+
         cap_camera.release()
+        print(f"📡 Streaming detenido para {self.camara_name}")
 
     def stop(self):
-        """Detener el streaming."""
         self.running = False
-
 
 def load_yaml_config(file_path):
     """Carga el contenido de un archivo YAML."""
     with open(file_path, 'r') as file:
         return yaml.safe_load(file)
 
+def start_camera_stream(camara_name, camara_url, shared_buffers, camara_number):
+    """
+    Función auxiliar para iniciar el streaming de una cámara en un nuevo proceso.
+    """
+    streamer = CameraStreamer(camara_name, camara_url, shared_buffers, camara_number)
+    streamer.streaming()
 
 def start_streaming_from_configs():
-    """Inicia el streaming de cámaras basándose en archivos YAML de una carpeta."""
-    # Obtener la ruta al nivel superior (un nivel antes del script actual)
+    """Inicia el streaming de cámaras y usa `multiprocessing.Manager()` para compartir buffers."""
     base_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    print(base_folder)
     config_folder = os.path.join(base_folder, 'configs')
 
-    # Verificar si la carpeta existe
     if not os.path.isdir(config_folder):
         raise FileNotFoundError(f"La carpeta 'configs' no existe en la ruta: {config_folder}")
-    else:
-        print(f"Carpeta de configuración encontrada: {config_folder}")
-    
-    # Listar todos los archivos en la carpeta configs
-    yaml_files = [f for f in os.listdir(config_folder) if 'camera' in f.lower() and f.endswith('.yaml')]
 
-    print(f"Archivos YAML encontrados: {yaml_files}")
-    
-    streamers = {}
-    threads = {}
+    yaml_files = [f for f in os.listdir(config_folder) if 'camera' in f.lower() and f.endswith('.yaml')]
+    print(f"📄 Archivos YAML encontrados: {yaml_files}")
+
+    manager = Manager()
+    shared_buffers = manager.dict()  # 🔹 Diccionario compartido entre procesos
+    processes = {}
 
     for yaml_file in yaml_files:
         config_path = os.path.join(config_folder, yaml_file)
         config = load_yaml_config(config_path)
-        
-        # Extraer el número de la cámara del nombre del archivo (e.g., "1" de "camera_1.yaml")
-        camara_number = int(yaml_file.split('_')[1].split('.')[0])  # Separa y obtiene el número
-        
+
+        try:
+            camara_number = int(yaml_file.split('_')[1].split('.')[0])
+        except (IndexError, ValueError):
+            print(f"⚠️ No se pudo extraer el número de cámara de {yaml_file}")
+            continue
+
         camara_name = config['camera'].get('name camera', f"Camara_{camara_number}")
         rtsp_url = config['camera'].get('rtsp_url')
-        
+
         if rtsp_url:
-            streamer = CameraStreamer(camara_name, rtsp_url)
-            streamers[camara_number] = streamer  # Guardar en el diccionario usando el número como clave
-            set_streamers(streamers)
-            
-            hilo = threading.Thread(target=streamer.streaming, name=f"hilo_{camara_name}")
-            threads[camara_number] = hilo  # Guardar el hilo en el diccionario
-            hilo.start()
+            shared_buffers[camara_number] = manager.list()  # 🔹 Crear buffer compartido
+
+            proceso = mp.Process(
+                target=start_camera_stream,
+                args=(camara_name, rtsp_url, shared_buffers, camara_number)
+            )
+            processes[camara_number] = proceso
+            proceso.start()
         else:
-            print(f"No se encontró 'rtsp_url' en {yaml_file}")
+            print(f"⚠️ No se encontró `rtsp_url` en {yaml_file}")
 
-    return streamers, threads
+    set_streamers(shared_buffers)  # 🔹 Guardar en `variables_globales.py`
+    set_processes(processes)
 
-
-# Punto de entrada si se ejecuta como script
-if __name__ == "__main__":
-    streamers, threads = start_streaming_from_configs()
-
-    try:
-        for hilo in threads.values():
-            hilo.join()
-    except KeyboardInterrupt:
-        print("Deteniendo streaming...")
-        for streamer in streamers.values():
-            streamer.stop()
+    print(f"✅ Buffers inicializados correctamente: {list(shared_buffers.keys())}")
+    return shared_buffers, processes

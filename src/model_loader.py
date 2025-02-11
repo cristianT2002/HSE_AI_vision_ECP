@@ -2,7 +2,7 @@ import os
 from ultralytics import YOLO
 
 # Ruta al modelo fijo
-MODEL_PATH = os.path.join("models", "juanmodelo.pt")
+MODEL_PATH = os.path.join("models", "best_ultimo.pt")
 
 # Verifica si el modelo existe
 if not os.path.exists(MODEL_PATH):

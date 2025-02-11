@@ -1,53 +1,70 @@
 camera:
   coordinates:
     area1:
-      Harness: '20'
+      Green: '50'
+      No_Harness: '25'
+      No_Helmet: '50'
+      Yellow: '50'
       camara: Mesa
       points:
-      - x: 14.38510014350783
-        y: 3.2986111111111107
-      - x: 63.202720409309286
-        y: 4.092261904761904
-      - x: 116.21326511511823
-        y: 144.56845238095238
-      - x: 56.913333749298054
-        y: 146.94940476190476
-      - x: 4.801272852062144
-        y: 5.150462962962963
-      punto: IESCO_T661_ECP
+      - x: 1.6565795220565296
+        y: 3.5631613756613754
+      - x: 78.92618705933737
+        y: 7.002314814814814
+      - x: 103.7842390965246
+        y: 148.27215608465607
+      - x: 10.64141760778686
+        y: 148.00760582010582
+      punto: TORITO_OESTE1_GEOPARK
     area2:
-      A_Person: '20'
-      White: '20'
-      YellowGreen: '20'
+      A_Person: '30'
       camara: Mesa
       points:
-      - x: 93.15218069507705
-        y: 21.023478835978835
-      - x: 192.8838834466837
-        y: 37.954695767195766
-      - x: 249.78785798964248
-        y: 93.24570105820105
-      - x: 226.72677356960128
-        y: 142.1875
-      - x: 135.08142509515193
-        y: 142.45205026455025
-      - x: 113.51781368939913
-        y: 100.91765873015872
-      - x: 106.03044861795719
-        y: 75.52083333333333
-      punto: IESCO_T661_ECP
-  info_emails: '["cristian.tascon@axuretechnologies.com"]'
-  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
-    true}'
+      - x: 100.78929306794784
+        y: 40.60019841269841
+      - x: 195.72908217383164
+        y: 27.63723544973545
+      - x: 269.70424907967805
+        y: 42.45205026455026
+      - x: 268.50627066824734
+        y: 62.82242063492063
+      - x: 254.13052973107878
+        y: 72.34623015873015
+      - x: 252.03406751107505
+        y: 107.26686507936508
+      - x: 116.06351781368939
+        y: 140.6001984126984
+      - x: 100.78929306794784
+        y: 40.60019841269841
+      punto: TORITO_OESTE1_GEOPARK
+    area3:
+      A_Person: '30'
+      camara: Mesa
+      points:
+      - x: 126.24633431085043
+        y: 91.92294973544973
+      - x: 131.63723716228864
+        y: 120.4943783068783
+      - x: 197.22655518812005
+        y: 105.15046296296296
+      - x: 177.75940600237098
+        y: 81.34093915343915
+      - x: 125.3478505022774
+        y: 92.1875
+      punto: TORITO_OESTE1_GEOPARK
+  info_emails: '["nelson.ceron@axuretechnologies.com"]'
+  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
   ip: 172.29.5.230
-  label: ''
+  label: A_Person, Green, Harness, Mub_Bucket, No_Harness, No_Helmet, Orange, White,
+    Yellow
   name camera: Mesa
   password: 4xUR3_2017
   place: POZO11
-  point: IESCO_T661_ECP
+  point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": 5, "area2": 5, "area3": "10"}'
+  time_areas: '{"area1": "10", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person
@@ -56,4 +73,4 @@ labels:
 - White
 - YellowGreen
 model:
-  path: models/juanmodelo.pt
+  path: models/best_ultimo.pt

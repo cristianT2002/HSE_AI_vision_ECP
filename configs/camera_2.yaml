@@ -1,38 +1,32 @@
 camera:
   coordinates:
     area1:
-      A_Person: '10'
+      A_Person: '39'
       camara: Planchada
       points:
-      - x: 152.90135396518374
-        y: 48.53670634920635
-      - x: 230.47045610532226
-        y: 64.67427248677248
-      - x: 201.11998502526984
-        y: 132.92824074074073
-      - x: 176.56142759094027
-        y: 148.8012566137566
-      - x: 75.03275722218756
-        y: 148.53670634920636
-      - x: 64.55044612216884
-        y: 128.6954365079365
-      - x: 87.01254133649466
-        y: 112.55787037037037
-      - x: 146.6119673051725
-        y: 74.19808201058201
-      punto: IESCO_T661_ECP
+      - x: 172.78684736138393
+        y: 58.419118719197456
+      - x: 67.24880738185239
+        y: 139.04668863550202
+      - x: 185.7810204519569
+        y: 148.56522119506576
+      - x: 230.15136759049867
+        y: 70.4572628386457
+      - x: 173.4207094633631
+        y: 59.258989239158964
+      punto: TORITO_OESTE1_GEOPARK
   info_emails: '[]'
-  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
+  info_notifications: '{"Email": false, "Imagen": false, "Page_HSE": true, "Video":
     true}'
   ip: 172.29.5.231
-  label: ''
+  label: A_Person, Loading_Machine
   name camera: Planchada
   password: 4xUR3_2017
   place: POZO11
-  point: IESCO_T661_ECP
+  point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
-  time_areas: '{"area1": "4", "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "20", "area2": "60", "area3": "60"}'
   username: admin
 labels:
 - A_Person
@@ -41,4 +35,4 @@ labels:
 - White
 - YellowGreen
 model:
-  path: models/juanmodelo.pt
+  path: models/best_ultimo.pt

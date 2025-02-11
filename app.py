@@ -9,6 +9,8 @@ from src.video_feed import app  # Importamos Flask app desde video_feed.py
 from src.buffers_camaras import start_streaming_from_configs
 from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads
 from src.notifications import procesar_detecciones
+import multiprocessing as mp
+from src.variables_globales import set_processes, get_processes
 
 
 def load_yaml_config(path):
@@ -81,12 +83,12 @@ def start_flask_server():
 #     # Iniciar el monitoreo de la base de datos en el hilo principal
 #     monitor_database(db_config)
 
-def monitor_database_and_start_detections(db_config):
+def monitor_database_and_start_detections(db_config, shared_buffers):
     """
-    Monitorea la base de datos, actualiza archivos YAML/JSON, e inicia hilos de detección por cámara.
+    Monitorea la base de datos, actualiza YAML/JSON e inicia procesos de detección por cámara.
     """
     previous_data = []  # Almacenar datos previos de la base de datos
-    detecciones_threads = {}  # Almacenar hilos por cámara
+    detecciones_processes = {}  # Almacenar procesos por cámara
 
     while True:
         try:
@@ -98,38 +100,45 @@ def monitor_database_and_start_detections(db_config):
 
             # Actualizar YAML si hay cambios en la base de datos
             if cameras != previous_data:
+                print("📡 Datos obtenidos de la base de datos:", cameras)
                 generate_camera_yaml(cameras)  # Actualizar YAML
                 cursor.execute(db_config["query_json"])
                 data = cursor.fetchall()
                 generate_json(data)
                 previous_data = cameras
 
-                # Iniciar o reiniciar hilos de detección para cada cámara
+                # Iniciar o reiniciar procesos de detección por cámara
                 for camera in cameras:
                     camera_id = camera["ID"]
                     config_path = f"configs/camera_{camera_id}.yaml"
 
-                    # Si ya existe un hilo para esta cámara, no lo vuelvas a iniciar
-                    if camera_id in detecciones_threads and detecciones_threads[camera_id].is_alive():
+                    # Si ya existe un proceso para esta cámara, no lo vuelvas a iniciar
+                    if camera_id in detecciones_processes and detecciones_processes[camera_id].is_alive():
                         continue
-                    print("Info camara: ",config_path, camera_id)
-                    # Iniciar un nuevo hilo para detecciones
-                    thread = threading.Thread(
+
+                    print(f"🟢 Iniciando proceso de detección para cámara {camera_id}")
+
+                    # Crear un nuevo proceso
+                    proceso = mp.Process(
                         target=procesar_detecciones,
-                        args=(config_path, camera_id),
+                        args=(config_path, camera_id, shared_buffers),
                         daemon=True
                     )
-                    detecciones_threads[camera_id] = thread
-                    thread.start()
-                    print(f"Hilo de detección iniciado para la cámara {camera_id}.")
+                    detecciones_processes[camera_id] = proceso
+                    proceso.start()
 
         except Exception as e:
-            print(f"Error monitoreando la base de datos: {e}")
+            print(f"⚠️ Error monitoreando la base de datos: {e}")
         finally:
             close_connection(connection)
 
+        # Guardar procesos en variables globales
+        set_processes(detecciones_processes)
+
         # Pausa antes de la próxima verificación
         time.sleep(5)
+
+
 
 if __name__ == "__main__":
     
@@ -151,9 +160,10 @@ if __name__ == "__main__":
     flask_thread.start()
 
     # Iniciar el streaming
-    streamers, threads = start_streaming_from_configs()
-    print("Streamers: ", [s.camara_url for s in streamers.values()])
+    shared_buffers, threads = start_streaming_from_configs()
+    # print("Streamers: ", [s.camara_url for s in streamers.values()])
 
     # Monitorear la base de datos e iniciar hilos de detección
-    monitor_database_and_start_detections(db_config)
+    # time.sleep(10)
+    monitor_database_and_start_detections(db_config, shared_buffers)
 
