@@ -257,6 +257,9 @@ def procesar_detecciones(config_path, camera_id):
                                 # Si la detección no cumple, reiniciamos el tiempo
                                 tiempo_deteccion_por_area.pop((area_name, label), None)
                                 print(f"{label} salió de {area_name}, reiniciando el tiempo.")
+                                
+                                
+                                
                     except Exception as detection_error:
                         print(f"Error al procesar una detección en {area_name}: {detection_error}")
             except Exception as area_error:
