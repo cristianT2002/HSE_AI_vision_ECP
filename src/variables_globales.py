@@ -1,5 +1,6 @@
 streamers = []
 threads= []
+processes = []  
 id = 0
 
 def get_streamers():
@@ -24,3 +25,10 @@ def set_id(id_edit):
     global id
     id = id_edit
     print("el id es: ", id)
+    
+def set_processes(processes_edit):  # Nueva función para establecer procesos
+    global processes
+    processes = processes_edit
+    
+def get_processes():  # Nueva función para obtener procesos
+    return processes

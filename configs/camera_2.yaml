@@ -2,7 +2,6 @@ camera:
   coordinates:
     area1:
       A_Person: '39'
-      Loading_Machine: '50'
       camara: Planchada
       points:
       - x: 172.78684736138393
