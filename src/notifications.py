@@ -12,7 +12,7 @@ from src.Tipo_notificacion import save_video_from_buffer, guardar_imagen_en_mari
 import socket
 import numpy as np
 
-def procesar_detecciones(config_path, camera_id):
+def procesar_detecciones(config_path, camera_id, shared_buffers):
     
     tiempo_deteccion_por_area = {}
     
@@ -82,173 +82,226 @@ def procesar_detecciones(config_path, camera_id):
         target_width, target_height = 640, 380  # Resolución deseada
 
         # Obtener buffer de frames
-        streamers = get_streamers()
-        info_buffer = streamers[camera_id]
+        # streamers = get_streamers()
+        # print(streamers)
+        # Esperar hasta que `get_streamers()` devuelva un diccionario válido
+        # if not isinstance(streamers, dict):
+        #     print(f"⚠️ ERROR: `get_streamers()` devolvió {type(streamers)}, esperando inicialización...")
+        #     time.sleep(1)  # 🔹 Espera un segundo antes de reintentar
+        #     continue  # 🔹 Reintentar en la siguiente iteración
+        frame_buffer = shared_buffers.get(camera_id, None)
 
         frame_to_process = None
 
-        with info_buffer.buffer_lock:
-                    if info_buffer.frame_buffer:
-                        # Si hay suficientes frames en el buffer, tomar el más reciente
-                        if len(info_buffer.frame_buffer) > 150:
-                            frame_to_process = info_buffer.frame_buffer.popleft()  # Toma el frame más antiguo eficientemente
+        if not frame_buffer:
+            # print(f"⚠️ Buffer vacío para la cámara {camera_id}, esperando frames...")
+            time.sleep(0.05)
+            continue
 
-        if frame_to_process is not None:
-            frame = cv2.resize(frame_to_process, (target_width, target_height))
-            width2, height2 = 294.12, 145.45  # Dimensiones originales
-            width1, height1 = 640, 380  # Dimensiones redimensionadas
+        # Obtener el último frame disponible de manera segura
+        try:
+            frame_to_process = frame_buffer[-1]  # Último frame en el buffer
+            # print(f"✅ Frame obtenido de buffer de {camera_id}")
+        except IndexError:
+            print(f"⚠️ Error: Intento de acceder a un frame inexistente en {camera_id}")
+            time.sleep(0.05)
+            continue
+        
+        
+        
+        frame = cv2.resize(frame_to_process, (target_width, target_height))
+        width2, height2 = 294.12, 145.45  # Dimensiones originales
+        width1, height1 = 640, 380  # Dimensiones redimensionadas
 
-            for area_name, area_config in areas.items():
-                try:
-                    # Escalar los puntos del polígono
-                    original_points = area_config["points"]
-                    scaled_points = [
-                        {
-                            "x": (point["x"] / width2) * width1,
-                            "y": (point["y"] / height2) * height1
-                        }
-                        for point in original_points
-                    ]
+        for area_name, area_config in areas.items():
+            try:
+                # Escalar los puntos del polígono
+                original_points = area_config["points"]
+                scaled_points = [
+                    {
+                        "x": (point["x"] / width2) * width1,
+                        "y": (point["y"] / height2) * height1
+                    }
+                    for point in original_points
+                ]
 
-                    # Convertir puntos escalados al formato requerido por OpenCV
-                    pts = np.array(
-                        [[int(point["x"]), int(point["y"])] for point in scaled_points],
-                        dtype=np.int32
-                    ).reshape((-1, 1, 2))
+                # Convertir puntos escalados al formato requerido por OpenCV
+                pts = np.array(
+                    [[int(point["x"]), int(point["y"])] for point in scaled_points],
+                    dtype=np.int32
+                ).reshape((-1, 1, 2))
 
-                    # Dibujar el polígono escalado en el frame
-                    cv2.polylines(frame, [pts], isClosed=True, color=(255, 0, 0), thickness=2)
+                # Dibujar el polígono escalado en el frame
+                if area_name == "area3":
+                    polygon_color = (0, 255, 0)  # Verde para area2
+                elif area_name == "area2":
+                    polygon_color = (0, 0, 255)
+                else:
+                    polygon_color = (255, 0, 0)  # Rojo o azul para otras áreas (según lo desees)
+                
+                # Dibujar el polígono escalado en el frame con el color definido
+                cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
 
-                    # Procesar el frame con el modelo
-                    results = model(frame, verbose=False)
+                # Procesar el frame con el modelo
+                results = model(frame, verbose=False)
 
-                    for detection in results[0].boxes:
-                        try:
-                                    # Obtener coordenadas, probabilidad y etiqueta de la detección
-                                    x1_det, y1_det, x2_det, y2_det = map(int, detection.xyxy[0])
-                                    point = (x1_det, y1_det)
+                for detection in results[0].boxes:
+                    try:
+                                # Obtener coordenadas, probabilidad y etiqueta de la detección
+                                x1_det, y1_det, x2_det, y2_det = map(int, detection.xyxy[0])
+                                point = (x1_det, y1_det)
+                                point2 = (int((x1_det + x2_det) / 2), y2_det)
+                                probability = detection.conf[0] * 100
+                                class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+                                label = LABELS.get(class_index, "Unknown")
 
-                                    probability = detection.conf[0] * 100
-                                    class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
-                                    label = LABELS.get(class_index, "Unknown")
-                                                          
-                                    print("label: ", label, "Probabilidad: ", probability)
-                                    print("Area: ", area_config)
-
-                                    # Verificar si la etiqueta está permitida en el área actual
-                                    if label in area_config:
-                                        min_probability = float(area_config[label])
-                                        # Usar cv2.pointPolygonTest para verificar si el punto está dentro del polígono
-                                        # Si se trata del area3 y la etiqueta es "A_Person", usamos el punto central inferior
-
-
-                                        inside = cv2.pointPolygonTest(pts, point, False)
-                                        # Verificar si la detección está dentro de la caja actual y cumple la probabilidad
-                                        if inside >= 0 :
-                                            if probability >= min_probability:
-                                                print("AREASSSSS: ", area_name)
-
-                                                print("Detectando en camara: ", camera_id)
-                                                print(f"Se detectó {label} con una probabilidad de {probability:.2f}% en el área {area_name}")
-                                                # Dibujar la detección
-                                                color = COLORS.get(label, (255, 255, 255))  # Color por etiqueta
-
-                                                # Agregar el texto de la etiqueta
-                                                text = f"{label}: {probability:.2f}%"
-                                                (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
-                                                text_offset_x, text_offset_y = x1_det, y1_det - 10
-                                                box_coords = ((text_offset_x, text_offset_y - text_height - 5), 
-                                                            (text_offset_x + text_width + 25, text_offset_y + 5))
-
-                                                detecciones_obtenidas = True
-                                                now = time.time()
-
-                                                # Inicializar tiempo solo si no existe
-                                                if (area_name, label) not in tiempo_deteccion_por_area:
-                                                    tiempo_deteccion_por_area[(area_name, label)] = now
+                                # Verificar si la etiqueta está permitida en el área actual
+                                if label in area_config:
+                                    min_probability = float(area_config[label])
+                                    inside = cv2.pointPolygonTest(pts, point, False)
+        
+                                    if inside >= 0 and probability >= min_probability:
+                                        print("Detectando en cámara:", camera_id)
+                                        print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
+                                        color = COLORS.get(label, (255, 255, 255))
+                                        text = f"{label}: {probability:.2f}%"
+                                        (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+                                        text_offset_x, text_offset_y = x1_det, y1_det - 10
+                                        box_coords = ((text_offset_x, text_offset_y - text_height - 5),
+                                                    (text_offset_x + text_width + 25, text_offset_y + 5))
+        
+                                        now = time.time()
+                                        if (area_name, label) not in tiempo_deteccion_por_area:
+                                            tiempo_deteccion_por_area[(area_name, label)] = now
+                                        else:
+                                            tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
+                                            print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} s")
+                                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                                                fecha_actual = datetime.now().strftime("%d/%m/%Y")
+                                                hora_actual = datetime.now().strftime("%H:%M:%S")
+                                                if label == "A_Person":
+                                                    NombreLabel = "Personas"
+                                                    descript = f"Se detectó una Persona en {area_name} en la cámara {nombre_camera}"
+                                                elif label == "White":
+                                                    NombreLabel = "Persona con casco blanco"
+                                                    descript = f"Se detectó una Persona con casco blanco en {area_name} en la cámara {nombre_camera}"
+                                                elif label == "No_Helmet":
+                                                    NombreLabel = "Persona Sin casco"
+                                                    descript = f"Se detectó una Persona sin casco en {area_name} en la cámara {nombre_camera}"
+                                                elif label == "YellowGreen":
+                                                    NombreLabel = "Persona con casco Amarillo o Verde"
+                                                    descript = f"Se detectó una Persona con casco Amarillo o Verde en {area_name} en la cámara {nombre_camera}"
                                                 else:
-                                                    # Calcular tiempo acumulado
-                                                    tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
-                                                    print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} segundos")
-
-                                                    # Verificar si el tiempo acumulado cumple el límite
-                                                    if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                                                        fecha_actual = datetime.now().strftime("%d/%m/%Y")
-                                                        hora_actual = datetime.now().strftime("%H:%M:%S")
-
-                                                        # print(f"{label} detectada en {area_name} por {tiempos_limite[area_name]} segundos.")
-                                                        
-                                                        
-                                                        descripcionPersona = f"Se detectó una Persona en el {area_name}  en la cámara {nombre_camera}"
-                                                        descripcionSinCasco = f"Se detectó una Persona sin casco en el {area_name}  en la cámara {nombre_camera}"
-                                                        descripcionCascoBlanco = f"Se detectó una persona con Casco Blanco en el {area_name}  en la cámara {nombre_camera}"
-                                                        descripcionCascoAmarilloVerde = f"Se detectó una persona con Casco Amarillo o Verde en el {area_name}  en la cámara {nombre_camera}"
-
-
-                                                        if label == "A_Person":
-                                                            NombreLabel = "Personas"
-                                                            descript = descripcionPersona
-                                                        elif label == "White":
-                                                            NombreLabel = "Persona con casco blanco"
-                                                            descript = descripcionCascoBlanco
-                                                        elif label == "No_Helmet":
-                                                            NombreLabel = "Persona Sin casco"
-                                                            descript = descripcionSinCasco
-                                                        elif label == "YellowGreen":
-                                                            NombreLabel = "Persona con casco Amarillo o Verde"
-                                                            descript = descripcionCascoAmarilloVerde
-
-                                
-                                                        add_event_to_database(
-                                                                    sitio = sitio,
-                                                                    company="TechCorp",
-                                                                    fecha = fecha_actual,
-                                                                    hora= hora_actual,
-                                                                    tipo_evento= f"Detección de {NombreLabel} en {area_name}",
-                                                                    descripcion= descript
-                                                                )
-                                                        
-                                                        id_registro = get_last_event_id()
-                                                        set_id(id_registro)
-                                                        # print("Tamaño del buffer: ", len(info_buffer.frame_buffer))
-                                                        # Reiniciar el tiempo acumulado solo si se cumple el tiempo límite
-                                                        tiempo_deteccion_por_area[(area_name, label)] = time.time()
-                                                        cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
-                                                        cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
-                                                        cv2.putText(frame, text, (text_offset_x, text_offset_y), 
-                                                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-                                                        if info_notifications['Video'] == True:
-                                                            save_video_from_buffer(info_buffer.frame_buffer, f"videos_{area_name}_{label}_{nombre_camera}.mp4", info_notifications['Email'], emails)
-                                                        elif info_notifications['Imagen'] == True:
-                                                            nombre_img = f"Imgs/img_{area_name}_{label}_{nombre_camera}.jpg"
-                                                            
-                                                            # Crear el directorio si no existe
-                                                            directorio = os.path.dirname(nombre_img)
-                                                            if not os.path.exists(directorio):
-                                                                os.makedirs(directorio)
-                                                            
-                                                            # Guardar el frame como una imagen
-                                                            cv2.imwrite(nombre_img, frame)
-                                                            guardar_imagen_en_mariadb(nombre_img, info_notifications['Email'], emails)
-                                                            print("Info notificaciones: ", info_notifications)
-                                                        
-
-                                                        
-
-                                                        
+                                                    descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera}"
+        
+                                                add_event_to_database(
+                                                    sitio=sitio,
+                                                    company="TechCorp",
+                                                    fecha=fecha_actual,
+                                                    hora=hora_actual,
+                                                    tipo_evento=f"Detección de {NombreLabel} en {area_name}",
+                                                    descripcion=descript
+                                                )
+                                                id_registro = get_last_event_id()
+                                                set_id(id_registro)
+                                                tiempo_deteccion_por_area[(area_name, label)] = time.time()
+                                                cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
+                                                cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+                                                cv2.putText(frame, text, (text_offset_x, text_offset_y),
+                                                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                                                # NOTA: Si no cuentas con un buffer de frames, revisa o adapta save_video_from_buffer
+                                                if info_notifications.get('Video') == True:
+                                                    # Aquí deberás ajustar la forma de guardar un clip de video
+                                                    save_video_from_buffer([], f"videos_{area_name}_{label}_{nombre_camera}.mp4",
+                                                                        info_notifications.get('Email'), emails)
+                                                elif info_notifications.get('Imagen') == True:
+                                                    nombre_img = f"Imgs/img_{area_name}_{label}_{nombre_camera}.jpg"
+                                                    directorio = os.path.dirname(nombre_img)
+                                                    if not os.path.exists(directorio):
+                                                        os.makedirs(directorio)
+                                                    cv2.imwrite(nombre_img, frame)
+                                                    guardar_imagen_en_mariadb(nombre_img, info_notifications.get('Email'), emails)
+                                                    print("Info notificaciones:", info_notifications)
+        
+                                    if area_name == "area3":
+                                        inside_point2 = cv2.pointPolygonTest(pts, point2, False)
+                                        if inside_point2 >= 0 and probability >= min_probability:
+                                            print("Detectando en cámara:", camera_id)
+                                            print(f"Se detectó {label} con {probability:.2f}% en el área {area_name} DONDE ESTA EL")
+                                            color = COLORS.get(label, (255, 255, 255))
+                                            text = f"{label}: {probability:.2f}%"
+                                            (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+                                            text_offset_x, text_offset_y = x1_det, y1_det - 10
+                                            box_coords = ((text_offset_x, text_offset_y - text_height - 5),
+                                                        (text_offset_x + text_width + 25, text_offset_y + 5))
+        
+                                            now = time.time()
+                                            if (area_name, label) not in tiempo_deteccion_por_area:
+                                                tiempo_deteccion_por_area[(area_name, label)] = now
                                             else:
-                                                # Si la detección está fuera de los límites o no cumple con la probabilidad mínima
-                                                tiempo_deteccion_por_area.pop((area_name, label), None)  # Reiniciar el tiempo al salir del área
-                                                print(f"{label} salió de {area_name}, reiniciando el tiempo.")
-
-                        except Exception as detection_error:
-                            print(f"Error al procesar una detección en {area_name}: {detection_error}")
-                        
-                        # # Volver a escribir el frame procesado en el buffer en la misma posición
-                        # with info_buffer.buffer_lock:
-                        #     info_buffer.frame_buffer[0] = frame  # Sobrescribir el frame en la misma posición
-                except Exception as area_error:
-                    print(f"Error al procesar {area_name}: {area_error}")
+                                                tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
+                                                print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} s")
+                                                if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                                                    fecha_actual = datetime.now().strftime("%d/%m/%Y")
+                                                    hora_actual = datetime.now().strftime("%H:%M:%S")
+                                                    if label == "A_Person":
+                                                        NombreLabel = "Personas"
+                                                        descript = f"Se detectó una Persona en {area_name} en la cámara {nombre_camera}"
+                                                    elif label == "White":
+                                                        NombreLabel = "Persona con casco blanco"
+                                                        descript = f"Se detectó una Persona con casco blanco en {area_name} en la cámara {nombre_camera}"
+                                                    elif label == "No_Helmet":
+                                                        NombreLabel = "Persona Sin casco"
+                                                        descript = f"Se detectó una Persona sin casco en {area_name} en la cámara {nombre_camera}"
+                                                    elif label == "YellowGreen":
+                                                        NombreLabel = "Persona con casco Amarillo o Verde"
+                                                        descript = f"Se detectó una Persona con casco Amarillo o Verde en {area_name} en la cámara {nombre_camera}"
+                                                    else:
+                                                        descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera}"
+        
+                                                    add_event_to_database(
+                                                        sitio=sitio,
+                                                        company="TechCorp",
+                                                        fecha=fecha_actual,
+                                                        hora=hora_actual,
+                                                        tipo_evento=f"Detección de {NombreLabel} en {area_name}",
+                                                        descripcion=descript
+                                                    )
+                                                    id_registro = get_last_event_id()
+                                                    set_id(id_registro)
+                                                    tiempo_deteccion_por_area[(area_name, label)] = time.time()
+                                                    cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 2)
+                                                    cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+                                                    cv2.putText(frame, text, (text_offset_x, text_offset_y),
+                                                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                                                    # NOTA: Si no cuentas con un buffer de frames, revisa o adapta save_video_from_buffer
+                                                    if info_notifications.get('Video') == True:
+                                                        # Aquí deberás ajustar la forma de guardar un clip de video
+                                                        save_video_from_buffer([], f"videos_{area_name}_{label}_{nombre_camera}.mp4",
+                                                                            info_notifications.get('Email'), emails)
+                                                    elif info_notifications.get('Imagen') == True:
+                                                        nombre_img = f"Imgs/img_{area_name}_{label}_{nombre_camera}.jpg"
+                                                        directorio = os.path.dirname(nombre_img)
+                                                        if not os.path.exists(directorio):
+                                                            os.makedirs(directorio)
+                                                        cv2.imwrite(nombre_img, frame)
+                                                        guardar_imagen_en_mariadb(nombre_img, info_notifications.get('Email'), emails)
+                                                        print("Info notificaciones:", info_notifications)
+        
+                                            
+                                    else:
+                                        # Si la detección no cumple, reiniciamos el tiempo
+                                        tiempo_deteccion_por_area.pop((area_name, label), None)
+                                        print(f"{label} salió de {area_name}, reiniciando el tiempo.")
+                                
+                    except Exception as detection_error:
+                        print(f"Error al procesar una detección en {area_name}: {detection_error}")
+                    
+                    # # Volver a escribir el frame procesado en el buffer en la misma posición
+                    # with info_buffer.buffer_lock:
+                    #     info_buffer.frame_buffer[0] = frame  # Sobrescribir el frame en la misma posición
+            except Exception as area_error:
+                print(f"Error al procesar {area_name}: {area_error}")
 
 def save_feed_url_to_database(camera_id, url):
     """
