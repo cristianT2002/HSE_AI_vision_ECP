@@ -56,6 +56,7 @@ def generate_frames(config_path, camera_id, retry_interval=5):
         streamers = get_streamers()
         
         # print(streamers)
+        # Traemos el buffer
         frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
 
         if not frame_buffer:
@@ -170,10 +171,10 @@ def video_feed(camera_id):
             return f"No se encontró el archivo YAML para la cámara {camera_id}.", 404
 
         # Obtener la IP del host
-        # host_ip = socket.gethostbyname(socket.gethostname())
+        host_ip = socket.gethostbyname(socket.gethostname())
         
         ################ Ip servidor #################### 
-        host_ip = "172.30.37.63"
+        # host_ip = "172.30.37.63"
         
         feed_url = f"http://{host_ip}:5000/video_feed/{camera_id}"
         print(feed_url)
