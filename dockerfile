@@ -17,7 +17,7 @@ WORKDIR /app
 
 # Copiar los archivos de la aplicación al contenedor
 COPY NUEVO.py .
-COPY best _mejorado7.pt .
+COPY best_mejorado7.pt .
 
 
 
