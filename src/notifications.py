@@ -30,10 +30,10 @@ def procesar_detecciones(config_path, camera_id, shared_buffers):
         "Orange": (0, 128, 255), # Naranja
     
     }
-    host_ip = socket.gethostbyname(socket.gethostname())
+    # host_ip = socket.gethostbyname(socket.gethostname())
     
     ################ Ip servidor #################### 
-    # host_ip = "10.212.134.13"
+    host_ip = "172.30.37.63"
 
     feed_url = f"http://{host_ip}:5000/video_feed/{camera_id}"
 
