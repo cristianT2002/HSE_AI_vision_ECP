@@ -5,7 +5,7 @@ import torch
 
 # Leer nuestro modelo
 # model = YOLO("yolov8n-seg.pt")  # load an official model
-model = YOLO("models/best_ultimo.pt")
+model = YOLO("models/best_mejorado.pt")
 video = "VideosEnsayoModelo/DemoG4.mp4"
 
 # Realizar VideoCaptura
