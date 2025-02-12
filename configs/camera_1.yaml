@@ -17,6 +17,10 @@ camera:
         y: 148.00760582010582
       punto: TORITO_OESTE1_GEOPARK
     area2:
+      A_Person: '31'
+      Green: '25'
+      No_Helmet: '25'
+      Yellow: '25'
       camara: Mesa
       points:
       - x: 109.47463655082048
@@ -43,24 +47,24 @@ camera:
         y: 33.9864417989418
       punto: TORITO_OESTE1_GEOPARK
     area3:
-      A_Person: '40'
+      A_Person: '31'
       camara: Mesa
       points:
-      - x: 134.93167779372308
-        y: 90.83994708994709
-      - x: 177.16041679665562
-        y: 81.58068783068782
-      - x: 189.43969551382042
-        y: 99.57010582010581
-      - x: 129.54077494228488
-        y: 112.53306878306877
-      - x: 128.34279653085417
-        y: 92.1626984126984
-      - x: 135.53066699943844
-        y: 91.36904761904762
+      - x: 155.29731078804517
+        y: 86.89649470899471
+      - x: 127.74380732513882
+        y: 91.65839947089947
+      - x: 128.94178573656953
+        y: 113.35152116402116
+      - x: 192.73413614525487
+        y: 99.5949074074074
+      - x: 177.45991139951332
+        y: 82.66369047619047
+      - x: 155.89629999376052
+        y: 86.36739417989418
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com"]'
-  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
   ip: 172.29.5.230
   label: A_Person, Green, Harness, Mub_Bucket, No_Harness, No_Helmet, Orange, White,
@@ -71,7 +75,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "10", "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "10", "area2": "20", "area3": "10"}'
   username: admin
 labels:
 - A_Person
