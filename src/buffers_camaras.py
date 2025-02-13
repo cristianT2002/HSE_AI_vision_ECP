@@ -42,7 +42,7 @@ class CameraStreamer:
             if len(buffer) >= 120:
                 buffer.pop(0)  # Eliminar el frame más antiguo si ya está lleno
             buffer.append(frame)
-
+            # print("Buffer: ", len(buffer))
             time.sleep(0.005)
 
         cap_camera.release()

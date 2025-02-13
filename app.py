@@ -7,10 +7,11 @@ from src.yaml_utils import generate_camera_yaml
 from src.json_utils import generate_json
 from src.video_feed import app  # Importamos Flask app desde video_feed.py
 from src.buffers_camaras import start_streaming_from_configs
-from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads
+from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads, set_streamers_procesado
 from src.notifications import procesar_detecciones
 import multiprocessing as mp
 from src.variables_globales import set_processes, get_processes
+from multiprocessing import Manager
 
 
 def load_yaml_config(path):
@@ -83,13 +84,15 @@ def start_flask_server():
 #     # Iniciar el monitoreo de la base de datos en el hilo principal
 #     monitor_database(db_config)
 
-def monitor_database_and_start_detections(db_config, shared_buffers):
+def monitor_database_and_start_detections(db_config, shared_buffers, buffer_detecciones):
     """
     Monitorea la base de datos, actualiza YAML/JSON e inicia procesos de detección por cámara.
     """
     previous_data = []  # Almacenar datos previos de la base de datos
     detecciones_processes = {}  # Almacenar procesos por cámara
 
+    
+    
     while True:
         try:
             # Establece una nueva conexión en cada iteración
@@ -106,10 +109,15 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
                 data = cursor.fetchall()
                 generate_json(data)
                 previous_data = cameras
-
                 # Iniciar o reiniciar procesos de detección por cámara
                 for camera in cameras:
                     camera_id = camera["ID"]
+                    
+                    if camera_id not in buffer_detecciones:
+                        buffer_detecciones[camera_id] = manager.list()  # 🔹 Esto evita que se reinicie
+                    # Solo inicializa si no existe
+                    # print("buffer_detecciones: ", buffer_detecciones)
+                    
                     config_path = f"configs/camera_{camera_id}.yaml"
 
                     # Si ya existe un proceso para esta cámara, no lo vuelvas a iniciar
@@ -121,11 +129,13 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
                     # Crear un nuevo proceso
                     proceso = mp.Process(
                         target=procesar_detecciones,
-                        args=(config_path, camera_id, shared_buffers),
+                        args=(config_path, camera_id, shared_buffers, manager),
                         daemon=True
                     )
                     detecciones_processes[camera_id] = proceso
                     proceso.start()
+                set_streamers_procesado(buffer_detecciones)
+                
 
         except Exception as e:
             print(f"⚠️ Error monitoreando la base de datos: {e}")
@@ -165,5 +175,7 @@ if __name__ == "__main__":
 
     # Monitorear la base de datos e iniciar hilos de detección
     # time.sleep(10)
-    monitor_database_and_start_detections(db_config, shared_buffers)
+    manager = Manager()
+    buffer_detecciones = manager.dict()
+    monitor_database_and_start_detections(db_config, shared_buffers, buffer_detecciones)
 

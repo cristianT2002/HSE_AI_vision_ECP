@@ -7,13 +7,15 @@ from src.load_config import load_yaml_config
 from src.model_loader import model, LABELS
 from src.variables_globales import get_streamers
 from src.db_utils import connect_to_db, close_connection
-from src.variables_globales import get_streamers, set_streamers, set_id
+from src.variables_globales import get_streamers, set_streamers, set_id, set_streamers_procesado, get_streamers_procesado
 from src.Tipo_notificacion import save_video_from_buffer, guardar_imagen_en_mariadb
 import socket
 import numpy as np
+from multiprocessing import Manager
 
-def procesar_detecciones(config_path, camera_id, shared_buffers):
-    
+
+def procesar_detecciones(config_path, camera_id, shared_buffers, manager):
+    buffer_detecciones = manager.dict()
     tiempo_deteccion_por_area = {}
     
     # Colores para las etiquetas
@@ -39,6 +41,7 @@ def procesar_detecciones(config_path, camera_id, shared_buffers):
 
     save_feed_url_to_database(camera_id, feed_url)
     while True:
+        print("Buffer antes de todo: ", buffer_detecciones)
         """
         Procesa las detecciones de objetos en cada área definida y las imprime en consola.
         """
@@ -161,8 +164,8 @@ def procesar_detecciones(config_path, camera_id, shared_buffers):
                                     inside = cv2.pointPolygonTest(pts, point, False)
         
                                     if inside >= 0 and probability >= min_probability:
-                                        print("Detectando en cámara:", camera_id)
-                                        print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
+                                        # print("Detectando en cámara:", camera_id)
+                                        # print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
                                         color = COLORS.get(label, (255, 255, 255))
                                         text = f"{label}: {probability:.2f}%"
                                         (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
@@ -175,7 +178,7 @@ def procesar_detecciones(config_path, camera_id, shared_buffers):
                                             tiempo_deteccion_por_area[(area_name, label)] = now
                                         else:
                                             tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
-                                            print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} s")
+                                            # print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} s")
                                             if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                                                 fecha_actual = datetime.now().strftime("%d/%m/%Y")
                                                 hora_actual = datetime.now().strftime("%H:%M:%S")
@@ -222,12 +225,18 @@ def procesar_detecciones(config_path, camera_id, shared_buffers):
                                                     cv2.imwrite(nombre_img, frame)
                                                     guardar_imagen_en_mariadb(nombre_img, info_notifications.get('Email'), emails)
                                                     print("Info notificaciones:", info_notifications)
-        
+                                        # Dibujar la detección en el frame
+                                        if label in config["camera"]["label"]:
+                                            cv2.rectangle(frame, (x1_det, y1_det), (x2_det, y2_det), color, 1)
+                                            cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+                                            cv2.putText(frame, text, (text_offset_x, text_offset_y),
+                                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                                    
                                     if area_name == "area3":
                                         inside_point2 = cv2.pointPolygonTest(pts, point2, False)
                                         if inside_point2 >= 0 and probability >= min_probability:
-                                            print("Detectando en cámara:", camera_id)
-                                            print(f"Se detectó {label} con {probability:.2f}% en el área {area_name} DONDE ESTA EL")
+                                            # print("Detectando en cámara:", camera_id)
+                                            # print(f"Se detectó {label} con {probability:.2f}% en el área {area_name} DONDE ESTA EL")
                                             color = COLORS.get(label, (255, 255, 255))
                                             text = f"{label}: {probability:.2f}%"
                                             (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
@@ -240,7 +249,7 @@ def procesar_detecciones(config_path, camera_id, shared_buffers):
                                                 tiempo_deteccion_por_area[(area_name, label)] = now
                                             else:
                                                 tiempo_acumulado = now - tiempo_deteccion_por_area[(area_name, label)]
-                                                print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} s")
+                                                # print(f"Tiempo acumulado para {area_name}, {label}: {tiempo_acumulado:.2f} s")
                                                 if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                                                     fecha_actual = datetime.now().strftime("%d/%m/%Y")
                                                     hora_actual = datetime.now().strftime("%H:%M:%S")
@@ -302,6 +311,19 @@ def procesar_detecciones(config_path, camera_id, shared_buffers):
                     #     info_buffer.frame_buffer[0] = frame  # Sobrescribir el frame en la misma posición
             except Exception as area_error:
                 print(f"Error al procesar {area_name}: {area_error}")
+        # Acceder al buffer compartido
+        
+        if camera_id not in buffer_detecciones:
+            buffer_detecciones[camera_id] = manager.list()  # Asegurar lista compartida
+
+        buffer = buffer_detecciones[camera_id]
+        print("Buffer tamaño antes de agregar: ", len(buffer) )
+        # Agregar frame al buffer compartido
+        if len(buffer) >= 120:
+            buffer.pop(0)  # Eliminar el frame más antiguo si ya está lleno
+        buffer.append(frame)
+        print("Buffer despues de agregar: ", len(buffer) )
+        
 
 def save_feed_url_to_database(camera_id, url):
     """
