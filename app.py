@@ -84,7 +84,7 @@ def start_flask_server():
 #     # Iniciar el monitoreo de la base de datos en el hilo principal
 #     monitor_database(db_config)
 
-def monitor_database_and_start_detections(db_config, shared_buffers, buffer_detecciones):
+def monitor_database_and_start_detections(db_config, shared_buffers, buffer_detecciones, manager):
     """
     Monitorea la base de datos, actualiza YAML/JSON e inicia procesos de detección por cámara.
     """
@@ -177,5 +177,5 @@ if __name__ == "__main__":
     # time.sleep(10)
     manager = Manager()
     buffer_detecciones = manager.dict()
-    monitor_database_and_start_detections(db_config, shared_buffers, buffer_detecciones)
+    monitor_database_and_start_detections(db_config, shared_buffers, buffer_detecciones, manager)
 
