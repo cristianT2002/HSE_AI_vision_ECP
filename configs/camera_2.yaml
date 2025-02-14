@@ -4,20 +4,20 @@ camera:
       A_Person: '39'
       camara: Planchada
       points:
-      - x: 172.78684736138393
-        y: 58.419118719197456
-      - x: 67.24880738185239
-        y: 139.04668863550202
-      - x: 185.7810204519569
-        y: 148.56522119506576
-      - x: 230.15136759049867
-        y: 70.4572628386457
-      - x: 173.4207094633631
-        y: 59.258989239158964
+      - x: 174.7644599737942
+        y: 62.2933201058201
+      - x: 63.05297310788045
+        y: 135.3091931216931
+      - x: 187.64272789667436
+        y: 146.68485449735448
+      - x: 225.07955325388406
+        y: 72.87533068783068
+      - x: 175.0639545766519
+        y: 62.2933201058201
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '[]'
-  info_notifications: '{"Email": false, "Imagen": false, "Page_HSE": true, "Video":
-    true}'
+  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
   ip: 172.29.5.231
   label: A_Person, Loading_Machine
   name camera: Planchada
@@ -26,7 +26,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
-  time_areas: '{"area1": "20", "area2": "60", "area3": "60"}'
+  time_areas: '{"area1": "60", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person
