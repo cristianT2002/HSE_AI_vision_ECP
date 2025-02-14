@@ -1,4 +1,5 @@
 streamers = []
+streamers_procesado = []
 threads= []
 processes = []  
 id = 0
@@ -32,3 +33,10 @@ def set_processes(processes_edit):  # Nueva función para establecer procesos
     
 def get_processes():  # Nueva función para obtener procesos
     return processes
+
+def get_streamers_procesado():
+    return streamers_procesado
+
+def set_streamers_procesado(streamers_procesado_edit):
+    global streamers_procesado
+    streamers_procesado = streamers_procesado_edit

@@ -9,6 +9,7 @@ from src.variables_globales import get_streamers, set_streamers, get_processes, 
 
 class CameraStreamer:
     def __init__(self, camara_name, camara_url, shared_buffers, camara_number):
+
         self.camara_name = camara_name
         self.camara_url = camara_url
         self.shared_buffers = shared_buffers
@@ -42,7 +43,7 @@ class CameraStreamer:
             if len(buffer) >= 120:
                 buffer.pop(0)  # Eliminar el frame más antiguo si ya está lleno
             buffer.append(frame)
-
+            # print("Buffer: ", len(buffer))
             time.sleep(0.005)
 
         cap_camera.release()

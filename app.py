@@ -7,10 +7,11 @@ from src.yaml_utils import generate_camera_yaml
 from src.json_utils import generate_json
 from src.video_feed import app  # Importamos Flask app desde video_feed.py
 from src.buffers_camaras import start_streaming_from_configs
-from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads
-from src.notifications import procesar_detecciones
+from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads, set_streamers_procesado
+from src.notifications import ProcesarDetecciones
 import multiprocessing as mp
 from src.variables_globales import set_processes, get_processes
+from multiprocessing import Manager
 
 
 def load_yaml_config(path):
@@ -89,9 +90,11 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
     """
     previous_data = []  # Almacenar datos previos de la base de datos
     detecciones_processes = {}  # Almacenar procesos por cámara
-
+    # Crear un Manager para buffers compartidos
+    manager = Manager()
+    buffer_detecciones = manager.dict()
     while True:
-        try:
+        # try:
             # Establece una nueva conexión en cada iteración
             connection = connect_to_db(db_config)
             cursor = connection.cursor(dictionary=True)
@@ -110,6 +113,11 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
                 # Iniciar o reiniciar procesos de detección por cámara
                 for camera in cameras:
                     camera_id = camera["ID"]
+
+                    # Crear buffer si no existe
+                    if camera_id not in buffer_detecciones:
+                        buffer_detecciones[camera_id] = manager.list()
+
                     config_path = f"configs/camera_{camera_id}.yaml"
 
                     # Si ya existe un proceso para esta cámara, no lo vuelvas a iniciar
@@ -118,40 +126,41 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
 
                     print(f"🟢 Iniciando proceso de detección para cámara {camera_id}")
 
-                    # Crear un nuevo proceso
+                    # Crear una instancia de la clase ProcesarDetecciones
+                    procesador = ProcesarDetecciones(config_path, camera_id, shared_buffers, buffer_detecciones)
+
+                    # Crear un nuevo proceso llamando al método procesar()
                     proceso = mp.Process(
-                        target=procesar_detecciones,
-                        args=(config_path, camera_id, shared_buffers),
+                        target=procesador.procesar,  # 🔹 Llamamos al método de la clase
                         daemon=True
                     )
+
                     detecciones_processes[camera_id] = proceso
                     proceso.start()
 
-        except Exception as e:
-            print(f"⚠️ Error monitoreando la base de datos: {e}")
-        finally:
-            close_connection(connection)
+                set_streamers_procesado(buffer_detecciones)
+
+        # except Exception as e:
+        #     print(f"⚠️ Error monitoreando la base de datos: {e}")
+        # finally:
+        #     close_connection(connection)
 
         # Guardar procesos en variables globales
-        set_processes(detecciones_processes)
+            set_processes(detecciones_processes)
 
-        # Pausa antes de la próxima verificación
-        time.sleep(5)
+            # Pausa antes de la próxima verificación
+            time.sleep(5)
 
 
 
 if __name__ == "__main__":
-    
     # Vaciar la carpeta de videos
-    # Verifica si la carpeta existe
     if os.path.exists("Videos"):
-        # Itera sobre los elementos de la carpeta
         for elemento in os.listdir("Videos"):
             elemento_ruta = os.path.join("Videos", elemento)
-            # Elimina archivos
             if os.path.isfile(elemento_ruta) or os.path.islink(elemento_ruta):
                 os.unlink(elemento_ruta)
-    
+
     # Cargar configuración desde database.yaml
     db_config = load_yaml_config("configs/database.yaml")["database"]
 
@@ -161,9 +170,16 @@ if __name__ == "__main__":
 
     # Iniciar el streaming
     shared_buffers, threads = start_streaming_from_configs()
-    # print("Streamers: ", [s.camara_url for s in streamers.values()])
 
-    # Monitorear la base de datos e iniciar hilos de detección
-    # time.sleep(10)
+    
     monitor_database_and_start_detections(db_config, shared_buffers)
+    # 🔹 Iniciar `monitor_database_and_start_detections` en un proceso separado
+    # monitor_process = mp.Process(
+    #     target=monitor_database_and_start_detections,
+    #     args=(db_config, shared_buffers),
+    #     daemon=True
+    # )
+    # monitor_process.start()
 
+    # # Esperar a que el proceso termine (si no se usa daemon=True)
+    # monitor_process.join()
