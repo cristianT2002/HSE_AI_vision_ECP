@@ -40,10 +40,12 @@ class ProcesarDetecciones:
         }
 
     def procesar(self):
-        host_ip = socket.gethostbyname(socket.gethostname())
+        # host_ip = socket.gethostbyname(socket.gethostname())
+        host_ip = "172.30.37.63"
         feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
 
-        # self.save_feed_url_to_database(self.camera_id, feed_url)
+        # Guardar la URL del video feed en la base de datos
+        self.save_feed_url_to_database(self.camera_id, feed_url)
 
         while self.running:
             # print("Buffer antes de todo: ", self.buffer_detecciones)
