@@ -44,6 +44,7 @@ class ProcesarDetecciones:
         host_ip = "172.30.37.63"
         feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
 
+        # Guardar la URL del video feed en la base de datos
         self.save_feed_url_to_database(self.camera_id, feed_url)
 
         while self.running:
