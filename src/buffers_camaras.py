@@ -9,6 +9,7 @@ from src.variables_globales import get_streamers, set_streamers, get_processes, 
 
 class CameraStreamer:
     def __init__(self, camara_name, camara_url, shared_buffers, camara_number):
+
         self.camara_name = camara_name
         self.camara_url = camara_url
         self.shared_buffers = shared_buffers
