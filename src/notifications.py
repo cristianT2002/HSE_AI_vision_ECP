@@ -7,7 +7,7 @@ import numpy as np
 import multiprocessing as mp
 from multiprocessing import Manager
 from datetime import datetime
-from src.variables_globales import get_streamers, set_streamers
+from src.variables_globales import get_streamers, set_streamers, set_id
 from src.Tipo_notificacion import save_video_from_buffer, guardar_imagen_en_mariadb
 from src.db_utils import connect_to_db, close_connection
 from src.load_config import load_yaml_config
@@ -219,6 +219,9 @@ class ProcesarDetecciones:
             tipo_evento=f"Detección de {label} en {area_name}",
             descripcion=descript
         )
+        
+        id_registro = self.get_last_event_id()
+        set_id(id_registro)
     
     def add_event_to_database(self,sitio, company, fecha, hora, tipo_evento, descripcion):
         """
@@ -261,3 +264,28 @@ class ProcesarDetecciones:
     def stop(self):
         """Detiene el procesamiento de detecciones."""
         self.running = False
+
+    def get_last_event_id(self):
+        """
+        Obtiene el ID del último registro en la tabla 'Eventos'.
+        """
+        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+        cursor = connection.cursor()
+
+        try:
+            query = "SELECT id_evento FROM Eventos ORDER BY id_evento DESC LIMIT 1"
+            cursor.execute(query)
+            result = cursor.fetchone()
+            if result:
+                last_id = result[0]
+                # print(f"El último ID en la tabla 'Eventos' es: {last_id}")
+                return last_id
+            else:
+                print("No se encontraron registros en la tabla 'Eventos'.")
+                return None
+        except Exception as e:
+            print(f"Error al obtener el último ID: {e}")
+            return None
+        finally:
+            cursor.close()
+            close_connection(connection)
