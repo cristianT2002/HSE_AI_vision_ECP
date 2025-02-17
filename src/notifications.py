@@ -212,9 +212,9 @@ class ProcesarDetecciones:
                         else:
                             tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
                             if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                                # self.guardar_evento(area_name, label, nombre_camera, sitio)
+                                self.guardar_evento(area_name, label, nombre_camera, sitio)
                                 self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
-                                # self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
+                                self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
                 
                 elif inside >= 0 and probability >= min_probability:
                     print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
@@ -238,9 +238,9 @@ class ProcesarDetecciones:
                     else:
                         tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
                         if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                            # self.guardar_evento(area_name, label, nombre_camera, sitio)
+                            self.guardar_evento(area_name, label, nombre_camera, sitio)
                             self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
-                            # self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
+                            self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
                 
                 else:
                     # Si la detección no cumple, reiniciamos el tiempo
