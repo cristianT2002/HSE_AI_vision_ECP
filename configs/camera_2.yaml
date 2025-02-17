@@ -1,7 +1,7 @@
 camera:
   coordinates:
     area1:
-      A_Person: '39'
+      A_Person: '50'
       camara: Planchada
       points:
       - x: 174.7644599737942
@@ -15,8 +15,9 @@ camera:
       - x: 175.0639545766519
         y: 62.2933201058201
       punto: TORITO_OESTE1_GEOPARK
-  info_emails: '[]'
-  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+  info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
+    "edwin.granados@axuretechnologies.com", "cristian.tascon@axuretechnologies.com"]'
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 172.29.5.231
   label: A_Person, Loading_Machine
@@ -26,7 +27,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
-  time_areas: '{"area1": "60", "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "60", "area2": "60", "area3": "60"}'
   username: admin
 labels:
 - A_Person

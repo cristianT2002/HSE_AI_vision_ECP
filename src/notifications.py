@@ -51,7 +51,6 @@ class ProcesarDetecciones:
             # print("Buffer antes de todo: ", self.buffer_detecciones)
             
             # Cargar configuración
-            # Cargar configuración
             try:
                 self.config = load_yaml_config(self.config_path)
                 rtsp_url = self.config["camera"]["rtsp_url"]
@@ -109,12 +108,21 @@ class ProcesarDetecciones:
                 # try:
                     # Procesar el área y realizar detección
                     pts = self.escalar_puntos(area_config)
-                    cv2.polylines(frame, [pts], isClosed=True, color=(255, 0, 0), thickness=2)
+                    # Dibujar el polígono escalado en el frame
+                    if area_name == "area3":
+                        polygon_color = (0, 255, 0)  # Verde para area2
+                    elif area_name == "area2":
+                        polygon_color = (0, 0, 255)
+                    else:
+                        polygon_color = (255, 0, 0)  # Rojo o azul para otras áreas (según lo desees)
+                    
+                    # Dibujar el polígono escalado en el frame con el color definido
+                    cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
 
                     results = model(frame, verbose=False)
 
                     for detection in results[0].boxes:
-                        self.procesar_deteccion(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails)
+                        self.procesar_deteccion(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts)
                     
                 # except Exception as area_error:
                 #     print(f"Error al procesar {area_name}: {area_error}")
@@ -145,7 +153,11 @@ class ProcesarDetecciones:
             close_connection(connection)
 
 
-
+    def dibujo_etiquetas(self, frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_heigh):
+        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 1)
+        cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+        cv2.putText(frame, text, (text_offset_x, text_offset_y),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
     def escalar_puntos(self, area_config):
         """Escala los puntos del polígono según la resolución."""
         width2, height2 = 294.12, 145.45
@@ -164,11 +176,12 @@ class ProcesarDetecciones:
             dtype=np.int32
         ).reshape((-1, 1, 2))
 
-    def procesar_deteccion(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails):
+    def procesar_deteccion(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
         """Procesa una detección específica en el frame."""
         # try:
         x1, y1, x2, y2 = map(int, detection.xyxy[0])
         point = (x1, y1)
+        point2 = (int((x1 + x2) / 2), y2)
         probability = detection.conf[0] * 100
         class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
         label = LABELS.get(class_index, "Unknown")
@@ -176,34 +189,70 @@ class ProcesarDetecciones:
         if label in area_config:
             min_probability = float(area_config[label])
             inside = cv2.pointPolygonTest(self.escalar_puntos(area_config), point, False)
-
-            if inside >= 0 and probability >= min_probability:
-                color = self.COLORS.get(label, (255, 255, 255))
-                text = f"{label}: {probability:.0f}%"
-                (text_width, text_height), _ = cv2.getTextSize(
-                    text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1
-                )
-                text_offset_x, text_offset_y = x1, y1 - 10
-                box_coords = (
-                    (text_offset_x, text_offset_y - text_height - 5),
-                    (text_offset_x + text_width + 25, text_offset_y + 5)
-                )
+            
+            if probability >= min_probability:
                 
-                now = time.time()
-                if (area_name, label) not in self.tiempo_deteccion_por_area:
-                    self.tiempo_deteccion_por_area[(area_name, label)] = now
+                if area_name == "area3":
+                    inside_point2 = cv2.pointPolygonTest(pts, point2, False)
+                    if inside_point2 >= 0 and probability >= min_probability:
+                        print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
+                        color = self.COLORS.get(label, (255, 255, 255))
+                        text = f"{label}: {probability:.2f}%"
+                        (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+                        text_offset_x, text_offset_y = x1, y1 - 10
+                        box_coords = ((text_offset_x, text_offset_y - text_height - 5),
+                                    (text_offset_x + text_width + 25, text_offset_y + 5))
+                        self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
+                        now = time.time()
+                        now_mostrar = datetime.now()
+                        # print("Fecha y hora actual:", now_mostrar.strftime("%Y-%m-%d %H:%M:%S"))
+
+                        if (area_name, label) not in self.tiempo_deteccion_por_area:
+                            self.tiempo_deteccion_por_area[(area_name, label)] = now
+                        else:
+                            tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
+                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                                self.guardar_evento(area_name, label, nombre_camera, sitio)
+                                self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
+                                self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
+                
+                elif inside >= 0 and probability >= min_probability:
+                    print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
+                    color = self.COLORS.get(label, (255, 255, 255))
+                    text = f"{label}: {probability:.0f}%"
+                    (text_width, text_height), _ = cv2.getTextSize(
+                        text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1
+                    )
+                    text_offset_x, text_offset_y = x1, y1 - 10
+                    box_coords = (
+                        (text_offset_x, text_offset_y - text_height - 5),
+                        (text_offset_x + text_width + 25, text_offset_y + 5)
+                    )
+                    self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
+                    now = time.time()
+                    now_mostrar = datetime.now()
+                    # print("Fecha y hora actual:", now_mostrar.strftime("%Y-%m-%d %H:%M:%S"))
+
+                    if (area_name, label) not in self.tiempo_deteccion_por_area:
+                        self.tiempo_deteccion_por_area[(area_name, label)] = now
+                    else:
+                        tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
+                        if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                            self.guardar_evento(area_name, label, nombre_camera, sitio)
+                            self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
+                            self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
+                
                 else:
-                    tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
-                    if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                        self.guardar_evento(area_name, label, nombre_camera, sitio)
-                        self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
-                        self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
+                    # Si la detección no cumple, reiniciamos el tiempo
+                    self.tiempo_deteccion_por_area.pop((area_name, label), None)
+                    print(f"{label} salió de {area_name}, reiniciando el tiempo.")
+                
                 # Dibujar la detección en el frame
-                if label in self.config["camera"]["label"]:
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), color, 1)
-                    cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
-                    cv2.putText(frame, text, (text_offset_x, text_offset_y),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                # if label in self.config["camera"]["label"]:
+                # cv2.rectangle(frame, (x1, y1), (x2, y2), color, 1)
+                # cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+                # cv2.putText(frame, text, (text_offset_x, text_offset_y),
+                # cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
         # except Exception as detection_error:
         #     print(f"Error al procesar una detección en {area_name}: {detection_error}")
 
@@ -211,14 +260,26 @@ class ProcesarDetecciones:
         """Guarda un evento en la base de datos."""
         fecha_actual = datetime.now().strftime("%d/%m/%Y")
         hora_actual = datetime.now().strftime("%H:%M:%S")
-        descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera}"
-
+        if label == "A_Person":
+            NombreLabel = "Personas"
+            descript = f"Se detectó una Persona en {area_name} en la cámara {nombre_camera}"
+        elif label == "White":
+            NombreLabel = "Persona con casco blanco"
+            descript = f"Se detectó una Persona con casco blanco en {area_name} en la cámara {nombre_camera}"
+        elif label == "No_Helmet":
+            NombreLabel = "Persona Sin casco"
+            descript = f"Se detectó una Persona sin casco en {area_name} en la cámara {nombre_camera}"
+        elif label == "YellowGreen":
+            NombreLabel = "Persona con casco Amarillo o Verde"
+            descript = f"Se detectó una Persona con casco Amarillo o Verde en {area_name} en la cámara {nombre_camera}"
+        else:
+            descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera}"
         self.add_event_to_database(
             sitio=sitio,
             company="TechCorp",
             fecha=fecha_actual,
             hora=hora_actual,
-            tipo_evento=f"Detección de {label} en {area_name}",
+            tipo_evento=f"Detección de {NombreLabel} en {area_name}",
             descripcion=descript
         )
         
@@ -261,7 +322,7 @@ class ProcesarDetecciones:
         if len(buffer) >= 120:
             buffer.pop(0)
         buffer.append(frame)
-        print(f"Buffer {self.camera_id} después de agregar: {len(buffer)}")
+        # print(f"Buffer {self.camera_id} después de agregar: {len(buffer)}")
 
     def stop(self):
         """Detiene el procesamiento de detecciones."""
