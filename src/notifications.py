@@ -21,6 +21,7 @@ class ProcesarDetecciones:
         self.shared_buffers = shared_buffers
         self.buffer_detecciones = buffer_detecciones
         self.tiempo_deteccion_por_area = {}
+        self.tiempo_acumulado = 0
 
         # if self.camera_id not in self.buffer_detecciones:
         #     self.buffer_detecciones[self.camera_id] = manager.list()  # Asegurar lista compartida
@@ -196,8 +197,8 @@ class ProcesarDetecciones:
                 if area_name == "area3":
                     inside_point2 = cv2.pointPolygonTest(pts, point2, False)
                     if inside_point2 >= 0 and probability >= min_probability:
-                        if self.camera_id == 2:
-                            print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
+                        # if self.camera_id == 2:
+                        print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
                         color = self.COLORS.get(label, (255, 255, 255))
                         text = f"{label}: {probability:.2f}%"
                         (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
@@ -205,21 +206,29 @@ class ProcesarDetecciones:
                         box_coords = ((text_offset_x, text_offset_y - text_height - 5),
                                     (text_offset_x + text_width + 25, text_offset_y + 5))
                         self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
-                        now = time.time()
+                        now_area3 = time.time()
                         now_mostrar = datetime.now()
                         # print("Fecha y hora actual:", now_mostrar.strftime("%Y-%m-%d %H:%M:%S"))
 
                         if (area_name, label) not in self.tiempo_deteccion_por_area:
-                            self.tiempo_deteccion_por_area[(area_name, label)] = now
+                            self.tiempo_deteccion_por_area[(area_name, label)] = now_area3
+                            print("Empezo a contar el tiempo")
                         else:
-                            tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
-                            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                            self.tiempo_acumulado = now_area3 - self.tiempo_deteccion_por_area[(area_name, label)]
+                            print(f"Tiempo acumulado: {self.tiempo_acumulado:.2f} segundos")
+                            if self.tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                                 self.guardar_evento(area_name, label, nombre_camera, sitio)
                                 self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
                                 self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
-                
+                                # self.tiempo_deteccion_por_area.pop((area_name, label), None)
+                                print("Tiempo limite:", tiempos_limite.get(area_name, 5))
+                                print(f"Evento guardado en la base de datos para {area_name} con {label}")
+                                # print(self.tiempo_deteccion_por_area[(area_name, label)])
+                                
                 elif inside >= 0 and probability >= min_probability:
-                    print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
+                    
+                    print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}, tiempo acumulado: {self.tiempo_acumulado:.2f} segundos"\n)
+                    print("Tiempo limite:", tiempos_limite.get(area_name, 5))
                     color = self.COLORS.get(label, (255, 255, 255))
                     text = f"{label}: {probability:.0f}%"
                     (text_width, text_height), _ = cv2.getTextSize(
@@ -231,15 +240,16 @@ class ProcesarDetecciones:
                         (text_offset_x + text_width + 25, text_offset_y + 5)
                     )
                     self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
-                    now = time.time()
+                    now_resto = time.time()
                     now_mostrar = datetime.now()
                     # print("Fecha y hora actual:", now_mostrar.strftime("%Y-%m-%d %H:%M:%S"))
 
                     if (area_name, label) not in self.tiempo_deteccion_por_area:
-                        self.tiempo_deteccion_por_area[(area_name, label)] = now
+                        self.tiempo_deteccion_por_area[(area_name, label)] = now_resto
                     else:
-                        tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
-                        if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                        self.tiempo_acumulado = now_resto - self.tiempo_deteccion_por_area[(area_name, label)]
+                        
+                        if self.tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                             self.guardar_evento(area_name, label, nombre_camera, sitio)
                             self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
                             self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
@@ -247,7 +257,10 @@ class ProcesarDetecciones:
                 else:
                     # Si la detección no cumple, reiniciamos el tiempo
                     self.tiempo_deteccion_por_area.pop((area_name, label), None)
-                    print(f"{label} salió de {area_name}, reiniciando el tiempo.")
+                    now_resto = time.time()
+                    self.tiempo_deteccion_por_area[(area_name, label)] = now_resto
+                    self.tiempo_acumulado = now_resto - self.tiempo_deteccion_por_area[(area_name, label)]
+                    print(f"{label} salió de {area_name}, reiniciando el tiempo. {self.tiempo_acumulado:.2f} segundos")
                 
                 # Dibujar la detección en el frame
                 # if label in self.config["camera"]["label"]:
@@ -311,7 +324,8 @@ class ProcesarDetecciones:
     def guardar_evidencia(self, frame, area_name, label, nombre_camera, info_notifications, emails):
         """Guarda video o imagen como evidencia según configuración."""
         if info_notifications.get('Video'):
-            save_video_from_buffer([], f"videos_{area_name}_{label}_{nombre_camera}.mp4", info_notifications.get('Email'), emails)
+            buffer = self.buffer_detecciones[self.camera_id]
+            save_video_from_buffer(buffer, f"videos_{area_name}_{label}_{nombre_camera}.mp4", info_notifications.get('Email'), emails)
         elif info_notifications.get('Imagen'):
             nombre_img = f"Imgs/img_{area_name}_{label}_{nombre_camera}.jpg"
             os.makedirs(os.path.dirname(nombre_img), exist_ok=True)

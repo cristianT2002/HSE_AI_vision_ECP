@@ -1,7 +1,7 @@
 camera:
   coordinates:
     area1:
-      A_Person: '30'
+      A_Person: '10'
       camara: Planchada
       points:
       - x: 174.7644599737942
@@ -16,9 +16,9 @@ camera:
         y: 62.2933201058201
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
-    "edwin.granados@axuretechnologies.com", "cristian.tascon@axuretechnologies.com"]'
-  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
-    false}'
+    "cristian.tascon@axuretechnologies.com"]'
+  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
+    true}'
   ip: 172.29.5.231
   label: A_Person, Loading_Machine
   name camera: Planchada

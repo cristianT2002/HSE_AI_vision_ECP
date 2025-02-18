@@ -7,14 +7,16 @@ camera:
       Yellow: '60'
       camara: Mesa
       points:
-      - x: 1.6565795220565296
-        y: 3.5631613756613754
-      - x: 78.92618705933737
-        y: 7.002314814814814
-      - x: 103.7842390965246
-        y: 148.27215608465607
-      - x: 10.64141760778686
-        y: 148.00760582010582
+      - x: 10.042428402071504
+        y: 12.02876984126984
+      - x: 47.47925375928121
+        y: 137.6901455026455
+      - x: 106.4796905222437
+        y: 124.9917328042328
+      - x: 64.25095151931116
+        y: 1.1822089947089947
+      - x: 10.042428402071504
+        y: 12.02876984126984
       punto: TORITO_OESTE1_GEOPARK
     area2:
       Green: '59'
@@ -55,7 +57,7 @@ camera:
         y: 90.6001984126984
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
-    "edwin.granados@axuretechnologies.com","cristian.tascon@axuretechnologies.com"]'
+    "cristian.tascon@axuretechnologies.com"]'
   info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
   ip: 172.29.5.230
@@ -66,7 +68,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "300", "area2": "300", "area3": "300"}'
+  time_areas: '{"area1": "5", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person
