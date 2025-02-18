@@ -17,6 +17,7 @@ class ProcesarDetecciones:
     def __init__(self, config_path, camera_id, shared_buffers, buffer_detecciones):
         self.config_path = config_path
         self.camera_id = camera_id
+        
         self.shared_buffers = shared_buffers
         self.buffer_detecciones = buffer_detecciones
         self.tiempo_deteccion_por_area = {}
@@ -195,7 +196,8 @@ class ProcesarDetecciones:
                 if area_name == "area3":
                     inside_point2 = cv2.pointPolygonTest(pts, point2, False)
                     if inside_point2 >= 0 and probability >= min_probability:
-                        print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
+                        if self.camera_id == 2:
+                            print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}")
                         color = self.COLORS.get(label, (255, 255, 255))
                         text = f"{label}: {probability:.2f}%"
                         (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)

@@ -11,7 +11,7 @@
         "CONTRASENA": "4xUR3_2017",
         "COORDENADAS_AREA": "{\"area1\": {\"Green\": \"60\", \"No_Harness\": \"49\", \"No_Helmet\": \"70\", \"Yellow\": \"60\", \"camara\": \"Mesa\", \"points\": [{\"x\": 1.6565795220565296, \"y\": 3.5631613756613754}, {\"x\": 78.92618705933737, \"y\": 7.002314814814814}, {\"x\": 103.7842390965246, \"y\": 148.27215608465607}, {\"x\": 10.64141760778686, \"y\": 148.00760582010582}], \"punto\": \"TORITO_OESTE1_GEOPARK\"}, \"area2\": {\"Green\": \"59\", \"No_Helmet\": \"70\", \"Yellow\": \"90\", \"camara\": \"Mesa\", \"points\": [{\"x\": 100.78929306794784, \"y\": 40.60019841269841}, {\"x\": 195.72908217383164, \"y\": 27.63723544973545}, {\"x\": 269.70424907967805, \"y\": 42.45205026455026}, {\"x\": 268.50627066824734, \"y\": 62.82242063492063}, {\"x\": 254.13052973107878, \"y\": 72.34623015873015}, {\"x\": 252.03406751107505, \"y\": 107.26686507936508}, {\"x\": 116.06351781368939, \"y\": 140.6001984126984}, {\"x\": 100.78929306794784, \"y\": 40.60019841269841}], \"punto\": \"TORITO_OESTE1_GEOPARK\"}, \"area3\": {\"A_Person\": \"60\", \"camara\": \"Mesa\", \"points\": [{\"x\": 128.34279653085417, \"y\": 91.3938492063492}, {\"x\": 129.24128033942722, \"y\": 113.61607142857142}, {\"x\": 190.9371685281088, \"y\": 99.5949074074074}, {\"x\": 176.86092219379796, \"y\": 80.01818783068782}, {\"x\": 127.74380732513882, \"y\": 90.6001984126984}], \"punto\": \"TORITO_OESTE1_GEOPARK\"}}",
         "TIME_AREAS": "{\"area1\": \"300\", \"area2\": \"300\", \"area3\": \"300\"}",
-        "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}",
+        "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": false, \"Page_HSE\": true, \"Video\": true}",
         "DESTINATARIOS": "[\"nelson.ceron@axuretechnologies.com\", \"carlos.saavedra@axuretechnologies.com\", \"edwin.granados@axuretechnologies.com\",\"cristian.tascon@axuretechnologies.com\"]"
     },
     {
@@ -24,7 +24,7 @@
         "ESTADO_LUGAR_MODELO": "A_Person, Loading_Machine",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"A_Person\": \"50\", \"camara\": \"Planchada\", \"points\": [{\"x\": 174.7644599737942, \"y\": 62.2933201058201}, {\"x\": 63.05297310788045, \"y\": 135.3091931216931}, {\"x\": 187.64272789667436, \"y\": 146.68485449735448}, {\"x\": 225.07955325388406, \"y\": 72.87533068783068}, {\"x\": 175.0639545766519, \"y\": 62.2933201058201}], \"punto\": \"TORITO_OESTE1_GEOPARK\"}}",
+        "COORDENADAS_AREA": "{\"area1\": {\"A_Person\": \"30\", \"camara\": \"Planchada\", \"points\": [{\"x\": 174.7644599737942, \"y\": 62.2933201058201}, {\"x\": 63.05297310788045, \"y\": 135.3091931216931}, {\"x\": 187.64272789667436, \"y\": 146.68485449735448}, {\"x\": 225.07955325388406, \"y\": 72.87533068783068}, {\"x\": 175.0639545766519, \"y\": 62.2933201058201}], \"punto\": \"TORITO_OESTE1_GEOPARK\"}}",
         "TIME_AREAS": "{\"area1\": \"60\", \"area2\": \"60\", \"area3\": \"60\"}",
         "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}",
         "DESTINATARIOS": "[\"nelson.ceron@axuretechnologies.com\", \"carlos.saavedra@axuretechnologies.com\", \"edwin.granados@axuretechnologies.com\", \"cristian.tascon@axuretechnologies.com\"]"
