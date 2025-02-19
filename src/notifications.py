@@ -21,6 +21,8 @@ class ProcesarDetecciones:
         self.shared_buffers = shared_buffers
         self.buffer_detecciones = buffer_detecciones
         self.tiempo_deteccion_por_area = {}
+        self.tiempo_ultimo_dibujo = {}  # Diccionario para controlar el cambio de color de áreas
+
         self.tiempo_acumulado = 0
 
         # if self.camera_id not in self.buffer_detecciones:
@@ -39,6 +41,7 @@ class ProcesarDetecciones:
             "Loading_Machine": (0, 100, 19),  # Verde Oscuro
             "Mud_Bucket": (255, 171, 171),  # Rosa Suave
             "Orange": (0, 128, 255),  # Naranja
+            "deteccion": (0, 0, 255, 80)  # Rojo transparente (cuando hay detección)
         }
 
     def procesar(self):
@@ -160,6 +163,14 @@ class ProcesarDetecciones:
         cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
         cv2.putText(frame, text, (text_offset_x, text_offset_y),
         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+
+    def dibujar_area(self, frame, pts, color):
+        """Dibuja un área con color sólido o transparente."""
+        overlay = frame.copy()
+        cv2.fillPoly(overlay, [pts], color[:3])  # Relleno del área con el color
+        alpha = color[3] / 255.0  # Transparencia
+        cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
+
     def escalar_puntos(self, area_config):
         """Escala los puntos del polígono según la resolución."""
         width2, height2 = 294.12, 145.45
@@ -263,8 +274,65 @@ class ProcesarDetecciones:
     #                 print(f"{label} salió de {area_name}, reiniciando el tiempo. {self.tiempo_acumulado:.2f} segundos, Tiempo limite: {tiempos_limite.get(area_name, 5)}")
                 
 
+    # def procesar_deteccion(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
+    #     """Procesa una detección específica en el frame y maneja el tiempo de permanencia con margen de 2 segundos."""
+        
+    #     x1, y1, x2, y2 = map(int, detection.xyxy[0])
+    #     point = (x1, y1)
+    #     point2 = (int((x1 + x2) / 2), y2)
+    #     probability = detection.conf[0] * 100
+    #     class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+    #     label = LABELS.get(class_index, "Unknown")
+        
+    #     if label not in area_config:
+    #         return  # No está en las etiquetas configuradas para el área
+
+    #     min_probability = float(area_config[label])
+    #     inside = cv2.pointPolygonTest(self.escalar_puntos(area_config), point, False)
+        
+    #     if probability < min_probability:
+    #         return  # Probabilidad no suficiente
+        
+    #     dentro_del_area = inside >= 0
+    #     if area_name == "area3":
+    #         dentro_del_area = cv2.pointPolygonTest(pts, point2, False) >= 0
+
+    #     if dentro_del_area:
+    #         # Dibujar detección en el frame
+    #         color = self.COLORS.get(label, (255, 255, 255))
+    #         text = f"{label}: {probability:.2f}%"
+    #         (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+    #         text_offset_x, text_offset_y = x1, y1 - 10
+    #         box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 25, text_offset_y + 5))
+            
+    #         self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
+    #         now = time.time()
+
+    #         if (area_name, label) not in self.tiempo_deteccion_por_area:
+    #             self.tiempo_deteccion_por_area[(area_name, label)] = now
+    #             print(f"⏳ Inicio detección {label} en {area_name} ({nombre_camera})")
+    #         else:
+    #             tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
+                
+    #             if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+    #                 self.guardar_evento(area_name, label, nombre_camera, sitio)
+    #                 self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
+    #                 self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
+    #                 print(f"🚨 Evento registrado: {label} en {area_name} (Cámara {nombre_camera})")
+                
+    #             print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s")
+
+    #     else:
+    #         # Se pierde la detección, dar margen de 2s antes de reiniciar
+    #         if (area_name, label) in self.tiempo_deteccion_por_area:
+    #             tiempo_desde_ultima = time.time() - self.tiempo_deteccion_por_area[(area_name, label)]
+                
+    #             if tiempo_desde_ultima >= 4:
+    #                 print(f"❌ {label} salió de {area_name} ({nombre_camera}), reseteando tiempo.")
+    #                 del self.tiempo_deteccion_por_area[(area_name, label)]
+
     def procesar_deteccion(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
-        """Procesa una detección específica en el frame y maneja el tiempo de permanencia con margen de 2 segundos."""
+        """Procesa una detección específica y maneja el tiempo de permanencia con margen de 4 segundos."""
         
         x1, y1, x2, y2 = map(int, detection.xyxy[0])
         point = (x1, y1)
@@ -286,39 +354,53 @@ class ProcesarDetecciones:
         if area_name == "area3":
             dentro_del_area = cv2.pointPolygonTest(pts, point2, False) >= 0
 
+        now = time.time()
+
         if dentro_del_area:
-            # Dibujar detección en el frame
-            color = self.COLORS.get(label, (255, 255, 255))
+                    # Dibujar etiqueta
+            color = self.COLORS["deteccion"][:3]  # Sin transparencia
             text = f"{label}: {probability:.2f}%"
             (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
             text_offset_x, text_offset_y = x1, y1 - 10
             box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 25, text_offset_y + 5))
             
             self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
-            now = time.time()
 
+            # Guardar tiempo de detección
             if (area_name, label) not in self.tiempo_deteccion_por_area:
                 self.tiempo_deteccion_por_area[(area_name, label)] = now
                 print(f"⏳ Inicio detección {label} en {area_name} ({nombre_camera})")
-            else:
-                tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
-                
-                if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                    self.guardar_evento(area_name, label, nombre_camera, sitio)
-                    self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
-                    self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
-                    print(f"🚨 Evento registrado: {label} en {area_name} (Cámara {nombre_camera})")
-                
-                print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s")
+
+            tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
+            
+            if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                self.guardar_evento(area_name, label, nombre_camera, sitio)
+                self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
+                self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
+                print(f"🚨 Evento registrado: {label} en {area_name} (Cámara {nombre_camera})")
+
+            print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s")
+
+            # Marcar área con color rojo transparente
+            self.tiempo_ultimo_dibujo[area_name] = now
+            self.dibujar_area(frame, pts, self.COLORS["deteccion"])  # Dibuja en rojo transparente
 
         else:
-            # Se pierde la detección, dar margen de 2s antes de reiniciar
             if (area_name, label) in self.tiempo_deteccion_por_area:
                 tiempo_desde_ultima = time.time() - self.tiempo_deteccion_por_area[(area_name, label)]
+                tiempo_restante = 4 - tiempo_desde_ultima  # Tiempo restante antes de resetear
                 
-                if tiempo_desde_ultima >= 4:
+                if tiempo_restante > 0:
+                    print(f"⏳ {label} en {area_name} ({nombre_camera}) desaparecerá en {tiempo_restante:.2f} segundos...")
+                else:
                     print(f"❌ {label} salió de {area_name} ({nombre_camera}), reseteando tiempo.")
                     del self.tiempo_deteccion_por_area[(area_name, label)]
+
+        # Control de color del área después de perder detección
+        if area_name in self.tiempo_ultimo_dibujo:
+            tiempo_desde_dibujo = time.time() - self.tiempo_ultimo_dibujo[area_name]
+            if tiempo_desde_dibujo >= 2:
+                self.dibujar_area(frame, pts, self.COLORS["original"])  # Volver a color original
 
 
 
