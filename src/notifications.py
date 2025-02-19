@@ -21,7 +21,8 @@ class ProcesarDetecciones:
         self.shared_buffers = shared_buffers
         self.buffer_detecciones = buffer_detecciones
         self.tiempo_deteccion_por_area = {}
-        self.tiempo_ultimo_dibujo = {}  # Diccionario para controlar el cambio de color de áreas
+        self.tiempo_ultimo_dibujo = {}  # Diccionario para controlar el 
+        self.area_pintada = set()
 
         self.tiempo_acumulado = 0
         self.COLOR_DETECCION = (0, 0, 255, 80)  # Rojo transparente
@@ -31,6 +32,7 @@ class ProcesarDetecciones:
         #     self.buffer_detecciones[self.camera_id] = manager.list()  # Asegurar lista compartida
         
         self.running = True
+
         
         self.COLORS = {
             "A_Person": (255, 0, 0),  # Azul
@@ -43,8 +45,102 @@ class ProcesarDetecciones:
             "Loading_Machine": (0, 100, 19),  # Verde Oscuro
             "Mud_Bucket": (255, 171, 171),  # Rosa Suave
             "Orange": (0, 128, 255),  # Naranja
+            "deteccion": (0, 255, 0, 80),  # Ejemplo: verde con transparencia
+            "original": (255, 0, 0, 80) 
         }
 
+    # def procesar(self):
+    #     # host_ip = socket.gethostbyname(socket.gethostname())
+    #     host_ip = "172.30.37.63"
+    #     feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
+
+    #     # Guardar la URL del video feed en la base de datos
+    #     self.save_feed_url_to_database(self.camera_id, feed_url)
+
+    #     while self.running:
+    #         # print("Buffer antes de todo: ", self.buffer_detecciones)
+            
+    #         # Cargar configuración
+    #         try:
+    #             self.config = load_yaml_config(self.config_path)
+    #             rtsp_url = self.config["camera"]["rtsp_url"]
+    #             areas = self.config["camera"]["coordinates"]
+    #             tiempos_limite = json.loads(self.config["camera"]["time_areas"])
+
+    #             # Convertir valores de tiempos_limite a float
+    #             tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+    #             # Convertir valores de tiempos_limite a float
+    #             if isinstance(tiempos_limite, str):
+    #                 tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
+    #             tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+                
+    #             sitio = self.config['camera']["point"]
+    #             nombre_camera = self.config['camera']["name camera"]
+    #             info_notifications = self.config['camera']["info_notifications"]
+    #             if info_notifications:
+    #                 try:
+    #                     info_notifications = json.loads(info_notifications)
+    #                     # print(info_notifications)
+    #                 except json.JSONDecodeError as e:
+    #                     print(f"Error decodificando JSON de notificaciones: {e}")
+                        
+    #             emails = self.config['camera']["info_emails"]
+    #             if emails:
+    #                 try:
+    #                     emails = json.loads(emails)
+    #                     # print(emails)
+    #                 except json.JSONDecodeError as e:
+    #                     print(f"Error decodificando JSON de correos: {e}")
+    #         except Exception as e:
+    #             print(f"Error al cargar configuración: {e}")
+    #             return
+
+    #         # Variables para el seguimiento de detecciones
+    #         target_width, target_height = 640, 380  # Resolución deseada
+
+    #         # Obtener buffer de frames
+    #         frame_buffer = self.shared_buffers.get(self.camera_id, None)
+
+    #         if not frame_buffer:
+    #             time.sleep(0.05)
+    #             continue
+
+    #         try:
+    #             frame_to_process = frame_buffer[0]  # Último frame en el buffer
+    #         except IndexError:
+    #             print(f"⚠️ Error: Intento de acceder a un frame inexistente en notifications {self.camera_id}")
+    #             time.sleep(0.05)
+    #             continue
+            
+    #         frame = cv2.resize(frame_to_process, (target_width, target_height))
+
+    #         for area_name, area_config in areas.items():
+    #             # try:
+    #                 # Procesar el área y realizar detección
+    #                 pts = self.escalar_puntos(area_config)
+    #                 # Dibujar el polígono escalado en el frame
+    #                 if area_name == "area3":
+    #                     polygon_color = (0, 255, 0)  # Verde para area2
+    #                 elif area_name == "area2":
+    #                     polygon_color = (0, 0, 255)
+    #                 else:
+    #                     polygon_color = (255, 0, 0)  # Rojo o azul para otras áreas (según lo desees)
+                    
+    #                 # Dibujar el polígono escalado en el frame con el color definido
+    #                 cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
+
+    #                 results = model(frame, verbose=False)
+
+    #                 for detection in results[0].boxes:
+    #                     self.procesar_deteccion(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts)
+                    
+    #             # except Exception as area_error:
+    #             #     print(f"Error al procesar {area_name}: {area_error}")
+
+    #         # Guardar frame en buffer de detecciones
+    #         self.actualizar_buffer(frame)
+
+     # ------------------------ PROCESAR PARA VIDEO -----------------------------
     def procesar(self):
         # host_ip = socket.gethostbyname(socket.gethostname())
         host_ip = "172.30.37.63"
@@ -53,89 +149,79 @@ class ProcesarDetecciones:
         # Guardar la URL del video feed en la base de datos
         self.save_feed_url_to_database(self.camera_id, feed_url)
 
+        # Cargar configuración para obtener la ruta del video
+        try:
+            self.config = load_yaml_config(self.config_path)
+            rtsp_url = self.config["camera"]["rtsp_url"]
+        except Exception as e:
+            print(f"Error al cargar configuración: {e}")
+            return
+
+        # Abrir el video utilizando la ruta de rtsp_url (ahora es el path al video)
+        cap = cv2.VideoCapture(rtsp_url)
+        if not cap.isOpened():
+            print(f"Error al abrir el video: {rtsp_url}")
+            return
+
         while self.running:
-            # print("Buffer antes de todo: ", self.buffer_detecciones)
-            
-            # Cargar configuración
+            # Cargar configuración y parámetros
             try:
                 self.config = load_yaml_config(self.config_path)
-                rtsp_url = self.config["camera"]["rtsp_url"]
                 areas = self.config["camera"]["coordinates"]
                 tiempos_limite = json.loads(self.config["camera"]["time_areas"])
-
-                # Convertir valores de tiempos_limite a float
                 tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-                # Convertir valores de tiempos_limite a float
-                if isinstance(tiempos_limite, str):
-                    tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
-                tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-                
-                sitio = self.config['camera']["point"]
-                nombre_camera = self.config['camera']["name camera"]
-                info_notifications = self.config['camera']["info_notifications"]
+                sitio = self.config["camera"]["point"]
+                nombre_camera = self.config["camera"]["name camera"]
+                info_notifications = self.config["camera"]["info_notifications"]
                 if info_notifications:
                     try:
                         info_notifications = json.loads(info_notifications)
-                        # print(info_notifications)
                     except json.JSONDecodeError as e:
                         print(f"Error decodificando JSON de notificaciones: {e}")
-                        
-                emails = self.config['camera']["info_emails"]
+                emails = self.config["camera"]["info_emails"]
                 if emails:
                     try:
                         emails = json.loads(emails)
-                        # print(emails)
                     except json.JSONDecodeError as e:
                         print(f"Error decodificando JSON de correos: {e}")
             except Exception as e:
                 print(f"Error al cargar configuración: {e}")
-                return
+                break
 
-            # Variables para el seguimiento de detecciones
+            # Leer el siguiente frame del video
+            ret, frame_to_process = cap.read()
+            if not ret:
+                print("Fin del video o error al leer frame.")
+                break
+
+            # Ajustar la resolución del frame
             target_width, target_height = 640, 380  # Resolución deseada
-
-            # Obtener buffer de frames
-            frame_buffer = self.shared_buffers.get(self.camera_id, None)
-
-            if not frame_buffer:
-                time.sleep(0.05)
-                continue
-
-            try:
-                frame_to_process = frame_buffer[0]  # Último frame en el buffer
-            except IndexError:
-                print(f"⚠️ Error: Intento de acceder a un frame inexistente en notifications {self.camera_id}")
-                time.sleep(0.05)
-                continue
-            
             frame = cv2.resize(frame_to_process, (target_width, target_height))
 
+            # Iterar sobre cada área definida en la configuración
             for area_name, area_config in areas.items():
-                # try:
-                    # Procesar el área y realizar detección
-                    pts = self.escalar_puntos(area_config)
-                    # Dibujar el polígono escalado en el frame
-                    if area_name == "area3":
-                        polygon_color = (0, 255, 0)  # Verde para area2
-                    elif area_name == "area2":
-                        polygon_color = (0, 0, 255)
-                    else:
-                        polygon_color = (255, 0, 0)  # Rojo o azul para otras áreas (según lo desees)
-                    
-                    # Dibujar el polígono escalado en el frame con el color definido
-                    cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
+                pts = self.escalar_puntos(area_config)
+                if area_name == "area3":
+                    polygon_color = (0, 255, 0)  # Verde
+                elif area_name == "area2":
+                    polygon_color = (0, 0, 255)
+                else:
+                    polygon_color = (255, 0, 0)  # Rojo o azul según lo desees
 
-                    results = model(frame, verbose=False)
+                cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
 
-                    for detection in results[0].boxes:
-                        self.procesar_deteccion(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts)
-                    
-                # except Exception as area_error:
-                #     print(f"Error al procesar {area_name}: {area_error}")
+                results = model(frame, verbose=False)
+                for detection in results[0].boxes:
+                    self.procesar_deteccion(
+                        detection, area_name, area_config, tiempos_limite, frame,
+                        sitio, nombre_camera, info_notifications, emails, pts
+                    )
 
-            # Guardar frame en buffer de detecciones
+            # Actualizar buffer o realizar cualquier acción adicional con el frame procesado
             self.actualizar_buffer(frame)
-            
+
+        cap.release()
+    
     def save_feed_url_to_database(self, camera_id, url):
         """
         Guarda la URL del video feed en la columna URL_CAMARA_SERVER de la base de datos.
@@ -159,19 +245,20 @@ class ProcesarDetecciones:
             close_connection(connection)
 
 
-    def dibujar_area(self, frame, pts, color):
-        """Dibuja el área solo una vez, evitando acumulación de capas."""
-        overlay = frame.copy()
-        cv2.fillPoly(overlay, [pts], color[:3])  # Relleno del área con el color
-        alpha = color[3] / 255.0  # Transparencia
-        cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
+    # def dibujar_area(self, frame, pts, color):
+    #     """Dibuja el área solo una vez, evitando acumulación de capas."""
+    #     overlay = frame.copy()
+    #     cv2.fillPoly(overlay, [pts], color[:3])  # Relleno del área con el color
+    #     alpha = color[3] / 255.0  # Transparencia
+    #     cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
 
-    def dibujo_etiquetas(self, frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height):
-        """Dibuja etiquetas sobre el frame."""
-        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 1)
-        cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
-        cv2.putText(frame, text, (text_offset_x, text_offset_y),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    # def dibujo_etiquetas(self, frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height):
+    #     """Dibuja etiquetas sobre el frame."""
+    #     cv2.rectangle(frame, (x1, y1), (x2, y2), color, 1)
+    #     cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+    #     cv2.putText(frame, text, (text_offset_x, text_offset_y),
+    #                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    
     def escalar_puntos(self, area_config):
         """Escala los puntos del polígono según la resolución."""
         width2, height2 = 294.12, 145.45
@@ -190,6 +277,8 @@ class ProcesarDetecciones:
             dtype=np.int32
         ).reshape((-1, 1, 2))
 
+
+# PRIMERA VERSION 
     # def procesar_deteccion(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
     #     """Procesa una detección específica en el frame."""
     #     # try:
@@ -273,7 +362,8 @@ class ProcesarDetecciones:
     #                 self.tiempo_deteccion_por_area[(area_name, label)] = now_resto
     #                 self.tiempo_acumulado = now_resto - self.tiempo_deteccion_por_area[(area_name, label)]
     #                 print(f"{label} salió de {area_name}, reiniciando el tiempo. {self.tiempo_acumulado:.2f} segundos, Tiempo limite: {tiempos_limite.get(area_name, 5)}")
-                
+
+# SEGUNDA VERSIÓN             
     # def procesar_deteccion(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
     #     """Procesa una detección específica en el frame y maneja el tiempo de permanencia con margen de 2 segundos."""
         
@@ -331,6 +421,8 @@ class ProcesarDetecciones:
     #                 print(f"❌ {label} salió de {area_name} ({nombre_camera}), reseteando tiempo.")
     #                 del self.tiempo_deteccion_por_area[(area_name, label)]
 
+
+## VOLVER AL COLOR ORIGINAL
     # def procesar_deteccion(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
     #     """Procesa una detección específica y maneja el tiempo de permanencia con margen de 4 segundos."""
         
@@ -403,38 +495,45 @@ class ProcesarDetecciones:
     #             self.dibujar_area(frame, pts, self.COLORS["original"])  # Volver a color original
 
 
+# SIN CAPAS DE DETECCION POR ETIQUETA Y VOLVER COLOR TRASPARENTE
     def procesar_deteccion(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
         """Procesa una detección específica y maneja el tiempo de permanencia con margen de 4 segundos."""
-        
+
         x1, y1, x2, y2 = map(int, detection.xyxy[0])
         point = (x1, y1)
         point2 = (int((x1 + x2) / 2), y2)
         probability = detection.conf[0] * 100
         class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
         label = LABELS.get(class_index, "Unknown")
-        
+
         if label not in area_config:
             return  # No está en las etiquetas configuradas para el área
 
         min_probability = float(area_config[label])
         inside = cv2.pointPolygonTest(self.escalar_puntos(area_config), point, False)
-        
+
         if probability < min_probability:
             return  # Probabilidad no suficiente
-        
+
         dentro_del_area = inside >= 0
         if area_name == "area3":
             dentro_del_area = cv2.pointPolygonTest(pts, point2, False) >= 0
 
         now = time.time()
 
+        # 👉 **Dibujar el área solo una vez por frame**
+        if area_name not in self.area_pintada:
+            self.dibujar_area(frame, pts, self.COLORS["deteccion"])  # Color transparente
+            self.area_pintada.add(area_name)  # Marcar como pintada en este frame
+
         if dentro_del_area:
+            # Dibujar etiqueta
             color = self.COLORS["deteccion"][:3]  # Sin transparencia
             text = f"{label}: {probability:.2f}%"
             (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
             text_offset_x, text_offset_y = x1, y1 - 10
             box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 25, text_offset_y + 5))
-            
+
             self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
 
             # Guardar tiempo de detección
@@ -443,7 +542,7 @@ class ProcesarDetecciones:
                 print(f"⏳ Inicio detección {label} en {area_name} ({nombre_camera})")
 
             tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
-            
+
             if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                 self.guardar_evento(area_name, label, nombre_camera, sitio)
                 self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
@@ -452,23 +551,43 @@ class ProcesarDetecciones:
 
             print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s")
 
-            # ⚡ Solo dibuja una vez cuando inicia la detección
-            if area_name not in self.tiempo_ultimo_dibujo:
-                self.tiempo_ultimo_dibujo[area_name] = now
-                self.dibujar_area(frame, pts, self.COLOR_DETECCION)  # Dibuja en rojo transparente
+            # Guardar última vez que se detectó algo en el área
+            self.tiempo_ultimo_dibujo[area_name] = now
 
         else:
+            # Si la detección desaparece, iniciar conteo de salida
             if (area_name, label) in self.tiempo_deteccion_por_area:
                 tiempo_desde_ultima = time.time() - self.tiempo_deteccion_por_area[(area_name, label)]
                 tiempo_restante = 4 - tiempo_desde_ultima  # Tiempo restante antes de resetear
-                
+
                 if tiempo_restante > 0:
                     print(f"⏳ {label} en {area_name} ({nombre_camera}) desaparecerá en {tiempo_restante:.2f} segundos...")
                 else:
                     print(f"❌ {label} salió de {area_name} ({nombre_camera}), reseteando tiempo.")
                     del self.tiempo_deteccion_por_area[(area_name, label)]
-                    if area_name in self.tiempo_ultimo_dibujo:
-                        del self.tiempo_ultimo_dibujo[area_name]  # 💡 Elimina la referencia para que deje de pintar
+
+        # Restaurar color del área después de perder detección
+        if area_name in self.tiempo_ultimo_dibujo:
+            tiempo_desde_dibujo = time.time() - self.tiempo_ultimo_dibujo[area_name]
+            if tiempo_desde_dibujo >= 2:
+                self.dibujar_area(frame, pts, self.COLORS["original"])  # Volver a color original
+                self.area_pintada.discard(area_name)  # Reset para la siguiente iteración
+
+
+    def dibujar_area(self, frame, pts, color):
+        """Dibuja el área una sola vez para evitar acumulación de transparencias."""
+        overlay = frame.copy()
+        cv2.fillPoly(overlay, [pts], color[:3])  # Relleno del área con el color
+        alpha = color[3] / 255.0  # Transparencia
+        cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
+
+
+    def dibujo_etiquetas(self, frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height):
+        """Dibuja etiquetas sobre el frame."""
+        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 1)
+        cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
+        cv2.putText(frame, text, (text_offset_x, text_offset_y),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
 
 
     def guardar_evento(self, area_name, label, nombre_camera, sitio):
