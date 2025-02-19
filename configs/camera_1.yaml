@@ -42,7 +42,7 @@ camera:
         y: 40.60019841269841
       punto: TORITO_OESTE1_GEOPARK
     area3:
-      A_Person: '60'
+      A_Person: '40'
       camara: Mesa
       points:
       - x: 128.34279653085417
@@ -68,7 +68,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "5", "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "5", "area2": "10", "area3": "60"}'
   username: admin
 labels:
 - A_Person
