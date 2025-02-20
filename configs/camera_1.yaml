@@ -21,6 +21,7 @@ camera:
     area2:
       Green: '30'
       No_Helmet: '70'
+      White: '30'
       Yellow: '50'
       camara: Mesa
       points:
@@ -68,7 +69,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: VideosEnsayoModelo/preuba_area3.mp4
-  time_areas: '{"area1": "5", "area2": "50", "area3": "10"}'
+  time_areas: '{"area1": "5", "area2": "12", "area3": "10"}'
   username: admin
 labels:
 - A_Person

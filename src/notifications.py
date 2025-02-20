@@ -214,7 +214,7 @@ class ProcesarDetecciones:
                     )
                     
                 # Guardar frame en buffer de detecciones
-                # self.actualizar_buffer(frame)
+                self.actualizar_buffer(frame)
 
             # Mostrar el frame procesado (opcional)
             cv2.imshow("Video", frame)
@@ -442,7 +442,7 @@ class ProcesarDetecciones:
                     self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
                     print(f"🚨 Evento registrado: {label} en {area_name} (Cámara {nombre_camera})")
                 
-                print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s")
+                # print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s")
 
         else:
             # Si no hay detección, esperar 4s antes de quitar la detección
