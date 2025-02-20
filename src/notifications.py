@@ -533,7 +533,8 @@ class ProcesarDetecciones:
         if len(buffer) >= 120:
             buffer.pop(0)
         buffer.append(frame)
-        print(f"Buffer {self.camera_id} después de agregar: {len(buffer)}")
+        if self.camera_id == 1:
+            print(f"Buffer {self.camera_id} después de agregar: {len(buffer)}")
 
     def stop(self):
         """Detiene el procesamiento de detecciones."""
