@@ -1,7 +1,6 @@
 camera:
   coordinates:
     area1:
-      A_Person: '10'
       camara: Planchada
       points:
       - x: 174.7644599737942
@@ -17,8 +16,8 @@ camera:
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
     "cristian.tascon@axuretechnologies.com"]'
-  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
-    true}'
+  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
   ip: 172.29.5.231
   label: A_Person, Loading_Machine
   name camera: Planchada
@@ -26,7 +25,7 @@ camera:
   place: POZO11
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: VideosEnsayoModelo/AREA3.mp4
+  rtsp_url: VideosEnsayoModelo/preuba_area3.mp4
   time_areas: '{"area1": "60", "area2": "60", "area3": "60"}'
   username: admin
 labels:
