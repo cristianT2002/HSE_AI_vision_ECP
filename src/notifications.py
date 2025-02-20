@@ -198,7 +198,7 @@ class ProcesarDetecciones:
                 if area_name == "area3":
                     polygon_color = (0, 255, 0)
                 elif area_name == "area2":
-                    polygon_color = (0, 0, 255)
+                    polygon_color = (255, 255, 0)
                 else:
                     polygon_color = (255, 0, 0)
                 
@@ -214,7 +214,7 @@ class ProcesarDetecciones:
                     )
                     
                 # Guardar frame en buffer de detecciones
-                self.actualizar_buffer(frame)
+                # self.actualizar_buffer(frame)
 
             # Mostrar el frame procesado (opcional)
             cv2.imshow("Video", frame)
@@ -423,6 +423,18 @@ class ProcesarDetecciones:
                 tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
                 # Actualizar el tiempo de detección cada vez que se mantenga dentro del área
                 self.tiempo_ultimo_detecciones[(area_name, label)] = now
+                tiempo_restante_alerta = tiempos_limite.get(area_name, 5) - tiempo_acumulado
+                if tiempo_restante_alerta <= 1:
+                    color = (0, 0, 255) # Rojo
+                    
+                    # Dibujar detección en el frame con color actualizado
+                    text = f"{label}: {probability:.2f}%"
+                    (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+                    text_offset_x, text_offset_y = x1, y1 - 10
+                    box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 25, text_offset_y + 5))
+                    # Dibujar el polígono en el frame
+                    cv2.polylines(frame, [pts], isClosed=True, color=(0, 0, 255), thickness=2)
+                    self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
                 
                 if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
                     self.guardar_evento(area_name, label, nombre_camera, sitio)
@@ -448,19 +460,7 @@ class ProcesarDetecciones:
 
 
 
-    def dibujar_area(self, frame, pts, color):
-        """Pinta el área en rojo transparente o la borra si ya no hay detecciones."""
-        overlay = frame.copy()
-        cv2.fillPoly(overlay, [pts], color[:3])  # Relleno del área con el color
-        alpha = color[3] / 255.0  # Transparencia
-        cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
-
-    def dibujo_etiquetas(self, frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height):
-        """Dibuja etiquetas sobre el frame."""
-        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 1)
-        cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
-        cv2.putText(frame, text, (text_offset_x, text_offset_y),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    
 
 # ------------- guardar_evento
 
