@@ -4,7 +4,7 @@ camera:
       Green: '60'
       No_Harness: '49'
       No_Helmet: '70'
-      Yellow: '60'
+      Yellow: '50'
       camara: Mesa
       points:
       - x: 10.042428402071504
@@ -19,9 +19,9 @@ camera:
         y: 12.02876984126984
       punto: TORITO_OESTE1_GEOPARK
     area2:
-      Green: '30'
+      Green: '80'
       No_Helmet: '70'
-      Yellow: '50'
+      Yellow: '30'
       camara: Mesa
       points:
       - x: 100.78929306794784
@@ -69,8 +69,8 @@ camera:
   place: POZO11
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "5", "area2": "10", "area3": "300"}'
+  rtsp_url: VideosEnsayoModelo/prueba_realizada_mesa.avi
+  time_areas: '{"area1": "5", "area2": "100", "area3": "300"}'
   username: admin
 labels:
 - A_Person

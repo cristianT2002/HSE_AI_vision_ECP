@@ -52,178 +52,178 @@ class ProcesarDetecciones:
             "Orange": (0, 128, 255),  # Naranja
         }
 
-    def procesar(self):
-        # host_ip = socket.gethostbyname(socket.gethostname())
-        host_ip = "172.30.37.63"
-        feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
-
-        # Guardar la URL del video feed en la base de datos
-        self.save_feed_url_to_database(self.camera_id, feed_url)
-
-        while self.running:
-            # print("Buffer antes de todo: ", self.buffer_detecciones)
-            
-            # Cargar configuración
-            try:
-                self.config = load_yaml_config(self.config_path)
-                rtsp_url = self.config["camera"]["rtsp_url"]
-                areas = self.config["camera"]["coordinates"]
-                tiempos_limite = json.loads(self.config["camera"]["time_areas"])
-
-                # Convertir valores de tiempos_limite a float
-                tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-                # Convertir valores de tiempos_limite a float
-                if isinstance(tiempos_limite, str):
-                    tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
-                tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-                
-                sitio = self.config['camera']["point"]
-                nombre_camera = self.config['camera']["name camera"]
-                info_notifications = self.config['camera']["info_notifications"]
-                if info_notifications:
-                    try:
-                        info_notifications = json.loads(info_notifications)
-                        # print(info_notifications)
-                    except json.JSONDecodeError as e:
-                        print(f"Error decodificando JSON de notificaciones: {e}")
-                        
-                emails = self.config['camera']["info_emails"]
-                if emails:
-                    try:
-                        emails = json.loads(emails)
-                        # print(emails)
-                    except json.JSONDecodeError as e:
-                        print(f"Error decodificando JSON de correos: {e}")
-            except Exception as e:
-                print(f"Error al cargar configuración: {e}")
-                return
-
-            # Variables para el seguimiento de detecciones
-            target_width, target_height = 640, 380  # Resolución deseada
-
-            # Obtener buffer de frames
-            frame_buffer = self.shared_buffers.get(self.camera_id, None)
-
-            if not frame_buffer:
-                time.sleep(0.05)
-                continue
-
-            try:
-                frame_to_process = frame_buffer[0]  # Último frame en el buffer
-            except IndexError:
-                print(f"⚠️ Error: Intento de acceder a un frame inexistente en notifications {self.camera_id}")
-                time.sleep(0.05)
-                continue
-            
-            frame = cv2.resize(frame_to_process, (target_width, target_height))
-
-            for area_name, area_config in areas.items():
-                # try:
-                    # Procesar el área y realizar detección
-                    pts = self.escalar_puntos(area_config)
-                    # Dibujar el polígono escalado en el frame
-                    if area_name == "area3":
-                        polygon_color = (0, 255, 0)  # Verde para area2
-                    elif area_name == "area2":
-                        polygon_color = (255, 255, 0)
-                    else:
-                        polygon_color = (255, 0, 0)  # Rojo o azul para otras áreas (según lo desees)
-                    
-                    # Dibujar el polígono escalado en el frame con el color definido
-                    cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
-
-                    results = model(frame, verbose=False)
-
-                    for detection in results[0].boxes:
-                        self.procesar_deteccion_2(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts)
-                    
-                # except Exception as area_error:
-                #     print(f"Error al procesar {area_name}: {area_error}")
-
-            # Guardar frame en buffer de detecciones
-            self.actualizar_buffer(frame)
-
     # def procesar(self):
-    #     # Cargar la configuración y obtener parámetros necesarios
-    #     try:
-    #         self.config = load_yaml_config(self.config_path)
-    #         rtsp_url = self.config["camera"]["rtsp_url"]
-    #         areas = self.config["camera"]["coordinates"]
-    #         tiempos_limite = self.config["camera"]["time_areas"]
-    #         # Asegurar que tiempos_limite sea un diccionario con valores float
-    #         if isinstance(tiempos_limite, str):
-    #             tiempos_limite = json.loads(tiempos_limite)
-    #         tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+    #     # host_ip = socket.gethostbyname(socket.gethostname())
+    #     host_ip = "172.30.37.63"
+    #     feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
 
-    #         sitio = self.config["camera"]["point"]
-    #         nombre_camera = self.config["camera"]["name camera"]
+    #     # Guardar la URL del video feed en la base de datos
+    #     self.save_feed_url_to_database(self.camera_id, feed_url)
 
-    #         info_notifications = self.config["camera"]["info_notifications"]
-    #         if info_notifications:
-    #             try:
-    #                 info_notifications = json.loads(info_notifications)
-    #             except json.JSONDecodeError as e:
-    #                 print(f"Error decodificando JSON de notificaciones: {e}")
+    #     while self.running:
+    #         # print("Buffer antes de todo: ", self.buffer_detecciones)
+            
+    #         # Cargar configuración
+    #         try:
+    #             self.config = load_yaml_config(self.config_path)
+    #             rtsp_url = self.config["camera"]["rtsp_url"]
+    #             areas = self.config["camera"]["coordinates"]
+    #             tiempos_limite = json.loads(self.config["camera"]["time_areas"])
 
-    #         emails = self.config["camera"]["info_emails"]
-    #         if emails:
-    #             try:
-    #                 emails = json.loads(emails)
-    #             except json.JSONDecodeError as e:
-    #                 print(f"Error decodificando JSON de correos: {e}")
-    #     except Exception as e:
-    #         print(f"Error al cargar configuración: {e}")
-    #         return
-
-    #     # Abrir el video estático utilizando la URL rtsp
-    #     cap = cv2.VideoCapture(rtsp_url)
-    #     if not cap.isOpened():
-    #         print("Error al abrir el video con rtsp_url")
-    #         return
-
-    #     target_width, target_height = 640, 380  # Resolución deseada
-
-    #     while True:
-    #         ret, frame = cap.read()
-    #         if not ret:
-    #             print("Fin del video o error al leer frame")
-    #             break
-
-    #         # Redimensionar el frame
-    #         frame = cv2.resize(frame, (target_width, target_height))
-
-    #         # Procesar cada área definida en la configuración
-    #         for area_name, area_config in areas.items():
-    #             pts = self.escalar_puntos(area_config)
-    #             # Seleccionar el color del polígono según el nombre del área
-    #             if area_name == "area3":
-    #                 polygon_color = (0, 255, 0)
-    #             elif area_name == "area2":
-    #                 polygon_color = (255, 255, 0)
-    #             else:
-    #                 polygon_color = (255, 0, 0)
+    #             # Convertir valores de tiempos_limite a float
+    #             tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+    #             # Convertir valores de tiempos_limite a float
+    #             if isinstance(tiempos_limite, str):
+    #                 tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
+    #             tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
                 
-    #             # Dibujar el polígono en el frame
-    #             cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
+    #             sitio = self.config['camera']["point"]
+    #             nombre_camera = self.config['camera']["name camera"]
+    #             info_notifications = self.config['camera']["info_notifications"]
+    #             if info_notifications:
+    #                 try:
+    #                     info_notifications = json.loads(info_notifications)
+    #                     # print(info_notifications)
+    #                 except json.JSONDecodeError as e:
+    #                     print(f"Error decodificando JSON de notificaciones: {e}")
+                        
+    #             emails = self.config['camera']["info_emails"]
+    #             if emails:
+    #                 try:
+    #                     emails = json.loads(emails)
+    #                     # print(emails)
+    #                 except json.JSONDecodeError as e:
+    #                     print(f"Error decodificando JSON de correos: {e}")
+    #         except Exception as e:
+    #             print(f"Error al cargar configuración: {e}")
+    #             return
 
-    #             # Realizar detección en el frame (se asume que 'model' está definido)
-    #             results = model(frame, verbose=False)
-    #             for detection in results[0].boxes:
-    #                 self.procesar_deteccion_2(
-    #                     detection, area_name, area_config, tiempos_limite,
-    #                     frame, sitio, nombre_camera, info_notifications, emails, pts
-    #                 )
+    #         # Variables para el seguimiento de detecciones
+    #         target_width, target_height = 640, 380  # Resolución deseada
+
+    #         # Obtener buffer de frames
+    #         frame_buffer = self.shared_buffers.get(self.camera_id, None)
+
+    #         if not frame_buffer:
+    #             time.sleep(0.05)
+    #             continue
+
+    #         try:
+    #             frame_to_process = frame_buffer[0]  # Último frame en el buffer
+    #         except IndexError:
+    #             print(f"⚠️ Error: Intento de acceder a un frame inexistente en notifications {self.camera_id}")
+    #             time.sleep(0.05)
+    #             continue
+            
+    #         frame = cv2.resize(frame_to_process, (target_width, target_height))
+
+    #         for area_name, area_config in areas.items():
+    #             # try:
+    #                 # Procesar el área y realizar detección
+    #                 pts = self.escalar_puntos(area_config)
+    #                 # Dibujar el polígono escalado en el frame
+    #                 if area_name == "area3":
+    #                     polygon_color = (0, 255, 0)  # Verde para area2
+    #                 elif area_name == "area2":
+    #                     polygon_color = (255, 255, 0)
+    #                 else:
+    #                     polygon_color = (255, 0, 0)  # Rojo o azul para otras áreas (según lo desees)
                     
-    #             # Guardar frame en buffer de detecciones
-    #             # self.actualizar_buffer(frame)
+    #                 # Dibujar el polígono escalado en el frame con el color definido
+    #                 cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
 
-    #         # Mostrar el frame procesado (opcional)
-    #         cv2.imshow("Video", frame)
-    #         if cv2.waitKey(1) & 0xFF == ord('q'):
-    #             break
+    #                 results = model(frame, verbose=False)
 
-    #     cap.release()
-    #     cv2.destroyAllWindows()
+    #                 for detection in results[0].boxes:
+    #                     self.procesar_deteccion_2(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts)
+                    
+    #             # except Exception as area_error:
+    #             #     print(f"Error al procesar {area_name}: {area_error}")
+
+    #         # Guardar frame en buffer de detecciones
+    #         self.actualizar_buffer(frame)
+
+    def procesar(self):
+        # Cargar la configuración y obtener parámetros necesarios
+        try:
+            self.config = load_yaml_config(self.config_path)
+            rtsp_url = self.config["camera"]["rtsp_url"]
+            areas = self.config["camera"]["coordinates"]
+            tiempos_limite = self.config["camera"]["time_areas"]
+            # Asegurar que tiempos_limite sea un diccionario con valores float
+            if isinstance(tiempos_limite, str):
+                tiempos_limite = json.loads(tiempos_limite)
+            tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+
+            sitio = self.config["camera"]["point"]
+            nombre_camera = self.config["camera"]["name camera"]
+
+            info_notifications = self.config["camera"]["info_notifications"]
+            if info_notifications:
+                try:
+                    info_notifications = json.loads(info_notifications)
+                except json.JSONDecodeError as e:
+                    print(f"Error decodificando JSON de notificaciones: {e}")
+
+            emails = self.config["camera"]["info_emails"]
+            if emails:
+                try:
+                    emails = json.loads(emails)
+                except json.JSONDecodeError as e:
+                    print(f"Error decodificando JSON de correos: {e}")
+        except Exception as e:
+            print(f"Error al cargar configuración: {e}")
+            return
+
+        # Abrir el video estático utilizando la URL rtsp
+        cap = cv2.VideoCapture(rtsp_url)
+        if not cap.isOpened():
+            print("Error al abrir el video con rtsp_url")
+            return
+
+        target_width, target_height = 640, 380  # Resolución deseada
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                print("Fin del video o error al leer frame")
+                break
+
+            # Redimensionar el frame
+            frame = cv2.resize(frame, (target_width, target_height))
+
+            # Procesar cada área definida en la configuración
+            for area_name, area_config in areas.items():
+                pts = self.escalar_puntos(area_config)
+                # Seleccionar el color del polígono según el nombre del área
+                if area_name == "area3":
+                    polygon_color = (0, 255, 0)
+                elif area_name == "area2":
+                    polygon_color = (255, 255, 0)
+                else:
+                    polygon_color = (255, 0, 0)
+                
+                # Dibujar el polígono en el frame
+                cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
+
+                # Realizar detección en el frame (se asume que 'model' está definido)
+                results = model(frame, verbose=False)
+                for detection in results[0].boxes:
+                    self.procesar_deteccion_2(
+                        detection, area_name, area_config, tiempos_limite,
+                        frame, sitio, nombre_camera, info_notifications, emails, pts
+                    )
+                    
+                # Guardar frame en buffer de detecciones
+                # self.actualizar_buffer(frame)
+
+            # Mostrar el frame procesado (opcional)
+            cv2.imshow("Video", frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
 
 
     def save_feed_url_to_database(self, camera_id, url):

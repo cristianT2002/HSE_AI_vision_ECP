@@ -28,7 +28,7 @@ camera:
   place: POZO11
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
+  rtsp_url: VideosEnsayoModelo/prueba_realizada_mesa.avi
   time_areas: '{"area1": "60", "area2": "60", "area3": "60"}'
   username: admin
 labels:
