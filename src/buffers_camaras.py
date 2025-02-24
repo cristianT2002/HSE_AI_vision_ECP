@@ -17,11 +17,11 @@ class CameraStreamer:
         self.running = True
 
     def streaming(self):
-        cap_camera = cv2.VideoCapture(self.camara_url, cv2.CAP_FFMPEG)
-        cap_camera.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        cap_camera = cv2.VideoCapture(self.camara_url)
+        cap_camera.set(cv2.CAP_PROP_BUFFERSIZE, 3)
         cap_camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         cap_camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        cap_camera.set(cv2.CAP_PROP_FPS, 30)
+        cap_camera.set(cv2.CAP_PROP_FPS, 15)
         cap_camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'XVID'))
 
         print(f"📡 Iniciando streaming para {self.camara_name}")
@@ -31,7 +31,7 @@ class CameraStreamer:
             if not ret:
                 print(f"⚠️ Error en {self.camara_name}, reconectando...")
                 cap_camera.release()
-                cap_camera = cv2.VideoCapture(self.camara_url, cv2.CAP_FFMPEG)
+                cap_camera = cv2.VideoCapture(self.camara_url)
                 continue
 
             frame = cv2.resize(frame, (640, 480))
