@@ -1,7 +1,7 @@
 camera:
   coordinates:
     area1:
-      A_Person: '30'
+      A_Person: '20'
       camara: Planchada
       points:
       - x: 174.7644599737942
@@ -16,7 +16,7 @@ camera:
         y: 62.2933201058201
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
-    "cristian.tascon@axuretechnologies.com", "fabismartinez867@gmail.com", "edwin.granados@axuretechnologies.com",
+    "cristian.tascon@axuretechnologies.com", "fabianmartinezr867@gmail.com", "edwin.granados@axuretechnologies.com",
     "co.perforacion_07@geo-park.com", "taladrohs7@geo-park.com", "ygonzalez@geo-park.com",
     "vvalencia@geo-park.com", "fpuentes@geo-park.com", "edson.delgado@axuretechnologies.com"]'
   info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
@@ -28,7 +28,7 @@ camera:
   place: POZO11
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: VideosEnsayoModelo/prueba_realizada_mesa.avi
+  rtsp_url: VideosEnsayoModelo/personas_rojo.mp4
   time_areas: '{"area1": "60", "area2": "60", "area3": "60"}'
   username: admin
 labels:
