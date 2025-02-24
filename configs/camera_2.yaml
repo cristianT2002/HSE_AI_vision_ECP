@@ -18,8 +18,8 @@ camera:
   info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
     "cristian.tascon@axuretechnologies.com", "fabismartinez867@gmail.com", "edwin.granados@axuretechnologies.com",
     "co.perforacion_07@geo-park.com", "taladrohs7@geo-park.com", "ygonzalez@geo-park.com",
-    "vvalencia@geo-park.com", "fpuentes@geo-park.com"]'
-  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+    "vvalencia@geo-park.com", "fpuentes@geo-park.com", "edson.delgado@axuretechnologies.com"]'
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 172.29.5.231
   label: A_Person, Loading_Machine

@@ -1,10 +1,10 @@
 camera:
   coordinates:
     area1:
-      Green: '60'
-      No_Harness: '49'
+      Green: '70'
+      No_Harness: '70'
       No_Helmet: '70'
-      Yellow: '60'
+      Yellow: '80'
       camara: Mesa
       points:
       - x: 10.042428402071504
@@ -19,9 +19,8 @@ camera:
         y: 12.02876984126984
       punto: TORITO_OESTE1_GEOPARK
     area2:
-      Green: '30'
-      No_Helmet: '70'
-      Yellow: '50'
+      No_Helmet: '80'
+      Yellow: '10'
       camara: Mesa
       points:
       - x: 100.78929306794784
@@ -42,7 +41,7 @@ camera:
         y: 40.60019841269841
       punto: TORITO_OESTE1_GEOPARK
     area3:
-      A_Person: '30'
+      A_Person: '10'
       camara: Mesa
       points:
       - x: 128.34279653085417
@@ -59,7 +58,7 @@ camera:
   info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
     "cristian.tascon@axuretechnologies.com", "fabismartinez867@gmail.com", "edwin.granados@axuretechnologies.com",
     "co.perforacion_07@geo-park.com", "taladrohs7@geo-park.com", "ygonzalez@geo-park.com",
-    "vvalencia@geo-park.com", "fpuentes@geo-park.com"]'
+    "vvalencia@geo-park.com", "fpuentes@geo-park.com", "edson.delgado@axuretechnologies.com"]'
   info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
   ip: 172.29.5.230
@@ -70,7 +69,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "5", "area2": "10", "area3": "300"}'
+  time_areas: '{"area1": "5", "area2": "200", "area3": "300"}'
   username: admin
 labels:
 - A_Person

@@ -392,6 +392,7 @@ class ProcesarDetecciones:
         probability = detection.conf[0] * 100
         class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
         label = LABELS.get(class_index, "Unknown")
+        hora_actual_PS = 0
         
         if label not in area_config:
             return  # No está en las etiquetas configuradas para el área
@@ -444,13 +445,14 @@ class ProcesarDetecciones:
                     hilo.start()
                     print(f"🚨 Evento registrado: {label} en {area_name} (Cámara {nombre_camera})")
                 
-                # print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s")
+                hora_actual_PS = datetime.now().strftime("%H:%M:%S")
+                print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s a las {hora_actual_PS}")
 
         else:
             # Si no hay detección, esperar 4s antes de quitar la detección
             if (area_name, label) in self.tiempo_deteccion_por_area:
                 tiempo_desde_ultima = time.time() - self.tiempo_ultimo_detecciones[(area_name, label)]
-                tiempo_restante = 4 - tiempo_desde_ultima  # Tiempo restante antes de resetear
+                tiempo_restante = 6 - tiempo_desde_ultima  # Tiempo restante antes de resetear
                 
                 if tiempo_restante > 0:
                     # print(f"⏳ {label} en {area_name} desaparecerá en {tiempo_restante:.2f} segundos...")
@@ -483,7 +485,9 @@ class ProcesarDetecciones:
             NombreLabel = "Persona con casco Amarillo o Verde"
             descript = f"Se detectó una Persona con casco Amarillo o Verde en {area_name} en la cámara {nombre_camera}"
         else:
+            NombreLabel = label  # Asignación de valor para evitar el error
             descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera}"
+        
         self.add_event_to_database(
             sitio=sitio,
             company="TechCorp",
@@ -495,7 +499,7 @@ class ProcesarDetecciones:
         
         id_registro = self.get_last_event_id()
         set_id(id_registro)
-    
+
     def add_event_to_database(self,sitio, company, fecha, hora, tipo_evento, descripcion):
         """
         Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.
@@ -529,12 +533,14 @@ class ProcesarDetecciones:
 
     def actualizar_buffer(self, frame):
         """Añade el frame al buffer de detecciones compartido."""
+        hola = 0
         buffer = self.buffer_detecciones[self.camera_id]
         if len(buffer) >= 120:
             buffer.pop(0)
         buffer.append(frame)
         if self.camera_id == 1:
-            print(f"Buffer {self.camera_id} después de agregar: {len(buffer)}")
+            # print(f"Buffer {self.camera_id} después de agregar: {len(buffer)}")
+            hola = 1
 
     def stop(self):
         """Detiene el procesamiento de detecciones."""
