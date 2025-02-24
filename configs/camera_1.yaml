@@ -22,6 +22,7 @@ camera:
       No_Helmet: '80'
       Yellow: '10'
       camara: Mesa
+      gloves: '10'
       points:
       - x: 100.78929306794784
         y: 40.60019841269841
@@ -56,9 +57,7 @@ camera:
         y: 90.6001984126984
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
-    "cristian.tascon@axuretechnologies.com", "fabismartinez867@gmail.com", "edwin.granados@axuretechnologies.com",
-    "co.perforacion_07@geo-park.com", "taladrohs7@geo-park.com", "ygonzalez@geo-park.com",
-    "vvalencia@geo-park.com", "fpuentes@geo-park.com", "edson.delgado@axuretechnologies.com"]'
+    "cristian.tascon@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
   info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
   ip: 172.29.5.230
@@ -69,7 +68,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "5", "area2": "200", "area3": "300"}'
+  time_areas: '{"area1": "5", "area2": "10", "area3": "300"}'
   username: admin
 labels:
 - A_Person
@@ -78,4 +77,4 @@ labels:
 - White
 - YellowGreen
 model:
-  path: models/best_mejorado.pt
+  path: models/best-ultra.pt
