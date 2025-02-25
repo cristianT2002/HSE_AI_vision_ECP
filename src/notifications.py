@@ -50,7 +50,7 @@ class ProcesarDetecciones:
             "Loading_Machine": (0, 100, 19),  # Verde Oscuro
             "Mud_Bucket": (255, 171, 171),  # Rosa Suave
             "Orange": (0, 128, 255),  # Naranja
-            "gloves": (61, 223, 43),  # Rojo
+            "gloves": (61, 223, 43),  # Verde Claro
         }
 
     def procesar(self):
@@ -448,23 +448,23 @@ class ProcesarDetecciones:
                 
                 hora_actual_PS = datetime.now().strftime("%H:%M:%S")
                 print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s a las {hora_actual_PS}")
-                cv2.circle(frame, point2, 5, (0, 0, 255), -1)
+                # cv2.circle(frame, point2, 5, (0, 0, 255), -1)
                 # Dibujar siempre la etiqueta "gloves"
-                if label == "gloves":
-                    color = (0, 255, 0)  # Verde para diferenciar
-                    text = f"{label}: {probability:.2f}%"
-                    (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
-                    text_offset_x, text_offset_y = x1, y1 - 10
-                    box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 25, text_offset_y + 5))
+                # if label == "gloves":
+                #     color = (0, 255, 0)  # Verde para diferenciar
+                #     text = f"{label}: {probability:.2f}%"
+                #     (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+                #     text_offset_x, text_offset_y = x1, y1 - 10
+                #     box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 25, text_offset_y + 5))
                     
-                    self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
+                #     self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
 
 
         else:
             # Si no hay detección, esperar 4s antes de quitar la detección
             if (area_name, label) in self.tiempo_deteccion_por_area:
                 tiempo_desde_ultima = time.time() - self.tiempo_ultimo_detecciones[(area_name, label)]
-                tiempo_restante = 6 - tiempo_desde_ultima  # Tiempo restante antes de resetear
+                tiempo_restante = 5 - tiempo_desde_ultima  # Tiempo restante antes de resetear
                 
                 if tiempo_restante > 0:
                     # print(f"⏳ {label} en {area_name} desaparecerá en {tiempo_restante:.2f} segundos...")
