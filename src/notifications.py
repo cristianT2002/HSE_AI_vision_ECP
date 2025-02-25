@@ -504,7 +504,7 @@ class ProcesarDetecciones:
         
         self.add_event_to_database(
             sitio=sitio,
-            company="TechCorp",
+            company="GEOPARK",
             fecha=fecha_actual,
             hora=hora_actual,
             tipo_evento=f"Detección de {NombreLabel} en {area_name} en la cámara {nombre_camera}",
