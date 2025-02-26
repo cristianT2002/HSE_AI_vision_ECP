@@ -3,6 +3,7 @@ streamers_procesado = []
 threads= []
 processes = []  
 id = 0
+envio_correo = True
 
 def get_streamers():
     return streamers
@@ -40,3 +41,10 @@ def get_streamers_procesado():
 def set_streamers_procesado(streamers_procesado_edit):
     global streamers_procesado
     streamers_procesado = streamers_procesado_edit
+
+def set_envio_correo(envio_correo_edit):
+    global envio_correo
+    envio_correo = envio_correo_edit    
+    
+def get_envio_correo():
+    return envio_correo

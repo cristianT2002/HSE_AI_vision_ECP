@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import pymysql
-from src.variables_globales import get_streamers, set_streamers, set_id, get_id
+from src.variables_globales import get_streamers, set_streamers, set_id, get_id, get_envio_correo, set_envio_correo
 import os
 import datetime
 import smtplib
@@ -153,7 +153,8 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
                 conexion.commit()
                 print("Video guardado en la base de datos exitosamente.")
                 if envio_correo == True:
-                    send_email_with_outlook("Add_Video", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
+                    if get_envio_correo() == True:
+                        send_email_with_outlook("Add_Video", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
                 
                 # Aquí puedes usar los datos como necesites
             else:
@@ -221,7 +222,8 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
                 
                 # Enviar correo si está habilitado
                 if envio_correo:
-                    send_email_with_outlook("Add_Image", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
+                    if get_envio_correo() == True:
+                        send_email_with_outlook("Add_Image", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
             else:
                 print(f"No se encontró un registro con ID {id_a_buscar}.")
     
@@ -335,6 +337,7 @@ def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_a
         server.login(username, password)
         server.sendmail(from_address, to_address, msg.as_string())
         print('Correo enviado exitosamente.')
+        set_envio_correo(False)
 
     except Exception as e:
         print('Error al enviar el correo:', e)
