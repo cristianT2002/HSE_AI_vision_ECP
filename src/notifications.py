@@ -7,7 +7,7 @@ import numpy as np
 import multiprocessing as mp
 from multiprocessing import Manager
 from datetime import datetime
-from src.variables_globales import get_streamers, set_streamers, set_id
+from src.variables_globales import get_streamers, set_streamers, set_id, set_envio_correo, get_envio_correo
 from src.Tipo_notificacion import save_video_from_buffer, guardar_imagen_en_mariadb
 from src.db_utils import connect_to_db, close_connection
 from src.load_config import load_yaml_config
@@ -187,8 +187,9 @@ class ProcesarDetecciones:
     #     while True:
     #         ret, frame = cap.read()
     #         if not ret:
-    #             print("Fin del video o error al leer frame")
-    #             break
+    #             print("Reiniciando video...")
+    #             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reiniciar video desde el inicio
+    #             continue  # Saltar a la siguiente iteración para leer el siguiente frame
 
     #         # Redimensionar el frame
     #         frame = cv2.resize(frame, (target_width, target_height))
@@ -196,6 +197,7 @@ class ProcesarDetecciones:
     #         # Procesar cada área definida en la configuración
     #         for area_name, area_config in areas.items():
     #             pts = self.escalar_puntos(area_config)
+
     #             # Seleccionar el color del polígono según el nombre del área
     #             if area_name == "area3":
     #                 polygon_color = (0, 255, 0)
@@ -203,7 +205,7 @@ class ProcesarDetecciones:
     #                 polygon_color = (255, 255, 0)
     #             else:
     #                 polygon_color = (255, 0, 0)
-                
+
     #             # Dibujar el polígono en el frame
     #             cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
 
@@ -214,18 +216,14 @@ class ProcesarDetecciones:
     #                     detection, area_name, area_config, tiempos_limite,
     #                     frame, sitio, nombre_camera, info_notifications, emails, pts
     #                 )
-                    
-    #             # Guardar frame en buffer de detecciones
-    #             # self.actualizar_buffer(frame)
-
+            
     #         # Mostrar el frame procesado (opcional)
     #         cv2.imshow("Video", frame)
     #         if cv2.waitKey(1) & 0xFF == ord('q'):
-    #             break
+    #             break  # Salir del bucle si se presiona 'q'
 
     #     cap.release()
     #     cv2.destroyAllWindows()
-
 
     def save_feed_url_to_database(self, camera_id, url):
         """
@@ -440,7 +438,7 @@ class ProcesarDetecciones:
                     self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
                 
                 if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                    self.guardar_evento(area_name, label, nombre_camera, sitio)
+                    self.guardar_evento(area_name, label, nombre_camera, sitio, tiempos_limite)
                     self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
                     hilo = threading.Thread(target=self.guardar_evidencia, args=( frame, area_name, label, nombre_camera, info_notifications, emails), daemon=True)
                     hilo.start()
@@ -448,18 +446,7 @@ class ProcesarDetecciones:
                 
                 hora_actual_PS = datetime.now().strftime("%H:%M:%S")
                 print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s a las {hora_actual_PS}")
-                # cv2.circle(frame, point2, 5, (0, 0, 255), -1)
-                # Dibujar siempre la etiqueta "gloves"
-                # if label == "gloves":
-                #     color = (0, 255, 0)  # Verde para diferenciar
-                #     text = f"{label}: {probability:.2f}%"
-                #     (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
-                #     text_offset_x, text_offset_y = x1, y1 - 10
-                #     box_coords = ((text_offset_x, text_offset_y - text_height - 5), (text_offset_x + text_width + 25, text_offset_y + 5))
-                    
-                #     self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
-
-
+                print(get_envio_correo())       
         else:
             # Si no hay detección, esperar 4s antes de quitar la detección
             if (area_name, label) in self.tiempo_deteccion_por_area:
@@ -473,34 +460,35 @@ class ProcesarDetecciones:
                     print(f"❌ {label} salió de {area_name}, quitando color y reiniciando tiempo.")
                     del self.tiempo_deteccion_por_area[(area_name, label)]  # 🔥 Solo se borra después de 4s
                     del self.tiempo_ultimo_detecciones[(area_name, label)]
+                    set_envio_correo(True)
 
 
     
 
 # ------------- guardar_evento
 
-    def guardar_evento(self, area_name, label, nombre_camera, sitio):
+    def guardar_evento(self, area_name, label, nombre_camera, sitio, tiempos_limite):
         """Guarda un evento en la base de datos."""
         fecha_actual = datetime.now().strftime("%d/%m/%Y")
         hora_actual = datetime.now().strftime("%H:%M:%S")
         if label == "A_Person":
             NombreLabel = "Personas"
-            descript = f"Se detectó una Persona en {area_name} en la cámara {nombre_camera}"
+            descript = f"Se detectó una Persona en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
         elif label == "White":
             NombreLabel = "Persona con casco blanco"
-            descript = f"Se detectó una Persona con casco blanco en {area_name} en la cámara {nombre_camera}"
+            descript = f"Se detectó una Persona con casco blanco en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
         elif label == "No_Helmet":
             NombreLabel = "Persona Sin casco"
-            descript = f"Se detectó una Persona sin casco en {area_name} en la cámara {nombre_camera}"
+            descript = f"Se detectó una Persona sin casco en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
         elif label == "Yellow":
             NombreLabel = "Persona con casco Amarillo"
-            descript = f"Se detectó una Persona con casco Amarillo en {area_name} en la cámara {nombre_camera}"
+            descript = f"Se detectó una Persona con casco Amarillo en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
         elif label == "Green":
             NombreLabel = "Persona con casco Verde"
-            descript = f"Se detectó una Persona con casco Verde en {area_name} en la cámara {nombre_camera}"
+            descript = f"Se detectó una Persona con casco Verde en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
         else:
             NombreLabel = label  # Asignación de valor para evitar el error
-            descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera}"
+            descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
         
         self.add_event_to_database(
             sitio=sitio,
