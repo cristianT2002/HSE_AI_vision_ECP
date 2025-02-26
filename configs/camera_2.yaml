@@ -1,19 +1,19 @@
 camera:
   coordinates:
     area1:
-      A_Person: '20'
+      A_Person: '40'
       camara: Planchada
       points:
       - x: 174.7644599737942
-        y: 62.2933201058201
-      - x: 63.05297310788045
-        y: 135.3091931216931
-      - x: 187.64272789667436
-        y: 146.68485449735448
-      - x: 225.07955325388406
-        y: 72.87533068783068
-      - x: 175.0639545766519
-        y: 62.2933201058201
+        y: 62.028769841269835
+      - x: 64.25095151931116
+        y: 137.42559523809524
+      - x: 162.48518125662943
+        y: 146.94940476190476
+      - x: 216.69370437386908
+        y: 71.81712962962962
+      - x: 175.36344917950956
+        y: 62.028769841269835
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
     "cristian.tascon@axuretechnologies.com", "fabianmartinezr867@gmail.com", "edwin.granados@axuretechnologies.com",
@@ -28,8 +28,8 @@ camera:
   place: POZO11
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: VideosEnsayoModelo/personas_rojo.mp4
-  time_areas: '{"area1": "60", "area2": "60", "area3": "60"}'
+  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
+  time_areas: '{"area1": "180", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person
