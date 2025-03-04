@@ -12,9 +12,9 @@ model = YOLO(MODEL_PATH)
 LABELS = model.model.names  # Diccionario de etiquetas, e.g., {0: 'A_Person', 1: 'Harness', ...}
 
 # Umbral de confianza (probabilidad) deseado
-confidence_threshold = 0.01
+confidence_threshold = 0.70
 # Abrir el video (puedes cambiar "video.mp4" por la ruta de tu video o usar 0 para la webcam)
-video_path = "VideosEnsayoModelo/personas_rojo.mp4"
+video_path = "VideosEnsayoModelo/mesa_prueba_hoy3.avi"
 cap = cv2.VideoCapture(video_path)
 
 while True:
@@ -39,13 +39,16 @@ while True:
             x1, y1, x2, y2 = map(int, coords)
             # Obtener el índice de la clase
             cls = int(box.cls.item())
+            print("Clase: ",cls)
             # Obtener la etiqueta correspondiente
             label = LABELS.get(cls, str(cls)) if isinstance(LABELS, dict) else LABELS[cls]
             
-            # Dibujar el rectángulo y la etiqueta en el frame
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(frame, f"{label} {conf:.2f}", (x1, y1 - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            if label == "Yellow":
+                print("Yellow sobre: ", conf)
+                # Dibujar el rectángulo y la etiqueta en el frame
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.putText(frame, f"{label} {conf:.2f}", (x1, y1 - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
     # Mostrar el frame con las detecciones
     cv2.imshow("Detecciones", frame)
