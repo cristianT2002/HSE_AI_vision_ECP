@@ -1,27 +1,29 @@
 camera:
   coordinates:
     area1:
+      Green: '70'
+      No_Harness: '70'
+      No_Helmet: '75'
+      Yellow: '70'
       camara: Mesa
       points:
-      - x: 4.352030947775629
-        y: 0.9176587301587301
-      - x: 81.32214388219879
-        y: 2.504960317460317
-      - x: 104.38322830223996
-        y: 110.17691798941799
-      - x: 110.97210956510887
-        y: 148.53670634920636
-      - x: 32.804018219255006
-        y: 144.56845238095238
-      - x: 13.336869033505957
-        y: 96.6848544973545
-      - x: 11.240406813502215
-        y: 39.27744708994709
+      - x: 67.24589754788794
+        y: 6.73776455026455
+      - x: 13.636363636363635
+        y: 18.907076719576718
+      - x: 1.0575903163411742
+        y: 48.53670634920635
+      - x: 21.423223310663253
+        y: 115.20337301587301
+      - x: 89.70799276221376
+        y: 103.03406084656083
+      - x: 66.94640294503026
+        y: 7.795965608465608
       punto: TORITO_OESTE1_GEOPARK
     area2:
-      Green: '70'
-      No_Helmet: '70'
-      Yellow: '70'
+      Green: '75'
+      No_Helmet: '80'
+      Yellow: '80'
       camara: Mesa
       points:
       - x: 100.78929306794784
@@ -60,8 +62,8 @@ camera:
     "cristian.tascon@axuretechnologies.com", "fabianmartinezr867@gmail.com", "edwin.granados@axuretechnologies.com",
     "co.perforacion_07@geo-park.com", "taladrohs7@geo-park.com", "ygonzalez@geo-park.com",
     "vvalencia@geo-park.com", "fpuentes@geo-park.com", "edson.delgado@axuretechnologies.com"]'
-  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
-    false}'
+  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
+    true}'
   ip: 172.29.5.230
   label: Green, No_Harness, No_Helmet, Yellow, A_Person
   name camera: Mesa
@@ -70,7 +72,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "15", "area2": "300", "area3": "120"}'
+  time_areas: '{"area1": "5", "area2": "15", "area3": "120"}'
   username: admin
 labels:
 - A_Person

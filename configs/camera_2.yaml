@@ -1,26 +1,23 @@
 camera:
   coordinates:
     area1:
-      A_Person: '40'
       camara: Planchada
       points:
-      - x: 174.7644599737942
-        y: 62.028769841269835
-      - x: 64.25095151931116
-        y: 137.42559523809524
-      - x: 162.48518125662943
-        y: 146.94940476190476
-      - x: 216.69370437386908
-        y: 71.81712962962962
-      - x: 175.36344917950956
-        y: 62.028769841269835
+      - x: 176.64673434385574
+        y: 56.125624436983045
+      - x: 221.14680387521437
+        y: 65.29768241749242
+      - x: 189.70008807305427
+        y: 112.99238391614118
+      - x: 156.47336948963982
+        y: 146.79796904430432
+      - x: 85.56992536967505
+        y: 125.04708869052493
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
-    "cristian.tascon@axuretechnologies.com", "fabianmartinezr867@gmail.com", "edwin.granados@axuretechnologies.com",
-    "co.perforacion_07@geo-park.com", "taladrohs7@geo-park.com", "ygonzalez@geo-park.com",
-    "vvalencia@geo-park.com", "fpuentes@geo-park.com", "edson.delgado@axuretechnologies.com"]'
-  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
-    false}'
+    "cristian.tascon@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
+  info_notifications: '{"Email": false, "Imagen": false, "Page_HSE": true, "Video":
+    true}'
   ip: 172.29.5.231
   label: A_Person, Loading_Machine
   name camera: Planchada
@@ -29,7 +26,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
-  time_areas: '{"area1": "180", "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "180", "area2": "15", "area3": "300"}'
   username: admin
 labels:
 - A_Person
