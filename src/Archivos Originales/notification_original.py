@@ -41,7 +41,7 @@ def procesar_detecciones(config_path, camera_id, shared_buffers, manager):
 
     save_feed_url_to_database(camera_id, feed_url)
     while True:
-        print("Buffer antes de todo: ", buffer_detecciones)
+        # print("Buffer antes de todo: ", buffer_detecciones)
         """
         Procesa las detecciones de objetos en cada área definida y las imprime en consola.
         """
@@ -317,12 +317,12 @@ def procesar_detecciones(config_path, camera_id, shared_buffers, manager):
             buffer_detecciones[camera_id] = manager.list()  # Asegurar lista compartida
 
         buffer = buffer_detecciones[camera_id]
-        print("Buffer tamaño antes de agregar: ", len(buffer) )
+        # print("Buffer tamaño antes de agregar: ", len(buffer) )
         # Agregar frame al buffer compartido
         if len(buffer) >= 120:
             buffer.pop(0)  # Eliminar el frame más antiguo si ya está lleno
         buffer.append(frame)
-        print("Buffer despues de agregar: ", len(buffer) )
+        # print("Buffer despues de agregar: ", len(buffer) )
         
 
 def save_feed_url_to_database(camera_id, url):
