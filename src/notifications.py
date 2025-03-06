@@ -55,7 +55,7 @@ class ProcesarDetecciones:
 
     def procesar(self):
         # host_ip = socket.gethostbyname(socket.gethostname())
-        host_ip = "172.30.37.63"
+        host_ip = "172.30.37.77"
         feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
 
         # Guardar la URL del video feed en la base de datos
@@ -439,10 +439,10 @@ class ProcesarDetecciones:
                     self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
                 
                 if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                    self.guardar_evento(area_name, label, nombre_camera, sitio, tiempos_limite)
+                    # self.guardar_evento(area_name, label, nombre_camera, sitio, tiempos_limite)
                     self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
-                    hilo = threading.Thread(target=self.guardar_evidencia, args=( frame, area_name, label, nombre_camera, info_notifications, emails), daemon=True)
-                    hilo.start()
+                    # hilo = threading.Thread(target=self.guardar_evidencia, args=( frame, area_name, label, nombre_camera, info_notifications, emails), daemon=True)
+                    # hilo.start()
                     print(f"🚨 Evento registrado: {label} en {area_name} (Cámara {nombre_camera})")
                 
                 hora_actual_PS = datetime.now().strftime("%H:%M:%S")
@@ -452,12 +452,14 @@ class ProcesarDetecciones:
             # Si no hay detección, esperar 4s antes de quitar la detección
             if (area_name, label) in self.tiempo_deteccion_por_area:
                 tiempo_desde_ultima = time.time() - self.tiempo_ultimo_detecciones[(area_name, label)]
-                tiempo_restante = 5 - tiempo_desde_ultima  # Tiempo restante antes de resetear
+                tiempo_restante = 5 - tiempo_desde_ultima
+                
                 
                 if tiempo_restante > 0:
                     # print(f"⏳ {label} en {area_name} desaparecerá en {tiempo_restante:.2f} segundos...")
                     pass
                 else:
+                    
                     print(f"❌ {label} salió de {area_name}, quitando color y reiniciando tiempo.")
                     del self.tiempo_deteccion_por_area[(area_name, label)]  # 🔥 Solo se borra después de 4s
                     del self.tiempo_ultimo_detecciones[(area_name, label)]

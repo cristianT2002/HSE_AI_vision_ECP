@@ -23,7 +23,7 @@ camera:
     area2:
       Green: '75'
       No_Helmet: '80'
-      Yellow: '80'
+      Yellow: '70'
       camara: Mesa
       points:
       - x: 100.78929306794784
