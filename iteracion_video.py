@@ -5,8 +5,8 @@ import torch
  
 # Leer nuestro modelo
 # model = YOLO("yolov8n-seg.pt")  # load an official model
-model = YOLO("models/best_mejorado.pt")
-video = "detectar_carga.mp4"
+model = YOLO("models/best_5FEB.pt")
+video = "VideosEnsayoModelo/falsaAlerta.mp4"
  
 # Realizar VideoCaptura
 cap = cv2.VideoCapture(video)
@@ -24,7 +24,7 @@ while True:
         break
  
     # Leemos resultados
-    resultados = model.predict(frame, imgsz=640, conf=0.20)
+    resultados = model.predict(frame, imgsz=640, conf=0.10)
  
     # Mostramos resultados
     anotaciones = resultados[0].plot()

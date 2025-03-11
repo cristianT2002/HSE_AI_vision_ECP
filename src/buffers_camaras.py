@@ -6,7 +6,9 @@ import multiprocessing as mp
 from multiprocessing import Manager
 from collections import deque
 from src.variables_globales import get_streamers, set_streamers, get_processes, set_processes
+from src.logger_config import get_logger
 
+logger = get_logger(__name__)
 class CameraStreamer:
     def __init__(self, camara_name, camara_url, shared_buffers, camara_number):
 
@@ -30,6 +32,7 @@ class CameraStreamer:
             ret, frame = cap_camera.read()
             if not ret:
                 print(f"⚠️ Error en {self.camara_name}, reconectando...")
+                # logger.warning(f"Error en {self.camara_name}, reconectando...")
                 cap_camera.release()
                 cap_camera = cv2.VideoCapture(self.camara_url)
                 continue
@@ -43,11 +46,12 @@ class CameraStreamer:
             if len(buffer) >= 120:
                 buffer.pop(0)  # Eliminar el frame más antiguo si ya está lleno
             buffer.append(frame)
-            print("Buffer: ", len(buffer))
+            # print("Buffer: ", len(buffer))
             time.sleep(0.005)
 
         cap_camera.release()
         print(f"📡 Streaming detenido para {self.camara_name}")
+        logger.info(f"Streaming detenido para {self.camara_name}")
 
     def stop(self):
         self.running = False

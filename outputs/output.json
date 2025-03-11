@@ -5,13 +5,13 @@
         "PUNTO": "TORITO_OESTE1_GEOPARK",
         "NOMBRE_CAMARA": "Mesa",
         "IP_CAMARA": "172.29.5.230",
-        "URL_CAMARA_SERVER": "http://172.30.37.63:5000/video_feed/1",
+        "URL_CAMARA_SERVER": "http://172.30.37.77:5000/video_feed/1",
         "ESTADO_LUGAR_MODELO": "Green, No_Harness, No_Helmet, Yellow, A_Person",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area2\": {\"No_Helmet\": \"70\", \"Yellow\": \"70\", \"Green\": \"70\", \"camara\": \"Mesa\", \"points\": [{\"x\": 100.78929306794784, \"y\": 40.60019841269841}, {\"x\": 195.72908217383164, \"y\": 27.63723544973545}, {\"x\": 269.70424907967805, \"y\": 42.45205026455026}, {\"x\": 268.50627066824734, \"y\": 62.82242063492063}, {\"x\": 254.13052973107878, \"y\": 72.34623015873015}, {\"x\": 252.03406751107505, \"y\": 107.26686507936508}, {\"x\": 116.06351781368939, \"y\": 140.6001984126984}, {\"x\": 100.78929306794784, \"y\": 40.60019841269841}], \"punto\": \"TORITO_OESTE1_GEOPARK\"}, \"area3\": {\"A_Person\": \"10\", \"camara\": \"Mesa\", \"points\": [{\"x\": 128.34279653085417, \"y\": 91.3938492063492}, {\"x\": 129.24128033942722, \"y\": 113.61607142857142}, {\"x\": 190.9371685281088, \"y\": 99.5949074074074}, {\"x\": 176.86092219379796, \"y\": 80.01818783068782}, {\"x\": 127.74380732513882, \"y\": 90.6001984126984}], \"punto\": \"TORITO_OESTE1_GEOPARK\"}, \"area1\": {\"points\": [{\"x\": 4.352030947775629, \"y\": 0.9176587301587301}, {\"x\": 81.32214388219879, \"y\": 2.504960317460317}, {\"x\": 104.38322830223996, \"y\": 110.17691798941799}, {\"x\": 110.97210956510887, \"y\": 148.53670634920636}, {\"x\": 32.804018219255006, \"y\": 144.56845238095238}, {\"x\": 13.336869033505957, \"y\": 96.6848544973545}, {\"x\": 11.240406813502215, \"y\": 39.27744708994709}], \"camara\": \"Mesa\", \"punto\": \"TORITO_OESTE1_GEOPARK\"}}",
-        "TIME_AREAS": "{\"area1\": \"15\", \"area2\": \"300\", \"area3\": \"120\"}",
-        "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}",
+        "COORDENADAS_AREA": "{\"area1\": {\"Green\": \"70\", \"No_Harness\": \"70\", \"No_Helmet\": \"75\", \"Yellow\": \"70\", \"camara\": \"Mesa\", \"points\": [{\"x\": 67.24589754788794, \"y\": 6.73776455026455}, {\"x\": 13.636363636363635, \"y\": 18.907076719576718}, {\"x\": 1.0575903163411742, \"y\": 48.53670634920635}, {\"x\": 21.423223310663253, \"y\": 115.20337301587301}, {\"x\": 89.70799276221376, \"y\": 103.03406084656083}, {\"x\": 66.94640294503026, \"y\": 7.795965608465608}], \"punto\": \"TORITO_OESTE1_GEOPARK\"}, \"area3\": {\"A_Person\": \"10\", \"camara\": \"Mesa\", \"points\": [{\"x\": 128.34279653085417, \"y\": 91.3938492063492}, {\"x\": 129.24128033942722, \"y\": 113.61607142857142}, {\"x\": 190.9371685281088, \"y\": 99.5949074074074}, {\"x\": 176.86092219379796, \"y\": 80.01818783068782}, {\"x\": 127.74380732513882, \"y\": 90.6001984126984}], \"punto\": \"TORITO_OESTE1_GEOPARK\"}, \"area2\": {\"points\": [{\"x\": 97.49485243651338, \"y\": 40.86474867724868}, {\"x\": 203.2164472452736, \"y\": 26.04993386243386}, {\"x\": 294.8617957197229, \"y\": 40.07109788359788}, {\"x\": 290.06988207400013, \"y\": 144.03935185185185}, {\"x\": 105.58120671367067, \"y\": 147.4785052910053}, {\"x\": 97.49485243651338, \"y\": 40.335648148148145}], \"camara\": \"Mesa\", \"punto\": \"TORITO_OESTE1_GEOPARK\", \"Yellow\": \"80\", \"Green\": \"90\", \"No_Helmet\": \"75\"}}",
+        "TIME_AREAS": "{\"area1\": \"5\", \"area2\": \"15\", \"area3\": \"120\"}",
+        "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": false, \"Page_HSE\": true, \"Video\": true}",
         "DESTINATARIOS": "[\"nelson.ceron@axuretechnologies.com\", \"carlos.saavedra@axuretechnologies.com\", \"cristian.tascon@axuretechnologies.com\", \"fabianmartinezr867@gmail.com\", \"edwin.granados@axuretechnologies.com\", \"co.perforacion_07@geo-park.com\", \"taladrohs7@geo-park.com\", \"ygonzalez@geo-park.com\", \"vvalencia@geo-park.com\", \"fpuentes@geo-park.com\", \"edson.delgado@axuretechnologies.com\"]"
     },
     {
@@ -20,13 +20,13 @@
         "PUNTO": "TORITO_OESTE1_GEOPARK",
         "NOMBRE_CAMARA": "Planchada",
         "IP_CAMARA": "172.29.5.231",
-        "URL_CAMARA_SERVER": "http://172.30.37.63:5000/video_feed/2",
+        "URL_CAMARA_SERVER": "http://172.30.37.77:5000/video_feed/2",
         "ESTADO_LUGAR_MODELO": "A_Person, Loading_Machine",
         "USUARIO": "admin",
         "CONTRASENA": "4xUR3_2017",
-        "COORDENADAS_AREA": "{\"area1\": {\"points\": [{\"x\": 174.7644599737942, \"y\": 62.028769841269835}, {\"x\": 64.25095151931116, \"y\": 137.42559523809524}, {\"x\": 162.48518125662943, \"y\": 146.94940476190476}, {\"x\": 216.69370437386908, \"y\": 71.81712962962962}, {\"x\": 175.36344917950956, \"y\": 62.028769841269835}], \"camara\": \"Planchada\", \"punto\": \"TORITO_OESTE1_GEOPARK\", \"A_Person\": \"40\"}}",
+        "COORDENADAS_AREA": "{\"area1\": {\"points\": [{\"x\": 182.25182504523616, \"y\": 62.55787037037037}, {\"x\": 95.39839021650964, \"y\": 127.90178571428571}, {\"x\": 169.6730517252137, \"y\": 147.4785052910053}, {\"x\": 216.39420977101142, \"y\": 70.22982804232804}, {\"x\": 182.85081425095152, \"y\": 62.55787037037037}], \"camara\": \"Planchada\", \"punto\": \"TORITO_OESTE1_GEOPARK\", \"A_Person\": \"100\"}}",
         "TIME_AREAS": "{\"area1\": \"180\", \"area2\": \"10\", \"area3\": \"10\"}",
-        "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}",
+        "INFO_NOTIFICATIONS": "{\"Email\": true, \"Imagen\": false, \"Page_HSE\": true, \"Video\": true}",
         "DESTINATARIOS": "[\"nelson.ceron@axuretechnologies.com\", \"carlos.saavedra@axuretechnologies.com\", \"cristian.tascon@axuretechnologies.com\", \"fabianmartinezr867@gmail.com\", \"edwin.granados@axuretechnologies.com\", \"co.perforacion_07@geo-park.com\", \"taladrohs7@geo-park.com\", \"ygonzalez@geo-park.com\", \"vvalencia@geo-park.com\", \"fpuentes@geo-park.com\", \"edson.delgado@axuretechnologies.com\"]"
     }
 ]

@@ -1,45 +1,43 @@
 camera:
   coordinates:
     area1:
-      camara: Mesa
-      points:
-      - x: 4.352030947775629
-        y: 0.9176587301587301
-      - x: 81.32214388219879
-        y: 2.504960317460317
-      - x: 104.38322830223996
-        y: 110.17691798941799
-      - x: 110.97210956510887
-        y: 148.53670634920636
-      - x: 32.804018219255006
-        y: 144.56845238095238
-      - x: 13.336869033505957
-        y: 96.6848544973545
-      - x: 11.240406813502215
-        y: 39.27744708994709
-      punto: TORITO_OESTE1_GEOPARK
-    area2:
       Green: '70'
-      No_Helmet: '70'
+      No_Harness: '70'
+      No_Helmet: '75'
       Yellow: '70'
       camara: Mesa
       points:
-      - x: 100.78929306794784
-        y: 40.60019841269841
-      - x: 195.72908217383164
-        y: 27.63723544973545
-      - x: 269.70424907967805
-        y: 42.45205026455026
-      - x: 268.50627066824734
-        y: 62.82242063492063
-      - x: 254.13052973107878
-        y: 72.34623015873015
-      - x: 252.03406751107505
-        y: 107.26686507936508
-      - x: 116.06351781368939
-        y: 140.6001984126984
-      - x: 100.78929306794784
-        y: 40.60019841269841
+      - x: 67.24589754788794
+        y: 6.73776455026455
+      - x: 13.636363636363635
+        y: 18.907076719576718
+      - x: 1.0575903163411742
+        y: 48.53670634920635
+      - x: 21.423223310663253
+        y: 115.20337301587301
+      - x: 89.70799276221376
+        y: 103.03406084656083
+      - x: 66.94640294503026
+        y: 7.795965608465608
+      punto: TORITO_OESTE1_GEOPARK
+    area2:
+      Green: '90'
+      No_Helmet: '75'
+      Yellow: '80'
+      camara: Mesa
+      points:
+      - x: 97.49485243651338
+        y: 40.86474867724868
+      - x: 203.2164472452736
+        y: 26.04993386243386
+      - x: 294.8617957197229
+        y: 40.07109788359788
+      - x: 290.06988207400013
+        y: 144.03935185185185
+      - x: 105.58120671367067
+        y: 147.4785052910053
+      - x: 97.49485243651338
+        y: 40.335648148148145
       punto: TORITO_OESTE1_GEOPARK
     area3:
       A_Person: '10'
@@ -60,8 +58,8 @@ camera:
     "cristian.tascon@axuretechnologies.com", "fabianmartinezr867@gmail.com", "edwin.granados@axuretechnologies.com",
     "co.perforacion_07@geo-park.com", "taladrohs7@geo-park.com", "ygonzalez@geo-park.com",
     "vvalencia@geo-park.com", "fpuentes@geo-park.com", "edson.delgado@axuretechnologies.com"]'
-  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
-    false}'
+  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
+    true}'
   ip: 172.29.5.230
   label: Green, No_Harness, No_Helmet, Yellow, A_Person
   name camera: Mesa
@@ -69,8 +67,8 @@ camera:
   place: POZO11
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "15", "area2": "300", "area3": "120"}'
+  rtsp_url: VideosEnsayoModelo/videoSINCASCO.mp4
+  time_areas: '{"area1": "5", "area2": "15", "area3": "120"}'
   username: admin
 labels:
 - A_Person
