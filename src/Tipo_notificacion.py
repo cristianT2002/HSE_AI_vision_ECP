@@ -9,13 +9,18 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 import io
+from twilio.rest import Client
 
+from src.logger_config import get_logger
 # Función para enviar correos
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
+
+logger = get_logger(__name__)
+
 
 def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails, fps=20):
     """
@@ -152,6 +157,7 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
                 # Confirmar cambios
                 conexion.commit()
                 print("Video guardado en la base de datos exitosamente.")
+                logger.warning("Video guardado en la base de datos exitosamente.")
                 if envio_correo == True:
                     if get_envio_correo() == True:
                         send_email_with_outlook("Add_Video", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
@@ -219,7 +225,8 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
                 # Confirmar cambios
                 conexion.commit()
                 print("Imagen guardada en la base de datos exitosamente.")
-                
+                logger.warning(f"Imagen guardada en la base de datos exitosamente. ID: {id_a_buscar}")
+               
                 # Enviar correo si está habilitado
                 if envio_correo:
                     if get_envio_correo() == True:
@@ -263,7 +270,8 @@ def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33'
     finally:
         conexion.close()
 
-        
+
+
 # Recuperar y guardar el video desde la base de datos
 # recuperar_video_de_mariadb(7, 'recuperado')
 
@@ -320,6 +328,7 @@ def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_a
             part.add_header('Content-Disposition', f'attachment; filename="{nombre_archivo}"')
             msg.attach(part)
             print('Video adjuntado exitosamente.')
+            logger.info("Video adjuntado exitosamente.")
 
         elif img_or_video == "Add_Image":
             # Adjuntar la imagen al correo
@@ -330,6 +339,7 @@ def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_a
             part.add_header('Content-Disposition', f'attachment; filename="{nombre_archivo}"')
             msg.attach(part)
             print('Imagen adjuntada exitosamente.')
+            logger.info("Imagen adjuntada exitosamente.")
 
         # Conectar al servidor SMTP y enviar el correo
         server = smtplib.SMTP(smtp_server, smtp_port)
@@ -337,11 +347,44 @@ def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_a
         server.login(username, password)
         server.sendmail(from_address, to_address, msg.as_string())
         print('Correo enviado exitosamente.')
+        logger.warning("Correo enviado exitosamente.")
         set_envio_correo(False)
 
     except Exception as e:
         print('Error al enviar el correo:', e)
+        logger.error(f"Error al enviar el correo: {e}")
 
     finally:
         # Cerrar la conexión con el servidor
         server.quit()
+
+
+def send_sms_with_twilio(mensaje, fecha, company_notificacion, sitio_notificacion, destinatario):
+    # Credenciales de Twilio
+    account_sid = 'US435484b16fe8d64c9d71a905dd53c7f2'
+    auth_token = 'TU_AUTH_TOKEN'
+    twilio_phone_number = 'TU_NUMERO_TWILIO'  # Ejemplo: "+1234567890"
+
+    # Crear cliente de Twilio
+    client = Client(account_sid, auth_token)
+
+    # Mensaje de texto
+    sms_body = (
+        f"🚨 Alerta Detectada 🚨\n"
+        f"Evento: {mensaje}\n"
+        f"Fecha: {fecha}\n"
+        f"Empresa: {company_notificacion}\n"
+        f"Sitio: {sitio_notificacion}\n"
+        f"Por favor, tome las medidas necesarias."
+    )
+
+    try:
+        # Enviar mensaje
+        message = client.messages.create(
+            body=sms_body,
+            from_=twilio_phone_number,
+            to=destinatario  # Número del destinatario (ejemplo: "+573001234567")
+        )
+        print(f"Mensaje enviado exitosamente. SID: {message.sid}")
+    except Exception as e:
+        print(f"Error al enviar el mensaje: {e}")

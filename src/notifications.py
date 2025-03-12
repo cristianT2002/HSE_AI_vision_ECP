@@ -12,7 +12,10 @@ from src.Tipo_notificacion import save_video_from_buffer, guardar_imagen_en_mari
 from src.db_utils import connect_to_db, close_connection
 from src.load_config import load_yaml_config
 from src.model_loader import model, LABELS
+from src.logger_config import get_logger
 import threading
+
+logger = get_logger(__name__)
 
 class ProcesarDetecciones:
     def __init__(self, config_path, camera_id, shared_buffers, buffer_detecciones):
@@ -28,8 +31,12 @@ class ProcesarDetecciones:
         self.tiempo_acumulado = 0
         self.area_pintada = set()  # 🔥 Bandera para evitar repintar el área
         self.tiempo_ultimo_dibujo = {}  # 🔥 Control del tiempo del último dibujo
-        self.areas_con_deteccion = {}  # 🔥 Controla si un área tiene detecciones activas
-
+        self.areas_con_deteccion = {}  # 🔥 Controla si un área tiene detecciones activa
+        
+        self.tiempos_acumulados = {}  # Almacena la suma de tiempos
+        self.contador_salidas = {}  # Almacena la cantidad de veces que salió
+        self.tiempos_individuales = {}  # 🔥 Lista de tiempos individuales de cada salida
+        # Definir color para detección activa        
         # Definir color para detección activa
         self.COLOR_DETECCION = (0, 0, 255, 50)  # Rojo transparente
 
@@ -55,11 +62,11 @@ class ProcesarDetecciones:
 
     def procesar(self):
         # host_ip = socket.gethostbyname(socket.gethostname())
-        host_ip = "172.30.37.63"
+        host_ip = "172.30.37.77"
         feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
 
         # Guardar la URL del video feed en la base de datos
-        self.save_feed_url_to_database(self.camera_id, feed_url)
+        # self.save_feed_url_to_database(self.camera_id, feed_url)
 
         while self.running:
             # print("Buffer antes de todo: ", self.buffer_detecciones)
@@ -88,7 +95,10 @@ class ProcesarDetecciones:
                     except json.JSONDecodeError as e:
                         print(f"Error decodificando JSON de notificaciones: {e}")
                         
-                emails = self.config['camera']["info_emails"]
+                # emails = self.config['camera']["info_emails"]
+                emails = json.dumps(["cristian.tascon@axuretechnologies.com"])  # Esto genera un string JSON válido
+                # print(f'formato de emails: {emails}')
+
                 if emails:
                     try:
                         emails = json.loads(emails)
@@ -249,22 +259,6 @@ class ProcesarDetecciones:
             close_connection(connection)
 
 
-    # def dibujar_area(self, frame, pts, color):
-    #     """Pinta el área solo una vez cuando inicia la detección y la borra cuando desaparece."""
-    #     overlay = frame.copy()  # Crear una copia de la imagen
-    #     cv2.fillPoly(overlay, [pts], color[:3])  # Relleno del área con el color
-    #     alpha = color[3] / 255.0  # Transparencia
-
-    #     # Mezclar la imagen con la transparencia
-    #     cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
-
-    # def dibujo_etiquetas(self, frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height):
-    #     """Dibuja etiquetas sobre el frame."""
-    #     cv2.rectangle(frame, (x1, y1), (x2, y2), color, 1)
-    #     cv2.rectangle(frame, box_coords[0], box_coords[1], color, -1)
-    #     cv2.putText(frame, text, (text_offset_x, text_offset_y),
-    #                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-
     def dibujar_area(self, frame, pts, color):
         """Dibuja el área solo una vez, evitando acumulación de capas."""
         overlay = frame.copy()
@@ -297,91 +291,6 @@ class ProcesarDetecciones:
             dtype=np.int32
         ).reshape((-1, 1, 2))
 
-#Version inicial
-    def procesar_deteccion(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
-        """Procesa una detección específica en el frame."""
-        # try:
-        x1, y1, x2, y2 = map(int, detection.xyxy[0])
-        point = (x1, y1)
-        point2 = (int((x1 + x2) / 2), y2)
-        probability = detection.conf[0] * 100
-        class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
-        label = LABELS.get(class_index, "Unknown")
-
-        if label in area_config:
-            min_probability = float(area_config[label])
-            inside = cv2.pointPolygonTest(self.escalar_puntos(area_config), point, False)
-            
-            if probability >= min_probability:
-                
-                if area_name == "area3":
-                    inside_point2 = cv2.pointPolygonTest(pts, point2, False)
-                    if inside_point2 >= 0 and probability >= min_probability:
-                        # if self.camera_id == 2:
-                        print(f"EN AREA 3 Se detectó {label} con {probability:.2f}% en el área {area_name}, tiempo acumulado: {self.tiempo_acumulado:.2f} segundos, tiempo limite: {tiempos_limite.get(area_name, 5)}")
-                        color = self.COLORS.get(label, (255, 255, 255))
-                        text = f"{label}: {probability:.2f}%"
-                        (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
-                        text_offset_x, text_offset_y = x1, y1 - 10
-                        box_coords = ((text_offset_x, text_offset_y - text_height - 5),
-                                    (text_offset_x + text_width + 25, text_offset_y + 5))
-                        self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
-                        now_area3 = time.time()
-                        now_mostrar = datetime.now()
-                        # print("Fecha y hora actual:", now_mostrar.strftime("%Y-%m-%d %H:%M:%S"))
-
-                        if (area_name, label) not in self.tiempo_deteccion_por_area:
-                            self.tiempo_deteccion_por_area[(area_name, label)] = now_area3
-                            print("Empezo a contar el tiempo")
-                        else:
-                            self.tiempo_acumulado = now_area3 - self.tiempo_deteccion_por_area[(area_name, label)]
-                            print(f"Tiempo acumulado: {self.tiempo_acumulado:.2f} segundos")
-                            if self.tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                                self.guardar_evento(area_name, label, nombre_camera, sitio)
-                                self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
-                                self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
-                                # self.tiempo_deteccion_por_area.pop((area_name, label), None)
-                                print("Tiempo limite:", tiempos_limite.get(area_name, 5))
-                                print(f"Evento guardado en la base de datos para {area_name} con {label}")
-                                # print(self.tiempo_deteccion_por_area[(area_name, label)])
-                                
-                elif inside >= 0 and probability >= min_probability:
-                    
-                    print(f"Se detectó {label} con {probability:.2f}% en el área {area_name}, tiempo acumulado: {self.tiempo_acumulado:.2f} segundos, tiempo limite: {tiempos_limite.get(area_name, 5)}, en cámera {nombre_camera}")
-                    print("Tiempo limite:", tiempos_limite.get(area_name, 5))
-                    color = self.COLORS.get(label, (255, 255, 255))
-                    text = f"{label}: {probability:.0f}%"
-                    (text_width, text_height), _ = cv2.getTextSize(
-                        text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1
-                    )
-                    text_offset_x, text_offset_y = x1, y1 - 10
-                    box_coords = (
-                        (text_offset_x, text_offset_y - text_height - 5),
-                        (text_offset_x + text_width + 25, text_offset_y + 5)
-                    )
-                    self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
-                    now_resto = time.time()
-                    now_mostrar = datetime.now()
-                    # print("Fecha y hora actual:", now_mostrar.strftime("%Y-%m-%d %H:%M:%S"))
-
-                    if (area_name, label) not in self.tiempo_deteccion_por_area:
-                        self.tiempo_deteccion_por_area[(area_name, label)] = now_resto
-                    else:
-                        self.tiempo_acumulado = now_resto - self.tiempo_deteccion_por_area[(area_name, label)]
-                        
-                        if self.tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                            self.guardar_evento(area_name, label, nombre_camera, sitio)
-                            self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
-                            self.guardar_evidencia(frame, area_name, label, nombre_camera, info_notifications, emails)
-                
-                else:
-                    # Si la detección no cumple, reiniciamos el tiempo
-                    self.tiempo_deteccion_por_area.pop((area_name, label), None)
-                    now_resto = time.time()
-                    self.tiempo_deteccion_por_area[(area_name, label)] = now_resto
-                    self.tiempo_acumulado = now_resto - self.tiempo_deteccion_por_area[(area_name, label)]
-                    print(f"{label} salió de {area_name}, reiniciando el tiempo. {self.tiempo_acumulado:.2f} segundos, Tiempo limite: {tiempos_limite.get(area_name, 5)}")
-
 # Versión sin areas                
     def procesar_deteccion_2(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
         """Procesa una detección específica en el frame y maneja el tiempo de permanencia con margen de 2 segundos."""
@@ -393,7 +302,10 @@ class ProcesarDetecciones:
         class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
         label = LABELS.get(class_index, "Unknown")
         hora_actual_PS = 0
-        
+        tiempo_acumulado2 = 0
+        límite = 20
+
+
         if label not in area_config:
             return  # No está en las etiquetas configuradas para el área
 
@@ -438,58 +350,118 @@ class ProcesarDetecciones:
                     cv2.polylines(frame, [pts], isClosed=True, color=(0, 0, 255), thickness=2)
                     self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
                 
-                if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
-                    self.guardar_evento(area_name, label, nombre_camera, sitio, tiempos_limite)
+                if tiempo_acumulado >= 10:
+                # if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+
+                    self.guardar_evento(area_name, label, nombre_camera, sitio, tiempo_acumulado)
+                    
                     self.tiempo_deteccion_por_area[(area_name, label)] = time.time()
                     hilo = threading.Thread(target=self.guardar_evidencia, args=( frame, area_name, label, nombre_camera, info_notifications, emails), daemon=True)
                     hilo.start()
                     print(f"🚨 Evento registrado: {label} en {area_name} (Cámara {nombre_camera})")
-                
+                    logger.warning(f"Evento registrado: {label} en {area_name} (Cámara {nombre_camera} durante {tiempo_acumulado:.2f}s)")
+
                 hora_actual_PS = datetime.now().strftime("%H:%M:%S")
                 print(f"📊 {label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s a las {hora_actual_PS}")
+                # logger.info(f"{label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s a las {hora_actual_PS}")
                 print(get_envio_correo())       
         else:
             # Si no hay detección, esperar 4s antes de quitar la detección
             if (area_name, label) in self.tiempo_deteccion_por_area:
+                tiempo_acumulado2 = time.time() - self.tiempo_deteccion_por_area[(area_name, label)]  # Nuevo cálculo                 
                 tiempo_desde_ultima = time.time() - self.tiempo_ultimo_detecciones[(area_name, label)]
-                tiempo_restante = 5 - tiempo_desde_ultima  # Tiempo restante antes de resetear
-                
+                tiempo_restante = 3 - tiempo_desde_ultima  # Tiempo restante antes de resetear
+
                 if tiempo_restante > 0:
-                    # print(f"⏳ {label} en {area_name} desaparecerá en {tiempo_restante:.2f} segundos...")
-                    pass
+                    pass  # Espera antes de borrar la detección
                 else:
-                    print(f"❌ {label} salió de {area_name}, quitando color y reiniciando tiempo.")
-                    del self.tiempo_deteccion_por_area[(area_name, label)]  # 🔥 Solo se borra después de 4s
+                    # 🔥 Guardar el tiempo en el diccionario
+                    key = (area_name, label, nombre_camera)
+                    
+                    if key not in self.tiempos_acumulados:
+                        self.tiempos_acumulados[key] = 0
+                        self.contador_salidas[key] = 0
+                        self.tiempos_individuales[key] = []  # Lista para tiempos individuales
+                    
+                    self.tiempos_acumulados[key] += tiempo_acumulado2
+                    self.contador_salidas[key] += 1
+                    self.tiempos_individuales[key].append(tiempo_acumulado2)  # ✅ Ahora sí se guarda el tiempo individual
+
+                    # Calcular promedio
+                    promedio = self.tiempos_acumulados[key] / self.contador_salidas[key]
+
+                    print(f"❌ {label} salió de {area_name} en {nombre_camera}, y duró {tiempo_acumulado2:.2f}s")
+                    logger.warning(f"{label} salio de {area_name} en {nombre_camera}, y duro {tiempo_acumulado2:.2f}s")
+
+                    promedio_dict = {}
+
+                    for (area, etiqueta, camara), tiempo_total in self.tiempos_acumulados.items():
+                        if camara == nombre_camera:
+                            if self.contador_salidas[(area, etiqueta, camara)] > 0:
+                                promedio = tiempo_total / self.contador_salidas[(area, etiqueta, camara)]
+                                if area not in promedio_dict:
+                                    promedio_dict[area] = {}
+                                promedio_dict[area][etiqueta] = f"{promedio:.2f}"
+
+                    print(f'Promedio diccionario: {promedio_dict}')
+
+                    self.actualizar_promedio(sitio, nombre_camera, promedio_dict)
+
+                    del self.tiempo_deteccion_por_area[(area_name, label)]
                     del self.tiempo_ultimo_detecciones[(area_name, label)]
+
                     set_envio_correo(True)
 
 
     
+#Función para guardar tiempos promedio en base de datos, filtrando por PUNTO y NOMBRE DE CAMARA
+    def actualizar_promedio(self, sitio, nombre_camera, promedio_dict):
+        """Actualiza la base de datos con el promedio de permanencia."""
+        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+        cursor = connection.cursor()
+
+        try:
+            promedio_json = json.dumps(promedio_dict)
+            update_query = """
+                UPDATE IP_Videofeed4
+                SET PROMEDIO = %s
+                WHERE NOMBRE_CAMARA = %s AND PUNTO = %s
+            """
+            cursor.execute(update_query, (promedio_json, nombre_camera, sitio))
+            connection.commit()
+            print(f"✅ Base de datos actualizada para {nombre_camera} en {sitio} con el promedio: {promedio_json}")
+
+        except Exception as e:
+            print(f"⚠️ Error al actualizar la base de datos: {e}")
+
+        finally:
+            cursor.close()
+            close_connection(connection)
 
 # ------------- guardar_evento
 
-    def guardar_evento(self, area_name, label, nombre_camera, sitio, tiempos_limite):
+    def guardar_evento(self, area_name, label, nombre_camera, sitio, tiempo_acumulado):
         """Guarda un evento en la base de datos."""
         fecha_actual = datetime.now().strftime("%d/%m/%Y")
         hora_actual = datetime.now().strftime("%H:%M:%S")
         if label == "A_Person":
             NombreLabel = "Personas"
-            descript = f"Se detectó una Persona en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
+            descript = f"Se detectó una Persona en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
         elif label == "White":
             NombreLabel = "Persona con casco blanco"
-            descript = f"Se detectó una Persona con casco blanco en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
+            descript = f"Se detectó una Persona con casco blanco en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
         elif label == "No_Helmet":
             NombreLabel = "Persona Sin casco"
-            descript = f"Se detectó una Persona sin casco en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
+            descript = f"Se detectó una Persona sin casco en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
         elif label == "Yellow":
             NombreLabel = "Persona con casco Amarillo"
-            descript = f"Se detectó una Persona con casco Amarillo en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
+            descript = f"Se detectó una Persona con casco Amarillo en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
         elif label == "Green":
             NombreLabel = "Persona con casco Verde"
-            descript = f"Se detectó una Persona con casco Verde en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
+            descript = f"Se detectó una Persona con casco Verde en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
         else:
             NombreLabel = label  # Asignación de valor para evitar el error
-            descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera} durante {tiempos_limite.get(area_name, 5)}s"
+            descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
         
         self.add_event_to_database(
             sitio=sitio,
