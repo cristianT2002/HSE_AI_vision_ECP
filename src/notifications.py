@@ -75,7 +75,60 @@ class ProcesarDetecciones:
             try:
                 self.config = load_yaml_config(self.config_path)
                 rtsp_url = self.config["camera"]["rtsp_url"]
-                areas = self.config["camera"]["coordinates"]
+                # areas = self.config["camera"]["coordinates"]
+
+                areas = json.dumps({
+                    'area1': {
+                        'Green': '70',
+                        'No_Harness': '70',
+                        'No_Helmet': '75',
+                        'Yellow': '70',
+                        'camara': 'Mesa',
+                        'points': [
+                            {'x': 67.24589754788794, 'y': 6.73776455026455},
+                            {'x': 13.636363636363635, 'y': 18.907076719576718},
+                            {'x': 1.0575903163411742, 'y': 48.53670634920635},
+                            {'x': 21.423223310663253, 'y': 115.20337301587301},
+                            {'x': 89.70799276221376, 'y': 103.03406084656083},
+                            {'x': 66.94640294503026, 'y': 7.795965608465608}
+                        ],
+                        'punto': 'TORITO_OESTE1_GEOPARK'
+                    },
+                    'area2': {
+                        'Green': '70',
+                        'No_Helmet': '70',
+                        'Yellow': '70',
+                        'camara': 'Mesa',
+                        'points': [
+                            {'x': 102.88575528795158, 'y': 36.36739417989418},
+                            {'x': 200.82049042241218, 'y': 26.314484126984127},
+                            {'x': 238.85630498533723, 'y': 30.547288359788357},
+                            {'x': 295.4607849254383, 'y': 30.811838624338623},
+                            {'x': 293.66381730829227, 'y': 95.8912037037037},
+                            {'x': 270.3032382853934, 'y': 96.42030423280423},
+                            {'x': 269.40475447682036, 'y': 124.198082010582},
+                            {'x': 298.1562363511574, 'y': 137.16104497354496},
+                            {'x': 298.75522555687274, 'y': 148.8012566137566},
+                            {'x': 105.58120671367067, 'y': 148.8012566137566},
+                            {'x': 103.18524989080925, 'y': 36.63194444444444}
+                        ],
+                        'punto': 'TORITO_OESTE1_GEOPARK'
+                    },
+                    'area3': {
+                        'A_Person': '10',
+                        'camara': 'Mesa',
+                        'points': [
+                            {'x': 128.34279653085417, 'y': 91.3938492063492},
+                            {'x': 129.24128033942722, 'y': 113.61607142857142},
+                            {'x': 190.9371685281088, 'y': 99.5949074074074},
+                            {'x': 176.86092219379796, 'y': 80.01818783068782},
+                            {'x': 127.74380732513882, 'y': 90.6001984126984}
+                        ],
+                        'punto': 'TORITO_OESTE1_GEOPARK'
+                    }
+                })
+
+                areas = json.loads(areas)                  
                 tiempos_limite = json.loads(self.config["camera"]["time_areas"])
 
                 # Convertir valores de tiempos_limite a float
@@ -305,7 +358,6 @@ class ProcesarDetecciones:
         tiempo_acumulado2 = 0
         límite = 20
 
-
         if label not in area_config:
             return  # No está en las etiquetas configuradas para el área
 
@@ -350,8 +402,8 @@ class ProcesarDetecciones:
                     cv2.polylines(frame, [pts], isClosed=True, color=(0, 0, 255), thickness=2)
                     self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
                 
-                if tiempo_acumulado >= 10:
-                # if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                # if tiempo_acumulado >= 10:
+                if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
 
                     self.guardar_evento(area_name, label, nombre_camera, sitio, tiempo_acumulado)
                     
@@ -391,7 +443,7 @@ class ProcesarDetecciones:
                     promedio = self.tiempos_acumulados[key] / self.contador_salidas[key]
 
                     print(f"❌ {label} salió de {area_name} en {nombre_camera}, y duró {tiempo_acumulado2:.2f}s")
-                    logger.warning(f"{label} salio de {area_name} en {nombre_camera}, y duro {tiempo_acumulado2:.2f}s")
+                    logger.warning(f"{label} salio de {area_name} en {nombre_camera}, y duro {tiempo_acumulado2:.2f}s se pone bandera correo en {get_envio_correo()}")
 
                     promedio_dict = {}
 
@@ -447,35 +499,42 @@ class ProcesarDetecciones:
         if label == "A_Person":
             NombreLabel = "Personas"
             descript = f"Se detectó una Persona en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
+            modelo = "Personas"
         elif label == "White":
             NombreLabel = "Persona con casco blanco"
             descript = f"Se detectó una Persona con casco blanco en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
+            modelo = "Blanco"
         elif label == "No_Helmet":
             NombreLabel = "Persona Sin casco"
             descript = f"Se detectó una Persona sin casco en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
+            modelo = "Sin Casco"        
         elif label == "Yellow":
             NombreLabel = "Persona con casco Amarillo"
             descript = f"Se detectó una Persona con casco Amarillo en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
+            modelo = "Amarillo"        
         elif label == "Green":
             NombreLabel = "Persona con casco Verde"
             descript = f"Se detectó una Persona con casco Verde en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
+            modelo = "Verde"
         else:
             NombreLabel = label  # Asignación de valor para evitar el error
             descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
-        
+            modelo = label
+
         self.add_event_to_database(
             sitio=sitio,
             company="GEOPARK",
             fecha=fecha_actual,
             hora=hora_actual,
             tipo_evento=f"Detección de {NombreLabel} en {area_name} en la cámara {nombre_camera}",
-            descripcion=descript
+            descripcion=descript,
+            mod = modelo
         )
         
         id_registro = self.get_last_event_id()
         set_id(id_registro)
 
-    def add_event_to_database(self,sitio, company, fecha, hora, tipo_evento, descripcion):
+    def add_event_to_database(self,sitio, company, fecha, hora, tipo_evento, descripcion, mod):
         """
         Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.
         """
@@ -484,10 +543,11 @@ class ProcesarDetecciones:
 
         try:
             insert_query = """
-                INSERT INTO Eventos (sitio, company, fecha, hora, tipo_evento, descripcion)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO Eventos (sitio, company, fecha, hora, tipo_evento, descripcion
+                , modelo)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
-            cursor.execute(insert_query, (sitio, company, fecha, hora, tipo_evento, descripcion))
+            cursor.execute(insert_query, (sitio, company, fecha, hora, tipo_evento, descripcion, mod))
             connection.commit()
         except Exception as e:
             print(f"Error al añadir el evento a la base de datos: {e}")

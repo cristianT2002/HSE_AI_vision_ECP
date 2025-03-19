@@ -64,21 +64,18 @@ camera:
       - x: 127.74380732513882
         y: 90.6001984126984
       punto: TORITO_OESTE1_GEOPARK
-  info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
-    "cristian.tascon@axuretechnologies.com", "fabianmartinezr867@gmail.com", "edwin.granados@axuretechnologies.com",
-    "co.perforacion_07@geo-park.com", "taladrohs7@geo-park.com", "ygonzalez@geo-park.com",
-    "vvalencia@geo-park.com", "fpuentes@geo-park.com", "edson.delgado@axuretechnologies.com"]'
+  info_emails: ''
   info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
-  ip: 172.29.5.230
+  ip: 172.29.5.229
   label: Green, No_Harness, No_Helmet, Yellow, A_Person
   name camera: Mesa
   password: 4xUR3_2017
-  place: POZO11
-  point: TORITO_OESTE1_GEOPARK
+  place: POZO12
+  point: TORITO_OESTE2_GEOPARK
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": 4, "area2": "15", "area3": "120"}'
+  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.229:554/Streaming/Channels/102
+  time_areas: '{"area1": "180", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person

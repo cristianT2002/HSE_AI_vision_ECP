@@ -10,6 +10,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 import io
 from twilio.rest import Client
+import traceback
 
 from src.logger_config import get_logger
 # Función para enviar correos
@@ -161,7 +162,9 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
                 if envio_correo == True:
                     if get_envio_correo() == True:
                         send_email_with_outlook("Add_Video", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
-                
+                        numero_destino = '+573012874982'  # Número de destino en formato internacional (ejemplo para Colombia)
+                        mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'  
+                        enviar_sms(numero_destino, mensaje)      
                 # Aquí puedes usar los datos como necesites
             else:
                 print(f"No se encontró un registro con ID {id_a_buscar}.")
@@ -231,6 +234,10 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
                 if envio_correo:
                     if get_envio_correo() == True:
                         send_email_with_outlook("Add_Image", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
+                        numero_destino = '+573012874982'  # Número de destino en formato internacional (ejemplo para Colombia)
+                        mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'  
+                        enviar_sms(numero_destino, mensaje)
+
             else:
                 print(f"No se encontró un registro con ID {id_a_buscar}.")
     
@@ -240,41 +247,11 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
     finally:
         conexion.close()
     
-def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
-    # Conectar a la base de datos
-    conexion = pymysql.connect(host=host, user=user, password=password, database=database)
-    
-    try:
-        with conexion.cursor() as cursor:
-            # Consulta para obtener el video y el nombre del archivo
-            sql = "SELECT Video_Alerta, Nombre_Archivo FROM Notificaciones WHERE id_notificacion = %s"
-            cursor.execute(sql, (id_video,))
-            resultado = cursor.fetchone()
-            
-            if resultado:
-                video_data = resultado[0]  # Contenido del video
-                nombre_archivo = resultado[1]  # Nombre del archivo
-                
-                # Agregar el string adicional al nombre del archivo antes de la extensión
-                nombre_base, extension = nombre_archivo.rsplit('.', 1)
-                nuevo_nombre_archivo = f"{nombre_base}_{string_adicional}.{extension}"
-                
-                # Guardar el video con el nuevo nombre
-                with open(nuevo_nombre_archivo, 'wb') as archivo_salida:
-                    archivo_salida.write(video_data)
-                print(f"Video recuperado y guardado como {nuevo_nombre_archivo}.")
-            else:
-                print("No se encontró un video con ese ID.")
-    except Exception as e:
-        print("Error al recuperar el video:", e)
-    finally:
-        conexion.close()
 
 
 
 # Recuperar y guardar el video desde la base de datos
 # recuperar_video_de_mariadb(7, 'recuperado')
-
 
 def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_archivo, sitio_notificacion, company_notificacion):
     # Configuración del servidor SMTP de Office 365
@@ -358,33 +335,49 @@ def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_a
         # Cerrar la conexión con el servidor
         server.quit()
 
+ACCOUNT_SID = 'AC743208a5c6a4be7845784bd6a774f06e'
+AUTH_TOKEN = 'eb6646dc29d975e7983d6ad810457964'
+TWILIO_PHONE_NUMBER = '12543234954'
 
-def send_sms_with_twilio(mensaje, fecha, company_notificacion, sitio_notificacion, destinatario):
-    # Credenciales de Twilio
-    account_sid = 'US435484b16fe8d64c9d71a905dd53c7f2'
-    auth_token = 'TU_AUTH_TOKEN'
-    twilio_phone_number = 'TU_NUMERO_TWILIO'  # Ejemplo: "+1234567890"
+def enviar_sms(numero_destino, mensaje):
+  
 
-    # Crear cliente de Twilio
-    client = Client(account_sid, auth_token)
-
-    # Mensaje de texto
-    sms_body = (
-        f"🚨 Alerta Detectada 🚨\n"
-        f"Evento: {mensaje}\n"
-        f"Fecha: {fecha}\n"
-        f"Empresa: {company_notificacion}\n"
-        f"Sitio: {sitio_notificacion}\n"
-        f"Por favor, tome las medidas necesarias."
+    cliente = Client(ACCOUNT_SID, AUTH_TOKEN)
+    
+    mensaje_enviado = cliente.messages.create(
+        body=mensaje,
+        from_=TWILIO_PHONE_NUMBER,
+        to=numero_destino
     )
+    
+    print(f"Mensaje enviado con SID: {mensaje_enviado.sid}")
 
+def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
+    # Conectar a la base de datos
+    conexion = pymysql.connect(host=host, user=user, password=password, database=database)
+    
     try:
-        # Enviar mensaje
-        message = client.messages.create(
-            body=sms_body,
-            from_=twilio_phone_number,
-            to=destinatario  # Número del destinatario (ejemplo: "+573001234567")
-        )
-        print(f"Mensaje enviado exitosamente. SID: {message.sid}")
+        with conexion.cursor() as cursor:
+            # Consulta para obtener el video y el nombre del archivo
+            sql = "SELECT Video_Alerta, Nombre_Archivo FROM Notificaciones WHERE id_notificacion = %s"
+            cursor.execute(sql, (id_video,))
+            resultado = cursor.fetchone()
+            
+            if resultado:
+                video_data = resultado[0]  # Contenido del video
+                nombre_archivo = resultado[1]  # Nombre del archivo
+                
+                # Agregar el string adicional al nombre del archivo antes de la extensión
+                nombre_base, extension = nombre_archivo.rsplit('.', 1)
+                nuevo_nombre_archivo = f"{nombre_base}_{string_adicional}.{extension}"
+                
+                # Guardar el video con el nuevo nombre
+                with open(nuevo_nombre_archivo, 'wb') as archivo_salida:
+                    archivo_salida.write(video_data)
+                print(f"Video recuperado y guardado como {nuevo_nombre_archivo}.")
+            else:
+                print("No se encontró un video con ese ID.")
     except Exception as e:
-        print(f"Error al enviar el mensaje: {e}")
+        print("Error al recuperar el video:", e)
+    finally:
+        conexion.close()
