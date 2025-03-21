@@ -75,10 +75,54 @@ class ProcesarDetecciones:
             try:
                 self.config = load_yaml_config(self.config_path)
                 rtsp_url = self.config["camera"]["rtsp_url"]
-                # areas = self.config["camera"]["coordinates"]
 
+                camara_actual = None
+                # print(self.config_path)
+                #Identicamos la cámara según el nombre del archivo
+                if "camera_1" in os.path.basename(self.config_path):
+                    print("Entro mesa")
+                    camara_actual = "Mesa"
+                    areas = self.config["camera"]["coordinates"]
+                elif "camera_2" in os.path.basename(self.config_path):
+                    camara_actual = "Planchada"
+                    areas = self.config["camera"]["coordinates"]
+                # else:
+                #     raise ValueError(f"❌ Cámara no reconocida: {camara_actual}")
+                
+                # print(f"📡 Configuración cargada para cámara {camara_actual}:", areas)
+
+            except Exception as e:
+                print(f"❌ Error al cargar la configuración: {e}")
+
+            #Manejo seguro de "camera_actual" en caso de error
+            if camara_actual is None:
+                camara_actual = "Desconocida"  
+                # print(f"🔄 Usando datos por defecto para cámara {camara_actual}") 
+
+            
+            # # Verifica qué cámara se está utilizando
+            # camara_actual = self.config["camera"]["nombre_camara"]
+
+            # Selecciona las áreas de la cámara correspondiente
+            # if camara_actual == "Mesa":
+            #     areas = self.config["camera"]["Mesa"]["coordinates"]
+            # elif camara_actual == "Planchada":
+            #     areas = self.config["camera"]["Planchada"]["coordinates"]
+            # else:
+            #     raise ValueError(f"❌ Cámara no reconocida: {camara_actual}")
+
+            # print("📡 Configuración cargada:", areas)
+
+            # self.config = load_yaml_config(self.config_path)
+            # rtsp_url = self.config["camera"]["rtsp_url"]
+            # areas = self.config["camera"]["coordinates"]
+
+            # print("📡 Configuración cargada:", areas)
+            if "camera_1.yaml" in os.path.basename(self.config_path): 
+                print("Entro mesa")
                 areas = json.dumps({
                     'area1': {
+                        'A_Person': '10',
                         'Green': '70',
                         'No_Harness': '70',
                         'No_Helmet': '75',
@@ -115,7 +159,7 @@ class ProcesarDetecciones:
                         'punto': 'TORITO_OESTE1_GEOPARK'
                     },
                     'area3': {
-                        'A_Person': '10',
+                        'A_Person': '5',
                         'camara': 'Mesa',
                         'points': [
                             {'x': 128.34279653085417, 'y': 91.3938492063492},
@@ -127,40 +171,63 @@ class ProcesarDetecciones:
                         'punto': 'TORITO_OESTE1_GEOPARK'
                     }
                 })
+                areas = json.loads(areas)
+            elif "camera_2.yaml" in os.path.basename(self.config_path):
+                print("Entro planchada")
+                areas = json.dumps({
+                    'area1': {
+                        'A_Person': '50',
+                        'camara': 'Planchada',
+                        'points': [
+                            {'x': 182.25182504523616, 'y': 62.55787037037037},
+                            {'x': 95.39839021650964, 'y': 127.90178571428571},
+                            {'x': 169.6730517252137, 'y': 147.4785052910053},
+                            {'x': 216.39420977101142, 'y': 70.22982804232804},
+                            {'x': 182.85081425095152, 'y': 62.55787037037037}
+                        ],
+                        'punto': 'TORITO_OESTE1_GEOPARK'
+                    }
+                })
+                areas = json.loads(areas)
+            # print(f"🔄 Usando datos por defecto para cámara {camara_actual}")
+            
+            # print("📡 Configuración areas:", areas)
+            
+            # areas = json.loads(areas)                  
+            tiempos_limite = json.loads(self.config["camera"]["time_areas"])
+            # tiempos_limite = json.loads(self.config["camera"].get("time_areas", "{}"))
+            # print(f"🔎 tiempos_limite cargado: {tiempos_limite}")
 
-                areas = json.loads(areas)                  
-                tiempos_limite = json.loads(self.config["camera"]["time_areas"])
 
-                # Convertir valores de tiempos_limite a float
-                tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-                # Convertir valores de tiempos_limite a float
-                if isinstance(tiempos_limite, str):
-                    tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
-                tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-                
-                sitio = self.config['camera']["point"]
-                nombre_camera = self.config['camera']["name camera"]
-                info_notifications = self.config['camera']["info_notifications"]
-                if info_notifications:
-                    try:
-                        info_notifications = json.loads(info_notifications)
-                        # print(info_notifications)
-                    except json.JSONDecodeError as e:
-                        print(f"Error decodificando JSON de notificaciones: {e}")
-                        
-                # emails = self.config['camera']["info_emails"]
-                emails = json.dumps(["cristian.tascon@axuretechnologies.com"])  # Esto genera un string JSON válido
-                # print(f'formato de emails: {emails}')
 
-                if emails:
-                    try:
-                        emails = json.loads(emails)
-                        # print(emails)
-                    except json.JSONDecodeError as e:
-                        print(f"Error decodificando JSON de correos: {e}")
-            except Exception as e:
-                print(f"Error al cargar configuración: {e}")
-                return
+            # Convertir valores de tiempos_limite a float
+            tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+            # Convertir valores de tiempos_limite a float
+            if isinstance(tiempos_limite, str):
+                tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
+            tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+            
+            sitio = self.config['camera']["point"]
+            nombre_camera = self.config['camera']["name camera"]
+            info_notifications = self.config['camera']["info_notifications"]
+            if info_notifications:
+                try:
+                    info_notifications = json.loads(info_notifications)
+                    # print(info_notifications)
+                except json.JSONDecodeError as e:
+                    print(f"Error decodificando JSON de notificaciones: {e}")
+                    
+            # emails = self.config['camera']["info_emails"]
+            emails = json.dumps(["fabianmartinezr867@gmail.com"])  # Esto genera un string JSON válido
+            # print(f'formato de emails: {emails}')
+
+            if emails:
+                try:
+                    emails = json.loads(emails)
+                    # print(emails)
+                except json.JSONDecodeError as e:
+                    print(f"Error decodificando JSON de correos: {e}")
+            
 
             # Variables para el seguimiento de detecciones
             target_width, target_height = 640, 380  # Resolución deseada
@@ -197,7 +264,7 @@ class ProcesarDetecciones:
                     cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
 
                     results = model(frame, verbose=False)
-
+                    print("Tiempos limite: ", tiempos_limite)
                     for detection in results[0].boxes:
                         self.procesar_deteccion_2(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts)
                     
