@@ -47,7 +47,7 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
 
             # Actualizar YAML si hay cambios en la base de datos
             if cameras != previous_data:
-                print("📡 Datos obtenidos de la base de datos:", cameras)
+                # print("📡 Datos obtenidos de la base de datos:", cameras)
                 generate_camera_yaml(cameras)  # Actualizar YAML
                 cursor.execute(db_config["query_json"])
                 data = cursor.fetchall()

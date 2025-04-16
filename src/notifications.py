@@ -224,6 +224,34 @@ class ProcesarDetecciones:
             except Exception as e:
                 print(f"Error al cargar configuración: {e}")
                 return
+            # Convertir valores de tiempos_limite a float
+            tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+            # Convertir valores de tiempos_limite a float
+            if isinstance(tiempos_limite, str):
+                tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
+            tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+            
+            sitio = self.config['camera']["point"]
+            nombre_camera = self.config['camera']["name camera"]
+            info_notifications = self.config['camera']["info_notifications"]
+            if info_notifications:
+                try:
+                    info_notifications = json.loads(info_notifications)
+                    # print(info_notifications)
+                except json.JSONDecodeError as e:
+                    print(f"Error decodificando JSON de notificaciones: {e}")
+                    
+            # emails = self.config['camera']["info_emails"]
+            emails = json.dumps(["fabianmartinezr867@gmail.com"])  # Esto genera un string JSON válido
+            # print(f'formato de emails: {emails}')
+
+            if emails:
+                try:
+                    emails = json.loads(emails)
+                    # print(emails)
+                except json.JSONDecodeError as e:
+                    print(f"Error decodificando JSON de correos: {e}")
+            
 
             target_width, target_height = 640, 380
             frame_buffer = self.shared_buffers.get(self.camera_id, None)
@@ -488,7 +516,7 @@ class ProcesarDetecciones:
 
 
     # Versión sin areas                
-    def procesar_deteccion_2(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
+    def procesar_deteccion_2(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts, override_label=None):
         """Procesa una detección específica en el frame y maneja el tiempo de permanencia con margen de 2 segundos."""
         
         x1, y1, x2, y2 = map(int, detection.xyxy[0])

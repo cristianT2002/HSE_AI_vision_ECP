@@ -51,7 +51,7 @@ def generate_camera_yaml(data):
     existing_files = set(os.listdir(CONFIGS_FOLDER))
 
     for camera in data:
-        print(camera)
+        # print(camera)
         camera_id = camera["ID"]
         place_cam = camera["LUGAR"]
         ponit_int = camera["PUNTO"]
