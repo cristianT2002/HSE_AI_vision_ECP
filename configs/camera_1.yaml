@@ -24,7 +24,7 @@ camera:
       punto: TORITO_OESTE1_GEOPARK
     area2:
       A_Person: '30'
-      Green: '74'
+      Green: '60'
       No_Helmet: '50'
       White: '40'
       Yellow: '50'
