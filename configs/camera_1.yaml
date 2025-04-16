@@ -1,11 +1,9 @@
 camera:
   coordinates:
     area1:
-      A_Person: '30'
       Green: '45'
       No_Harness: '45'
       No_Helmet: '50'
-      Orange: '45'
       Yellow: '50'
       camara: Mesa
       points:
@@ -23,10 +21,8 @@ camera:
         y: 7.795965608465608
       punto: TORITO_OESTE1_GEOPARK
     area2:
-      A_Person: '30'
       Green: '60'
       No_Helmet: '50'
-      White: '40'
       Yellow: '50'
       camara: Mesa
       points:

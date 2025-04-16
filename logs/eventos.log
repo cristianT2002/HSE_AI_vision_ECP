@@ -1,0 +1,61 @@
+2025-04-16 11:43:21,289 - WARNING - A_Person salio de area3 en Mesa, y duro 3.03s se pone bandera correo en True
+2025-04-16 11:43:39,731 - WARNING - A_Person salio de area3 en Mesa, y duro 6.84s se pone bandera correo en True
+2025-04-16 11:45:41,036 - WARNING - A_Person salio de area3 en Mesa, y duro 119.87s se pone bandera correo en True
+2025-04-16 11:45:45,606 - WARNING - A_Person salio de area3 en Mesa, y duro 4.35s se pone bandera correo en True
+2025-04-16 11:46:07,044 - WARNING - A_Person salio de area3 en Mesa, y duro 20.88s se pone bandera correo en True
+2025-04-16 11:47:11,466 - WARNING - A_Person salio de area3 en Mesa, y duro 52.64s se pone bandera correo en True
+2025-04-16 11:47:51,545 - WARNING - A_Person salio de area3 en Mesa, y duro 15.99s se pone bandera correo en True
+2025-04-16 11:48:00,841 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\ANALITICA\AppData\Local\Programs\Python\Python310\lib\multiprocessing\connection.py", line 317, in _recv_bytes
+    nread, err = ov.GetOverlappedResult(True)
+BrokenPipeError: [WinError 109] Ha terminado la canalización
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ANALITICA\Documents\GitHub\HSE_AI_vision\ent_back_HSE_AI\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\ANALITICA\Documents\GitHub\HSE_AI_vision\ent_back_HSE_AI\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\ANALITICA\Documents\GitHub\HSE_AI_vision\ent_back_HSE_AI\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\ANALITICA\Documents\GitHub\HSE_AI_vision\ent_back_HSE_AI\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\ANALITICA\Documents\GitHub\HSE_AI_vision\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+  File "<string>", line 2, in get
+  File "C:\Users\ANALITICA\AppData\Local\Programs\Python\Python310\lib\multiprocessing\managers.py", line 818, in _callmethod
+    kind, result = conn.recv()
+  File "C:\Users\ANALITICA\AppData\Local\Programs\Python\Python310\lib\multiprocessing\connection.py", line 255, in recv
+    buf = self._recv_bytes()
+  File "C:\Users\ANALITICA\AppData\Local\Programs\Python\Python310\lib\multiprocessing\connection.py", line 326, in _recv_bytes
+    raise EOFError
+EOFError
+2025-04-16 11:48:00,841 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\ANALITICA\AppData\Local\Programs\Python\Python310\lib\multiprocessing\connection.py", line 317, in _recv_bytes
+    nread, err = ov.GetOverlappedResult(True)
+BrokenPipeError: [WinError 109] Ha terminado la canalización
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ANALITICA\Documents\GitHub\HSE_AI_vision\ent_back_HSE_AI\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\ANALITICA\Documents\GitHub\HSE_AI_vision\ent_back_HSE_AI\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\ANALITICA\Documents\GitHub\HSE_AI_vision\ent_back_HSE_AI\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\ANALITICA\Documents\GitHub\HSE_AI_vision\ent_back_HSE_AI\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\ANALITICA\Documents\GitHub\HSE_AI_vision\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+  File "<string>", line 2, in get
+  File "C:\Users\ANALITICA\AppData\Local\Programs\Python\Python310\lib\multiprocessing\managers.py", line 818, in _callmethod
+    kind, result = conn.recv()
+  File "C:\Users\ANALITICA\AppData\Local\Programs\Python\Python310\lib\multiprocessing\connection.py", line 255, in recv
+    buf = self._recv_bytes()
+  File "C:\Users\ANALITICA\AppData\Local\Programs\Python\Python310\lib\multiprocessing\connection.py", line 326, in _recv_bytes
+    raise EOFError
+EOFError
