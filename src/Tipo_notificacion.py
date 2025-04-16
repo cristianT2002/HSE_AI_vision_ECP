@@ -70,7 +70,7 @@ def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails
     guardar_video_en_mariadb(output_path, output_path, envio_correo, lista_emails)
     print(f"Video guardado como {output_path}")
     
-def borrar_primer_registro(host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
+def borrar_primer_registro(host='10.20.30.33', user='analitica', password='4xUR3_2017', database='hseVideoAnalytics'):
     # Conectar a la base de datos
     conexion = pymysql.connect(host=host, user=user, password=password, database=database, cursorclass=pymysql.cursors.DictCursor)
     
@@ -106,7 +106,7 @@ def borrar_primer_registro(host='10.20.30.33', user='ax_monitor', password='axur
         conexion.close()
 
     
-def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
+def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, host='10.20.30.33', user='analitica', password='4xUR3_2017', database='hseVideoAnalytics'):
     # Conectar a la base de datos
     conexion = pymysql.connect(host=host, user=user, password=password, database=database, cursorclass=pymysql.cursors.DictCursor)
     ultimo_registro = get_id()
@@ -171,7 +171,7 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
         conexion.close()
 
     
-def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
+def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='10.20.30.33', user='analitica', password='4xUR3_2017', database='hseVideoAnalytics'):
     # Conectar a la base de datos
     conexion = pymysql.connect(host=host, user=user, password=password, database=database, cursorclass=pymysql.cursors.DictCursor)
     
@@ -240,7 +240,7 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
     finally:
         conexion.close()
     
-def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
+def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='analitica', password='4xUR3_2017', database='hseVideoAnalytics'):
     # Conectar a la base de datos
     conexion = pymysql.connect(host=host, user=user, password=password, database=database)
     
@@ -347,7 +347,7 @@ def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_a
         server.login(username, password)
         server.sendmail(from_address, to_address, msg.as_string())
         print('Correo enviado exitosamente.')
-        logger.warning("Correo enviado exitosamente.")
+        logger.warning(f"Correo enviado exitosamente se pone bandera envio correo en {get_envio_correo}.")
         set_envio_correo(False)
 
     except Exception as e:

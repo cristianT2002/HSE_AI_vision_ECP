@@ -1,12 +1,10 @@
 camera:
   coordinates:
     area1:
-      A_Person: '30'
-      Green: '45'
-      No_Harness: '45'
-      No_Helmet: '50'
-      Orange: '45'
-      Yellow: '50'
+      Green: '70'
+      No_Harness: '70'
+      No_Helmet: '75'
+      Yellow: '70'
       camara: Mesa
       points:
       - x: 67.24589754788794
@@ -23,11 +21,9 @@ camera:
         y: 7.795965608465608
       punto: TORITO_OESTE1_GEOPARK
     area2:
-      A_Person: '30'
-      Green: '74'
-      No_Helmet: '50'
-      White: '40'
-      Yellow: '50'
+      Green: '90'
+      No_Helmet: '90'
+      Yellow: '95'
       camara: Mesa
       points:
       - x: 102.88575528795158
@@ -54,7 +50,7 @@ camera:
         y: 36.63194444444444
       punto: TORITO_OESTE1_GEOPARK
     area3:
-      A_Person: '15'
+      A_Person: '10'
       camara: Mesa
       points:
       - x: 128.34279653085417
@@ -68,19 +64,18 @@ camera:
       - x: 127.74380732513882
         y: 90.6001984126984
       punto: TORITO_OESTE1_GEOPARK
-  info_emails: '["nelson.ceron@axuretechnologies.com", "cristian.tascon@axuretechnologies.com",
-    "fabianmartinezr867@gmail.com"]'
+  info_emails: null
   info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
     true}'
-  ip: 172.29.5.230
+  ip: 172.29.5.228
   label: Green, No_Harness, No_Helmet, Yellow, A_Person
-  name camera: Mesa
+  name camera: Planchada
   password: 4xUR3_2017
-  place: POZO11
-  point: TORITO_OESTE1_GEOPARK
+  place: POZO13
+  point: HCL
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": 4, "area2": "180", "area3": "120"}'
+  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.228:554/Streaming/Channels/102
+  time_areas: '{"area1": "180", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person

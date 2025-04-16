@@ -60,99 +60,287 @@ class ProcesarDetecciones:
             "gloves": (61, 223, 43),  # Rojo
         }
 
-    def procesar(self):
-        # host_ip = socket.gethostbyname(socket.gethostname())
-        host_ip = "172.30.37.77"
-        feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
+     #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
+    def get_head_region(self, person_box, fraction=0.40, offset=0):
+        x1, y1, x2, y2 = person_box
+        y1_adjusted = max(0, y1 - offset)
+        adjusted_height = y2 - y1_adjusted
+        head_height = int(adjusted_height * fraction)
+        return (x1, y1_adjusted, x2, y1_adjusted + head_height)
+    
+    #---------------------AÑADI------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        # Guardar la URL del video feed en la base de datos
-        # self.save_feed_url_to_database(self.camera_id, feed_url)
+    def compute_iou(self, boxA, boxB):
+        xA = max(boxA[0], boxB[0])
+        yA = max(boxA[1], boxB[1])
+        xB = min(boxA[2], boxB[2])
+        yB = min(boxA[3], boxB[3])
+        interArea = max(0, xB - xA) * max(0, yB - yA)
+        areaA = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
+        areaB = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
+        union = areaA + areaB - interArea
+        return interArea / union if union > 0 else 0
+    #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def is_inside(self, inner_box, outer_box):
+        x1, y1, x2, y2 = inner_box
+        X1, Y1, X2, Y2 = outer_box
+        return (x1 >= X1) and (y1 >= Y1) and (x2 <= X2) and (y2 <= Y2)
+
+    
+    #--------------------------------------------ORIGINAL PROCESAR -------------------------------------------------------------------------------------------------------------------------------------------------
+
+    # def procesar(self):
+    #     # host_ip = socket.gethostbyname(socket.gethostname())
+    #     host_ip = "172.30.37.48"
+    #     host_ip = "172.30.37.67"    #Este toca usarlo
+    #     feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
+
+    #     # Guardar la URL del video feed en la base de datos
+    #     self.save_feed_url_to_database(self.camera_id, feed_url)
+
+    #     while self.running:
+    #         # print("Buffer antes de todo: ", self.buffer_detecciones)
+            
+    #         # Cargar configuración
+    #         try:
+    #             self.config = load_yaml_config(self.config_path)
+    #             rtsp_url = self.config["camera"]["rtsp_url"]
+    #             areas = self.config["camera"]["coordinates"]
+    #             tiempos_limite = json.loads(self.config["camera"]["time_areas"])
+
+    #             # Convertir valores de tiempos_limite a float
+    #             tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+    #             # Convertir valores de tiempos_limite a float
+    #             if isinstance(tiempos_limite, str):
+    #                 tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
+    #             tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
+                
+    #             sitio = self.config['camera']["point"]
+    #             nombre_camera = self.config['camera']["name camera"]
+    #             info_notifications = self.config['camera']["info_notifications"]
+    #             if info_notifications:
+    #                 try:
+    #                     info_notifications = json.loads(info_notifications)
+    #                     # print(info_notifications)
+    #                 except json.JSONDecodeError as e:
+    #                     print(f"Error decodificando JSON de notificaciones: {e}")
+                        
+    #             emails = self.config['camera']["info_emails"]
+    #             # emails = json.dumps(["cristian.tascon@axuretechnologies.com"])  # Esto genera un string JSON válido
+    #             # print(f'formato de emails: {emails}')
+
+    #             if emails:
+    #                 try:
+    #                     emails = json.loads(emails)
+    #                     # print(emails)
+    #                 except json.JSONDecodeError as e:
+    #                     print(f"Error decodificando JSON de correos: {e}")
+    #         except Exception as e:
+    #             print(f"Error al cargar configuración: {e}")
+    #             return
+
+    #         # Variables para el seguimiento de detecciones
+    #         target_width, target_height = 640, 380  # Resolución deseada
+
+    #         # Obtener buffer de frames
+    #         frame_buffer = self.shared_buffers.get(self.camera_id, None)
+
+    #         if not frame_buffer:
+    #             time.sleep(0.05)
+    #             continue
+
+    #         try:
+    #             frame_to_process = frame_buffer[0]  # Último frame en el buffer
+    #         except IndexError:
+    #             print(f"⚠️ Error: Intento de acceder a un frame inexistente en notifications {self.camera_id}")
+    #             time.sleep(0.05)
+    #             continue
+            
+    #         frame = cv2.resize(frame_to_process, (target_width, target_height))
+
+    #         for area_name, area_config in areas.items():
+    #             # try:
+    #                 # Procesar el área y realizar detección
+    #                 pts = self.escalar_puntos(area_config)
+    #                 # Dibujar el polígono escalado en el frame
+    #                 if area_name == "area3":
+    #                     polygon_color = (0, 255, 0)  # Verde para area2
+    #                 elif area_name == "area2":
+    #                     polygon_color = (255, 255, 0)
+    #                 else:
+    #                     polygon_color = (255, 0, 0)  # Rojo o azul para otras áreas (según lo desees)
+                    
+    #                 # Dibujar el polígono escalado en el frame con el color definido
+    #                 cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
+
+    #                 results = model(frame, verbose=False)
+
+    #                 for detection in results[0].boxes:
+    #                     self.procesar_deteccion_2(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts)
+                    
+    #             # except Exception as area_error:
+    #             #     print(f"Error al procesar {area_name}: {area_error}")
+
+    #         # Guardar frame en buffer de detecciones
+    #         self.actualizar_buffer(frame)
+
+
+
+
+
+    #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
+    def procesar(self):
+        host_ip = "172.30.37.67"
+        feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
+        self.save_feed_url_to_database(self.camera_id, feed_url)
 
         while self.running:
-            # print("Buffer antes de todo: ", self.buffer_detecciones)
-            
-            # Cargar configuración
             try:
                 self.config = load_yaml_config(self.config_path)
                 rtsp_url = self.config["camera"]["rtsp_url"]
                 areas = self.config["camera"]["coordinates"]
                 tiempos_limite = json.loads(self.config["camera"]["time_areas"])
 
-                # Convertir valores de tiempos_limite a float
-                tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-                # Convertir valores de tiempos_limite a float
                 if isinstance(tiempos_limite, str):
-                    tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
+                    tiempos_limite = json.loads(tiempos_limite)
                 tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-                
+
                 sitio = self.config['camera']["point"]
                 nombre_camera = self.config['camera']["name camera"]
                 info_notifications = self.config['camera']["info_notifications"]
                 if info_notifications:
                     try:
                         info_notifications = json.loads(info_notifications)
-                        # print(info_notifications)
                     except json.JSONDecodeError as e:
                         print(f"Error decodificando JSON de notificaciones: {e}")
-                        
-                # emails = self.config['camera']["info_emails"]
-                emails = json.dumps(["cristian.tascon@axuretechnologies.com"])  # Esto genera un string JSON válido
-                # print(f'formato de emails: {emails}')
 
+                emails = self.config['camera']["info_emails"]
                 if emails:
                     try:
                         emails = json.loads(emails)
-                        # print(emails)
                     except json.JSONDecodeError as e:
                         print(f"Error decodificando JSON de correos: {e}")
             except Exception as e:
                 print(f"Error al cargar configuración: {e}")
                 return
 
-            # Variables para el seguimiento de detecciones
-            target_width, target_height = 640, 380  # Resolución deseada
-
-            # Obtener buffer de frames
+            target_width, target_height = 640, 380
             frame_buffer = self.shared_buffers.get(self.camera_id, None)
-
             if not frame_buffer:
                 time.sleep(0.05)
                 continue
 
             try:
-                frame_to_process = frame_buffer[0]  # Último frame en el buffer
+                frame_to_process = frame_buffer[0]
             except IndexError:
                 print(f"⚠️ Error: Intento de acceder a un frame inexistente en notifications {self.camera_id}")
                 time.sleep(0.05)
                 continue
-            
+
             frame = cv2.resize(frame_to_process, (target_width, target_height))
+            results = model(frame, verbose=False)
+
+            # Extraer personas antes de recorrer áreas
+            self.person_boxes = []
+            for detection in results[0].boxes:
+                class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+                label = LABELS.get(class_index, str(class_index))
+                if label == "A_Person":
+                    x1, y1, x2, y2 = map(int, detection.xyxy[0])
+                    self.person_boxes.append((x1, y1, x2, y2))
 
             for area_name, area_config in areas.items():
-                # try:
-                    # Procesar el área y realizar detección
-                    pts = self.escalar_puntos(area_config)
-                    # Dibujar el polígono escalado en el frame
+                pts = self.escalar_puntos(area_config)
+                if area_name == "area3":
+                    polygon_color = (0, 255, 0)
+                elif area_name == "area2":
+                    polygon_color = (255, 255, 0)
+                else:
+                    polygon_color = (255, 0, 0)
+                cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
+
+                for detection in results[0].boxes:
+                    x1, y1, x2, y2 = map(int, detection.xyxy[0])
+                    box = (x1, y1, x2, y2)
+                    class_index = int(detection.cls[0]) if hasattr(detection, 'cls') else -1
+                    label = LABELS.get(class_index, str(class_index))
+
+                    #--------------------------------------------AÑADI----------------------------------
                     if area_name == "area3":
-                        polygon_color = (0, 255, 0)  # Verde para area2
-                    elif area_name == "area2":
-                        polygon_color = (255, 255, 0)
-                    else:
-                        polygon_color = (255, 0, 0)  # Rojo o azul para otras áreas (según lo desees)
-                    
-                    # Dibujar el polígono escalado en el frame con el color definido
-                    cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
+                        if label == "A_Person":
+                            self.procesar_deteccion_2(detection, area_name, area_config,
+                                                    tiempos_limite, frame, sitio,
+                                                    nombre_camera, info_notifications,
+                                                    emails, pts)
+                        continue  # Se omiten las demás detecciones en area3
 
-                    results = model(frame, verbose=False)
+                    # --- Para área2: se ignoran A_Person solas; se procesan solo aquellas detecciones
+                    # que corresponden a cascos: Green, Yellow o No_Helmet ---
+                    if area_name == "area2":
+                        if label not in ["Green", "Yellow", "No_Helmet", "White"]:
+                            continue  # Si es A_Person u otra, se ignora
+                        else:
+                            # Opcional: si quieres validar que el casco corresponde a una persona (por ejemplo, utilizando IoU con el head_box)
+                            valid = False
+                            for person_box in self.person_boxes:
+                                head_box = self.get_head_region(person_box, fraction=0.25, offset=5)
+                                iou = self.compute_iou(box, head_box)
+                                helmet_area = (x2 - x1) * (y2 - y1)
+                                person_area = (person_box[2] - person_box[0]) * (person_box[3] - person_box[1])
+                                if iou >= 0.1 and helmet_area <= 0.40 * person_area:
+                                    valid = True
+                                    break
+                            if not valid:
+                                continue
 
-                    for detection in results[0].boxes:
-                        self.procesar_deteccion_2(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts)
-                    
-                # except Exception as area_error:
-                #     print(f"Error al procesar {area_name}: {area_error}")
+                            self.procesar_deteccion_2(detection, area_name, area_config,
+                                                    tiempos_limite, frame, sitio,
+                                                    nombre_camera, info_notifications,
+                                                    emails, pts)
+                        continue
 
-            # Guardar frame en buffer de detecciones
+                    # --- Para área1: se procesan las detecciones de A_Person y de cascos (Green, Orange, No_Harness, No_Helmet, Yellow) ---
+                    if area_name == "area1":
+                        if label not in ["A_Person", "Green", "Orange", "No_Harness", "No_Helmet", "Yellow", "White"]:
+                            continue  # Se ignoran otros labels
+                        self.procesar_deteccion_2(detection, area_name, area_config,
+                                                tiempos_limite, frame, sitio,
+                                                nombre_camera, info_notifications,
+                                                emails, pts)
+            #----------------------------------HASTA AQUI--------------------------------------
             self.actualizar_buffer(frame)
+
+    # #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
+    # # Funciones auxiliares que deben estar en la clase:
+    # def get_head_region(self, person_box, fraction=0.25, offset=5):
+    #     x1, y1, x2, y2 = person_box
+    #     y1_adjusted = max(0, y1 - offset)
+    #     adjusted_height = y2 - y1_adjusted
+    #     head_height = int(adjusted_height * fraction)
+    #     return (x1, y1_adjusted, x2, y1_adjusted + head_height)
+    # #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
+    # def compute_iou(self, boxA, boxB):
+    #     xA = max(boxA[0], boxB[0])
+    #     yA = max(boxA[1], boxB[1])
+    #     xB = min(boxA[2], boxB[2])
+    #     yB = min(boxA[3], boxB[3])
+    #     interArea = max(0, xB - xA) * max(0, yB - yA)
+    #     areaA = max(0, boxA[2] - boxA[0]) * max(0, boxA[3] - boxA[1])
+    #     areaB = max(0, boxB[2] - boxB[0]) * max(0, boxB[3] - boxB[1])
+    #     union = areaA + areaB - interArea
+    #     return interArea / union if union != 0 else 0
+    # #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
+    # def is_inside(self, inner_box, outer_box):
+    #     x1, y1, x2, y2 = inner_box
+    #     X1, Y1, X2, Y2 = outer_box
+    #     return x1 >= X1 and y1 >= Y1 and x2 <= X2 and y2 <= Y2
+
+
+
+
+
+
 
     # def procesar(self):
     #     # Cargar la configuración y obtener parámetros necesarios
@@ -290,8 +478,16 @@ class ProcesarDetecciones:
             [[int(point["x"]), int(point["y"])] for point in scaled_points],
             dtype=np.int32
         ).reshape((-1, 1, 2))
+    
+    # #-------------------------------------------------------AÑADI-------------------------------------------------------------
+    # def reiniciar_contadores(self):
+    #     self.tiempo_deteccion_por_area.clear()
+    #     self.tiempo_ultimo_detecciones.clear()
+    #     print("Contadores de detección reiniciados por reconexión.")
+    # #------------------------------------------------------HASTA AQUI-------------------------------------------------------
 
-# Versión sin areas                
+
+    # Versión sin areas                
     def procesar_deteccion_2(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts):
         """Procesa una detección específica en el frame y maneja el tiempo de permanencia con margen de 2 segundos."""
         
@@ -304,6 +500,19 @@ class ProcesarDetecciones:
         hora_actual_PS = 0
         tiempo_acumulado2 = 0
         límite = 20
+
+        #------------------------------------AÑADI------------------------------------------------
+        # --- Reinicio por gap de tiempo ---
+        now = time.time()
+        if (area_name, label) in self.tiempo_ultimo_detecciones:
+            gap = now - self.tiempo_ultimo_detecciones[(area_name, label)]
+            if gap > 5:  # Umbral en segundos (ajústalo según necesites)
+                print(f"Gap grande detectado ({gap:.2f}s) en {area_name} para {label}; reiniciando contadores.")
+                self.tiempo_deteccion_por_area[(area_name, label)] = now
+                self.tiempo_ultimo_detecciones[(area_name, label)] = now
+
+    # --- Fin de reinicio por gap ---
+        #-----------------------------------HASTA AQUI--------------------------------------
 
 
         if label not in area_config:
@@ -318,7 +527,26 @@ class ProcesarDetecciones:
         dentro_del_area = inside >= 0
         if area_name == "area3":
             dentro_del_area = cv2.pointPolygonTest(pts, point2, False) >= 0
+
+
+
         if dentro_del_area:
+
+
+            #----------------------------------AÑADI----------------------------------------------------------------
+            # (Código de dibujo y actualización de detección)
+            if (area_name, label) not in self.tiempo_deteccion_por_area:
+                self.tiempo_deteccion_por_area[(area_name, label)] = now
+                self.tiempo_ultimo_detecciones[(area_name, label)] = now
+                print(f"⏳ Inicio detección {label} en {area_name} ({nombre_camera})")
+            else:
+                tiempo_acumulado = now - self.tiempo_deteccion_por_area[(area_name, label)]
+                self.tiempo_ultimo_detecciones[(area_name, label)] = now
+            #---------------------------------HASTA AQUI---------------------------------
+
+
+
+
             # Dibujar detección en el frame
             color = self.COLORS.get(label, (255, 255, 255))
             text = f"{label}: {probability:.2f}%"
@@ -350,8 +578,8 @@ class ProcesarDetecciones:
                     cv2.polylines(frame, [pts], isClosed=True, color=(0, 0, 255), thickness=2)
                     self.dibujo_etiquetas(frame, text, x1, y1, x2, y2, color, box_coords, text_offset_x, text_offset_y, text_width, text_height)
                 
-                if tiempo_acumulado >= 10:
-                # if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
+                # if tiempo_acumulado >= 10:
+                if tiempo_acumulado >= tiempos_limite.get(area_name, 5):
 
                     self.guardar_evento(area_name, label, nombre_camera, sitio, tiempo_acumulado)
                     
@@ -366,11 +594,23 @@ class ProcesarDetecciones:
                 # logger.info(f"{label} en {area_name} ({nombre_camera}) - {tiempo_acumulado:.2f}s / {tiempos_limite.get(area_name, 5)}s a las {hora_actual_PS}")
                 print(get_envio_correo())       
         else:
+            #------------------------------AÑADI------------------------------------------------------------------------------------
+             # Definir un timeout específico por área
+            reset_time_for_area = {
+                "area1": 5,  # esperar 5 segundos
+                "area2": 4,   # esperar 4 segundos
+                "area3": 3    # espera 3 segundos
+            }
+            reset_threshold = reset_time_for_area.get(area_name, 3)
+            #--------------------------------HASTA AQUI----------------------------------------------------------------------------------
+
+
             # Si no hay detección, esperar 4s antes de quitar la detección
             if (area_name, label) in self.tiempo_deteccion_por_area:
                 tiempo_acumulado2 = time.time() - self.tiempo_deteccion_por_area[(area_name, label)]  # Nuevo cálculo                 
                 tiempo_desde_ultima = time.time() - self.tiempo_ultimo_detecciones[(area_name, label)]
-                tiempo_restante = 3 - tiempo_desde_ultima  # Tiempo restante antes de resetear
+                tiempo_restante = reset_threshold - tiempo_desde_ultima  # Umbral configurable  #-----------------------AÑADI----------------------------------
+                # tiempo_restante = 3 - tiempo_desde_ultima  # Tiempo restante antes de resetear   #-----------------------ESTO LO COMENTEEEEEEEE---------------------
 
                 if tiempo_restante > 0:
                     pass  # Espera antes de borrar la detección
@@ -391,7 +631,7 @@ class ProcesarDetecciones:
                     promedio = self.tiempos_acumulados[key] / self.contador_salidas[key]
 
                     print(f"❌ {label} salió de {area_name} en {nombre_camera}, y duró {tiempo_acumulado2:.2f}s")
-                    logger.warning(f"{label} salio de {area_name} en {nombre_camera}, y duro {tiempo_acumulado2:.2f}s")
+                    logger.warning(f"{label} salio de {area_name} en {nombre_camera}, y duro {tiempo_acumulado2:.2f}s se pone bandera correo en {get_envio_correo()}")
 
                     promedio_dict = {}
 
@@ -447,35 +687,42 @@ class ProcesarDetecciones:
         if label == "A_Person":
             NombreLabel = "Personas"
             descript = f"Se detectó una Persona en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
+            modelo = "Personas"
         elif label == "White":
             NombreLabel = "Persona con casco blanco"
             descript = f"Se detectó una Persona con casco blanco en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
+            modelo = "Blanco"
         elif label == "No_Helmet":
             NombreLabel = "Persona Sin casco"
             descript = f"Se detectó una Persona sin casco en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
+            modelo = "Sin Casco"        
         elif label == "Yellow":
             NombreLabel = "Persona con casco Amarillo"
             descript = f"Se detectó una Persona con casco Amarillo en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
+            modelo = "Amarillo"        
         elif label == "Green":
             NombreLabel = "Persona con casco Verde"
             descript = f"Se detectó una Persona con casco Verde en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
+            modelo = "Verde"
         else:
             NombreLabel = label  # Asignación de valor para evitar el error
             descript = f"Se detectó {label} en {area_name} en la cámara {nombre_camera} durante {tiempo_acumulado:.2f}s"
-        
+            modelo = label
+
         self.add_event_to_database(
             sitio=sitio,
             company="GEOPARK",
             fecha=fecha_actual,
             hora=hora_actual,
             tipo_evento=f"Detección de {NombreLabel} en {area_name} en la cámara {nombre_camera}",
-            descripcion=descript
+            descripcion=descript,
+            mod = modelo
         )
         
         id_registro = self.get_last_event_id()
         set_id(id_registro)
 
-    def add_event_to_database(self,sitio, company, fecha, hora, tipo_evento, descripcion):
+    def add_event_to_database(self,sitio, company, fecha, hora, tipo_evento, descripcion, mod):
         """
         Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.
         """
@@ -484,10 +731,11 @@ class ProcesarDetecciones:
 
         try:
             insert_query = """
-                INSERT INTO Eventos (sitio, company, fecha, hora, tipo_evento, descripcion)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO Eventos (sitio, company, fecha, hora, tipo_evento, descripcion
+                , modelo)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
-            cursor.execute(insert_query, (sitio, company, fecha, hora, tipo_evento, descripcion))
+            cursor.execute(insert_query, (sitio, company, fecha, hora, tipo_evento, descripcion, mod))
             connection.commit()
         except Exception as e:
             print(f"Error al añadir el evento a la base de datos: {e}")
