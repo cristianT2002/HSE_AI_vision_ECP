@@ -34,9 +34,9 @@ def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails
     :param lista_emails: Lista de correos electrónicos.
     :param fps: Cuadros por segundo del video.
     """
-    if not frame_buffer:
-        print("El buffer está vacío, no se puede crear el video.")
-        return
+    # if not frame_buffer:
+    #     print("El buffer está vacío, no se puede crear el video.")
+    #     return
 
     # Crear la carpeta 'Videos' si no existe
     videos_dir = os.path.join(os.getcwd(), "Videos")
@@ -145,6 +145,7 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
                 estado_notification = 'pendiente'
                 sitio_notificacion = resultado['sitio']
                 company_notificacion = resultado['company']
+                # company_cliente = resultado[]
                 with open(nombre_archivo, 'rb') as archivo_video:
                     contenido_video = archivo_video.read()
                 
@@ -152,8 +153,8 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
                 print("NOmbre del video: ",nombre_archivo)
                 # Insertar el video en la base de datos
                 with conexion.cursor() as cursor:
-                    sql = "INSERT INTO Notificaciones (id_evento, fecha_envio, mensaje, estado, Nombre_Archivo, Video_Alerta) VALUES (%s,%s, %s,%s,%s, %s)"
-                    cursor.execute(sql, (id_a_buscar, fecha_notification, mensaje_notification, estado_notification,nombre_archivo, contenido_video))
+                    sql = "INSERT INTO Notificaciones (id_evento, fecha_envio, mensaje, estado, Nombre_Archivo, Video_Alerta, cliente) VALUES (%s,%s, %s,%s,%s,%s,%s)"
+                    cursor.execute(sql, (id_a_buscar, fecha_notification, mensaje_notification, estado_notification,nombre_archivo, contenido_video, company_notificacion))
                 
                 # Confirmar cambios
                 conexion.commit()
@@ -162,9 +163,9 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
                 if envio_correo == True:
                     if get_envio_correo() == True:
                         send_email_with_outlook("Add_Video", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
-                        numero_destino = '+573012874982'  # Número de destino en formato internacional (ejemplo para Colombia)
-                        mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'  
-                        enviar_sms(numero_destino, mensaje)      
+                        # numero_destino = '+573012874982'  # Número de destino en formato internacional (ejemplo para Colombia)
+                        # mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'  
+                        # enviar_sms(numero_destino, mensaje)      
                 # Aquí puedes usar los datos como necesites
             else:
                 print(f"No se encontró un registro con ID {id_a_buscar}.")
@@ -222,8 +223,8 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
                 # nombre_archivo = os.path.basename(nombre_archivo)
                 # Insertar la imagen en la base de datos
                 with conexion.cursor() as cursor:
-                    sql = "INSERT INTO Notificaciones (id_evento, fecha_envio, mensaje, estado, Nombre_Archivo, Imagen_Alerta) VALUES (%s, %s, %s, %s, %s, %s)"
-                    cursor.execute(sql, (id_a_buscar, fecha_notification, mensaje_notification, estado_notification, nombre_archivo, contenido_imagen))
+                    sql = "INSERT INTO Notificaciones (id_evento, fecha_envio, mensaje, estado, Nombre_Archivo, Imagen_Alerta, cliente) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                    cursor.execute(sql, (id_a_buscar, fecha_notification, mensaje_notification, estado_notification, nombre_archivo, contenido_imagen, company_notificacion))
                 
                 # Confirmar cambios
                 conexion.commit()
@@ -234,9 +235,9 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
                 if envio_correo:
                     if get_envio_correo() == True:
                         send_email_with_outlook("Add_Image", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
-                        numero_destino = '+573012874982'  # Número de destino en formato internacional (ejemplo para Colombia)
-                        mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'  
-                        enviar_sms(numero_destino, mensaje)
+                        # numero_destino = '+573012874982'  # Número de destino en formato internacional (ejemplo para Colombia)
+                        # mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'  
+                        # enviar_sms(numero_destino, mensaje)
 
             else:
                 print(f"No se encontró un registro con ID {id_a_buscar}.")
@@ -352,6 +353,7 @@ def send_email_with_outlook(img_or_video, destinatario, fecha, mensaje, nombre_a
         server.starttls()  # Habilitar el modo seguro (TLS)
         server.login(username, password)
         server.sendmail(from_address, to_address, msg.as_string())
+        
         print('Correo enviado exitosamente.')
         logger.warning(f"Correo enviado exitosamente se pone bandera envio correo en {get_envio_correo}.")
         set_envio_correo(False)
@@ -368,18 +370,18 @@ ACCOUNT_SID = 'AC743208a5c6a4be7845784bd6a774f06e'
 AUTH_TOKEN = 'eb6646dc29d975e7983d6ad810457964'
 TWILIO_PHONE_NUMBER = '12543234954'
 
-def enviar_sms(numero_destino, mensaje):
+# def enviar_sms(numero_destino, mensaje):
   
 
-    cliente = Client(ACCOUNT_SID, AUTH_TOKEN)
+#     cliente = Client(ACCOUNT_SID, AUTH_TOKEN)
     
-    mensaje_enviado = cliente.messages.create(
-        body=mensaje,
-        from_=TWILIO_PHONE_NUMBER,
-        to=numero_destino
-    )
+#     mensaje_enviado = cliente.messages.create(
+#         body=mensaje,
+#         from_=TWILIO_PHONE_NUMBER,
+#         to=numero_destino
+#     )
     
-    print(f"Mensaje enviado con SID: {mensaje_enviado.sid}")
+#     print(f"Mensaje enviado con SID: {mensaje_enviado.sid}")
 
 def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
     # Conectar a la base de datos
