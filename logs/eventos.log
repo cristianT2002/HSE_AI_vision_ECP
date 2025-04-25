@@ -59,3 +59,124 @@ Traceback (most recent call last):
   File "C:\Users\ANALITICA\AppData\Local\Programs\Python\Python310\lib\multiprocessing\connection.py", line 326, in _recv_bytes
     raise EOFError
 EOFError
+2025-04-25 10:43:38,918 - WARNING - A_Person salio de area3 en Mesa, y duro 8.32s se pone bandera correo en True
+2025-04-25 10:45:14,653 - WARNING - A_Person salio de area3 en Mesa, y duro 5.93s se pone bandera correo en True
+2025-04-25 10:45:21,501 - WARNING - A_Person salio de area3 en Mesa, y duro 3.03s se pone bandera correo en True
+2025-04-25 10:45:58,301 - WARNING - A_Person salio de area3 en Mesa, y duro 7.31s se pone bandera correo en True
+2025-04-25 10:46:43,042 - WARNING - A_Person salio de area3 en Mesa, y duro 3.04s se pone bandera correo en True
+2025-04-25 10:58:24,109 - WARNING - A_Person salio de area3 en Mesa, y duro 5.30s se pone bandera correo en True
+2025-04-25 11:02:58,976 - WARNING - A_Person salio de area3 en Mesa, y duro 5.24s se pone bandera correo en True
+2025-04-25 11:03:25,606 - WARNING - A_Person salio de area3 en Mesa, y duro 25.27s se pone bandera correo en True
+2025-04-25 11:04:24,081 - WARNING - A_Person salio de area3 en Mesa, y duro 3.56s se pone bandera correo en True
+2025-04-25 11:05:04,456 - WARNING - A_Person salio de area3 en Mesa, y duro 37.64s se pone bandera correo en True
+2025-04-25 11:58:41,605 - WARNING - A_Person salio de area3 en Mesa, y duro 13.19s se pone bandera correo en True
+2025-04-25 12:03:35,200 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+AttributeError: 'list' object has no attribute 'get'
+2025-04-25 12:09:57,761 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+AttributeError: 'list' object has no attribute 'get'
+2025-04-25 12:09:59,886 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+AttributeError: 'list' object has no attribute 'get'
+2025-04-25 12:10:01,541 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+AttributeError: 'list' object has no attribute 'get'
+2025-04-25 12:42:43,975 - WARNING - A_Person salio de area3 en Mesa, y duro 14.59s se pone bandera correo en True
+2025-04-25 12:44:38,360 - WARNING - A_Person salio de area3 en Mesa, y duro 4.41s se pone bandera correo en True
+2025-04-25 12:44:49,793 - WARNING - A_Person salio de area3 en Mesa, y duro 3.37s se pone bandera correo en True
+2025-04-25 12:45:16,952 - WARNING - A_Person salio de area3 en Mesa, y duro 3.21s se pone bandera correo en True
+2025-04-25 12:46:21,751 - WARNING - A_Person salio de area3 en Mesa, y duro 7.95s se pone bandera correo en True
+2025-04-25 12:49:36,680 - WARNING - A_Person salio de area3 en Mesa, y duro 9.12s se pone bandera correo en True
+2025-04-25 12:49:57,104 - WARNING - A_Person salio de area3 en Mesa, y duro 3.70s se pone bandera correo en True
+2025-04-25 12:50:15,215 - WARNING - A_Person salio de area3 en Mesa, y duro 3.14s se pone bandera correo en True
+2025-04-25 12:50:23,187 - WARNING - A_Person salio de area3 en Mesa, y duro 3.15s se pone bandera correo en True
+2025-04-25 12:50:39,937 - WARNING - A_Person salio de area3 en Mesa, y duro 10.13s se pone bandera correo en True
+2025-04-25 12:50:45,239 - WARNING - A_Person salio de area3 en Mesa, y duro 3.88s se pone bandera correo en True
+2025-04-25 12:51:08,789 - WARNING - A_Person salio de area3 en Mesa, y duro 4.03s se pone bandera correo en True
+2025-04-25 12:53:20,728 - WARNING - A_Person salio de area3 en Mesa, y duro 3.04s se pone bandera correo en True
+2025-04-25 13:05:20,470 - WARNING - A_Person salio de area3 en Mesa, y duro 3.02s se pone bandera correo en True
+2025-04-25 13:07:46,793 - WARNING - A_Person salio de area3 en Mesa, y duro 3.09s se pone bandera correo en True
+2025-04-25 13:28:35,501 - WARNING - A_Person salio de area3 en Mesa, y duro 3.20s se pone bandera correo en True
+2025-04-25 13:28:57,008 - WARNING - A_Person salio de area3 en Mesa, y duro 3.23s se pone bandera correo en True
+2025-04-25 13:29:05,763 - WARNING - A_Person salio de area3 en Mesa, y duro 3.08s se pone bandera correo en True
+2025-04-25 13:31:01,933 - WARNING - A_Person salio de area3 en Mesa, y duro 3.39s se pone bandera correo en True
+2025-04-25 13:31:36,220 - WARNING - A_Person salio de area3 en Mesa, y duro 3.05s se pone bandera correo en True
+2025-04-25 13:32:18,346 - WARNING - A_Person salio de area3 en Mesa, y duro 3.23s se pone bandera correo en True
+2025-04-25 13:32:56,221 - WARNING - A_Person salio de area3 en Mesa, y duro 3.25s se pone bandera correo en True
+2025-04-25 13:35:20,122 - WARNING - A_Person salio de area3 en Mesa, y duro 6.66s se pone bandera correo en True
+2025-04-25 13:36:05,449 - WARNING - A_Person salio de area3 en Mesa, y duro 3.13s se pone bandera correo en True
+2025-04-25 13:37:52,352 - WARNING - A_Person salio de area3 en Mesa, y duro 43.79s se pone bandera correo en True
+2025-04-25 13:38:27,606 - WARNING - A_Person salio de area3 en Mesa, y duro 29.21s se pone bandera correo en True
+2025-04-25 13:38:41,719 - WARNING - A_Person salio de area3 en Mesa, y duro 13.88s se pone bandera correo en True
+2025-04-25 13:38:57,602 - WARNING - A_Person salio de area3 en Mesa, y duro 14.56s se pone bandera correo en True
+2025-04-25 13:39:09,555 - WARNING - A_Person salio de area3 en Mesa, y duro 3.16s se pone bandera correo en True
+2025-04-25 13:40:42,056 - WARNING - A_Person salio de area3 en Mesa, y duro 30.83s se pone bandera correo en True
+2025-04-25 13:40:52,375 - WARNING - A_Person salio de area3 en Mesa, y duro 9.11s se pone bandera correo en True
+2025-04-25 13:41:15,343 - WARNING - A_Person salio de area3 en Mesa, y duro 22.44s se pone bandera correo en True
+2025-04-25 13:41:39,395 - WARNING - A_Person salio de area3 en Mesa, y duro 19.67s se pone bandera correo en True
+2025-04-25 13:41:42,955 - WARNING - A_Person salio de area3 en Mesa, y duro 3.27s se pone bandera correo en True
+2025-04-25 13:42:20,332 - WARNING - A_Person salio de area3 en Mesa, y duro 6.06s se pone bandera correo en True
+2025-04-25 13:42:32,620 - WARNING - A_Person salio de area3 en Mesa, y duro 10.02s se pone bandera correo en True
+2025-04-25 13:42:47,607 - WARNING - A_Person salio de area3 en Mesa, y duro 3.03s se pone bandera correo en True
+2025-04-25 13:43:07,228 - WARNING - A_Person salio de area3 en Mesa, y duro 10.46s se pone bandera correo en True
+2025-04-25 13:43:41,377 - WARNING - A_Person salio de area3 en Mesa, y duro 3.01s se pone bandera correo en True
+2025-04-25 13:50:51,700 - WARNING - A_Person salio de area3 en Mesa, y duro 6.64s se pone bandera correo en True
+2025-04-25 13:51:41,309 - WARNING - A_Person salio de area3 en Mesa, y duro 41.85s se pone bandera correo en True
+2025-04-25 13:52:08,099 - WARNING - A_Person salio de area3 en Mesa, y duro 3.10s se pone bandera correo en True
+2025-04-25 13:53:25,860 - WARNING - A_Person salio de area3 en Mesa, y duro 3.25s se pone bandera correo en True
+2025-04-25 13:54:00,682 - WARNING - A_Person salio de area3 en Mesa, y duro 33.31s se pone bandera correo en True
+2025-04-25 13:54:06,566 - WARNING - A_Person salio de area3 en Mesa, y duro 3.35s se pone bandera correo en True
+2025-04-25 14:55:11,645 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+AttributeError: 'list' object has no attribute 'get'

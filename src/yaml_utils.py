@@ -73,8 +73,8 @@ def generate_camera_yaml(data):
             print(f"Error: `COORDENADAS_AREA` no es un JSON válido para la cámara {camera_id}.")
             continue
 
-        rtsp_url = f"rtsp://{username}:{password}@{ip_camera}:554/Streaming/Channels/102"
-        # rtsp_url = "VideosEnsayoModelo/videoSINCASCO.mp4"
+        # rtsp_url = f"rtsp://{username}:{password}@{ip_camera}:554/Streaming/Channels/102"
+        rtsp_url = "VideosEnsayoModelo/mesa_prueba_hoy3.avi"
         model = "best_mejorado.pt"
 
         camera_config = {
@@ -85,6 +85,7 @@ def generate_camera_yaml(data):
                 "ip": ip_camera,
                 "port": 554,
                 "point": ponit_int,
+                "client": name_cliente,
                 "place": place_cam,
                 "name camera": name_cam,
                 "coordinates": coordinates_dict,

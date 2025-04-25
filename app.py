@@ -10,7 +10,7 @@ from src.buffers_camaras import start_streaming_from_configs
 from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads, set_streamers_procesado
 from src.notifications import ProcesarDetecciones
 import multiprocessing as mp
-from src.variables_globales import set_processes, get_processes
+from src.variables_globales import set_processes, get_processes, set_ip_local, get_ip_local, obtener_ip_local
 from multiprocessing import Manager
 import psycopg2
 import socket
@@ -29,16 +29,6 @@ def start_flask_server():
     app.run(host="0.0.0.0", port=5000)
 
 
-# Función para saber la ip que tiene el equipo
-def obtener_ip_local():
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-        s.close()
-        return ip
-    except:
-        return socket.gethostbyname(socket.gethostname())
 
 def monitor_database_and_start_detections(db_config, shared_buffers):
     """
@@ -55,8 +45,8 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
             connection = connect_to_db(db_config)
             cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             
-            ip_local = obtener_ip_local()
-            print("🌐 IP del equipo:", ip_local)  
+            ip_local = get_ip_local()
+            # print("🌐 IP del equipo:", ip_local)  
             
             # Buscamos el proyecto en la base de datos segun la ip local
             cursor.execute(db_config["query_proyecto_por_ip"], (ip_local,))
@@ -131,6 +121,9 @@ if __name__ == "__main__":
     # Cargar configuración desde database.yaml
     db_config = load_yaml_config("configs/database.yaml")["database"]
 
+    host_ip = obtener_ip_local()
+    set_ip_local(host_ip)
+    
     # Iniciar el servidor Flask en un hilo separado
     flask_thread = threading.Thread(target=start_flask_server, daemon=True)
     flask_thread.start()

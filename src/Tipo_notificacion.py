@@ -19,6 +19,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
+import psycopg2
+import psycopg2.extras
 
 logger = get_logger(__name__)
 
@@ -107,70 +109,76 @@ def borrar_primer_registro(host='10.20.30.33', user='analitica', password='4xUR3
         conexion.close()
 
     
-def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, host='10.20.30.33', user='analitica', password='4xUR3_2017', database='hseVideoAnalytics'):
-    # Conectar a la base de datos
-    conexion = pymysql.connect(host=host, user=user, password=password, database=database, cursorclass=pymysql.cursors.DictCursor)
-    ultimo_registro = get_id()
-    
-    # Contar el número de registros en la tabla Notificaciones
-    with conexion.cursor() as cursor:
-        sql_count = "SELECT COUNT(*) AS total_registros FROM Notificaciones"
-        cursor.execute(sql_count)
-        resultado_count = cursor.fetchone()
-        total_registros = resultado_count['total_registros']
-    
-    print(f"Total de registros en la tabla Notificaciones: {total_registros}")
-    
-    # Verificar si el número de registros es mayor a 30
-    if total_registros > 15:
-        print("Se ha alcanzado el límite de registros en la tabla Notificaciones.")
-        # Llamar a la función
-        borrar_primer_registro()
-    
+def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, host='10.20.30.33', user='postgres', password='4xUR3_2017', database='hse_video_analitics'):
+    port = 5432
     try:
-        # Obtener el último registro con el ID de get_id()
+        conexion = psycopg2.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            dbname=database
+        )
+        cursor = conexion.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+        # Verificar número de registros
+        cursor.execute("SELECT COUNT(*) AS total_registros FROM notificaciones")
+        total_registros = cursor.fetchone()['total_registros']
+        print(f"Total de registros en la tabla notificaciones: {total_registros}")
+
+        if total_registros > 15:
+            print("Se ha alcanzado el límite de registros en la tabla Notificaciones.")
+            borrar_primer_registro()
+
+        # Buscar evento por ID
         id_a_buscar = get_id()
-        with conexion.cursor() as cursor:
-            # Consultar los datos del registro con el ID
-            sql_select = "SELECT * FROM Eventos WHERE id_evento = %s"
-            cursor.execute(sql_select, (id_a_buscar,))
-            resultado = cursor.fetchone()
-            
-            if resultado:
-                
-                print("Datos del registro:", resultado)
-                # Actualizar los datos del registro
-                fecha_notification = resultado['fecha']
-                mensaje_notification = resultado['descripcion']
-                estado_notification = 'pendiente'
-                sitio_notificacion = resultado['sitio']
-                company_notificacion = resultado['company']
-                with open(nombre_archivo, 'rb') as archivo_video:
-                    contenido_video = archivo_video.read()
-                
-                # nombre_archivo_video = os.path.basename(nombre_archivo)
-                print("NOmbre del video: ",nombre_archivo)
-                # Insertar el video en la base de datos
-                with conexion.cursor() as cursor:
-                    sql = "INSERT INTO Notificaciones (id_evento, fecha_envio, mensaje, estado, Nombre_Archivo, Video_Alerta) VALUES (%s,%s, %s,%s,%s, %s)"
-                    cursor.execute(sql, (id_a_buscar, fecha_notification, mensaje_notification, estado_notification,nombre_archivo, contenido_video))
-                
-                # Confirmar cambios
-                conexion.commit()
-                print("Video guardado en la base de datos exitosamente.")
-                logger.warning("Video guardado en la base de datos exitosamente.")
-                if envio_correo == True:
-                    if get_envio_correo() == True:
-                        send_email_with_outlook("Add_Video", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
-                        numero_destino = '+573012874982'  # Número de destino en formato internacional (ejemplo para Colombia)
-                        mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'  
-                        enviar_sms(numero_destino, mensaje)      
-                # Aquí puedes usar los datos como necesites
-            else:
-                print(f"No se encontró un registro con ID {id_a_buscar}.")
+        cursor.execute("SELECT * FROM eventos WHERE id_evento = %s", (id_a_buscar,))
+        resultado = cursor.fetchone()
+
+        if resultado:
+            print("Datos del registro:", resultado)
+
+            fecha_notification = resultado['fecha']
+            mensaje_notification = resultado['descripcion']
+            estado_notification = 'pendiente'
+            sitio_notificacion = resultado['id_proyecto']
+            company_notificacion = resultado['id_cliente']
+
+            with open(nombre_archivo, 'rb') as archivo_video:
+                contenido_video = archivo_video.read()
+
+            insert_sql = """
+                INSERT INTO notificaciones (id_evento, fecha_envio, mensaje, estado, nombre_archivo, video_alerta)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(insert_sql, (
+                id_a_buscar,
+                fecha_notification,
+                mensaje_notification,
+                estado_notification,
+                os.path.basename(nombre_archivo),
+                psycopg2.Binary(contenido_video)
+            ))
+
+            conexion.commit()
+            print("✅ Video guardado en la base de datos exitosamente.")
+            logger.warning("Video guardado en la base de datos exitosamente.")
+
+            if envio_correo and get_envio_correo():
+                send_email_with_outlook("Add_Video", lista_emails, fecha_notification,
+                                        mensaje_notification, nombre_archivo,
+                                        sitio_notificacion, company_notificacion)
+                numero_destino = '+573012874982'
+                mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'
+                enviar_sms(numero_destino, mensaje)
+        else:
+            print(f"⚠️ No se encontró un registro con ID {id_a_buscar}.")
+
     except Exception as e:
-        print("Error al buscar el registro:", e)
+        print("❌ Error al guardar video en PostgreSQL:", e)
+
     finally:
+        cursor.close()
         conexion.close()
 
     
@@ -199,7 +207,7 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, host='
         id_a_buscar = get_id()  # Asegúrate de que esta función esté definida
         with conexion.cursor() as cursor:
             # Consultar los datos del registro con el ID
-            sql_select = "SELECT * FROM Eventos WHERE id_evento = %s"
+            sql_select = "SELECT * FROM eventos WHERE id_evento = %s"
             cursor.execute(sql_select, (id_a_buscar,))
             resultado = cursor.fetchone()
             

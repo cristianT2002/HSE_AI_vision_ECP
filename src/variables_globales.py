@@ -1,9 +1,13 @@
+import socket
+
 streamers = []
 streamers_procesado = []
 threads= []
 processes = []  
 id = 0
 envio_correo = True
+
+ip_local = None
 
 def get_streamers():
     return streamers
@@ -48,3 +52,22 @@ def set_envio_correo(envio_correo_edit):
     
 def get_envio_correo():
     return envio_correo
+
+# Función para saber la ip que tiene el equipo
+def obtener_ip_local():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except:
+        return socket.gethostbyname(socket.gethostname())
+
+def get_ip_local():
+    global ip_local
+    return ip_local
+
+def set_ip_local(ip_local_edit):
+    global ip_local
+    ip_local = ip_local_edit
