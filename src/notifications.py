@@ -19,7 +19,6 @@ logger = get_logger(__name__)
 
 class ProcesarDetecciones:
     HELMET_LABELS = {"Green", "Yellow", "White", "Black", "Orange", "Brown", "No_Helmet"}
-    
     def __init__(self, config_path, camera_id, shared_buffers, buffer_detecciones):
         self.config_path = config_path
         self.camera_id = camera_id
@@ -40,8 +39,7 @@ class ProcesarDetecciones:
         self.tiempos_individuales = {}  # 🔥 Lista de tiempos individuales de cada salida
         # Definir color para detección activa        
         # Definir color para detección activa
-        self.COLOR_DETECCION = (0, 0, 255, 50)  # Rojo 
-        
+        self.COLOR_DETECCION = (0, 0, 255, 50)  # Rojo transparente
 
 
         # if self.camera_id not in self.buffer_detecciones:
@@ -56,13 +54,11 @@ class ProcesarDetecciones:
             "No_Harness": (0, 0, 255),  # Rojo
             "No_Helmet": (0, 0, 255),  # Rojo
             "White": (120, 120, 120),  # Gris
-            "Yellow": (0, 225, 225),  # Amarillo
+            "Yellow": (0, 255, 255),  # Amarillo
             "Loading_Machine": (0, 100, 19),  # Verde Oscuro
             "Mud_Bucket": (255, 171, 171),  # Rosa Suave
             "Orange": (0, 128, 255),  # Naranja
             "gloves": (61, 223, 43),  # Rojo
-            "Black": (0, 200, 200),
-            "Brown": (100, 100, 100),
         }
 
      #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
@@ -92,199 +88,19 @@ class ProcesarDetecciones:
         X1, Y1, X2, Y2 = outer_box
         return (x1 >= X1) and (y1 >= Y1) and (x2 <= X2) and (y2 <= Y2)
 
-
-
-
-   #-------------------------------------------Procesar cambiando fabian----------------------------------------------------------
-    def procesar(self):
-        host_ip = "172.30.37.67"
-        feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
-        # (opcional) self.save_feed_url_to_database(self.camera_id, feed_url)
-
-        while self.running:
-            now = time.time()
-
-            # ——— cargar configuración ———
-            try:
-                # config = load_yaml_config(self.config_path)
-                cfg = load_yaml_config(self.config_path)
-                areas          = cfg["camera"]["coordinates"]
-                tiempos_limite = json.loads(cfg["camera"]["time_areas"])
-                if isinstance(tiempos_limite, str):
-                    tiempos_limite = json.loads(tiempos_limite)
-                tiempos_limite = {k: float(v) for k, v in tiempos_limite.items()}
-
-                sitio             = cfg['camera']["point"]
-                nombre_camera     = cfg['camera']["name camera"]
-                info_notifications= cfg['camera']["info_notifications"]
-                if info_notifications:
-                    info_notifications = json.loads(info_notifications)
-                
-
-                # emails = self.config['camera']["info_emails"]
-                emails = cfg['camera']["info_emails"]
-
-                # emails = ["fabianmartinezr867@gmail.com"]
-            except Exception as e:
-                print(f"Error al cargar configuración: {e}")
-                return
-
-            # ——— obtener frame ———
-            buf = self.shared_buffers.get(self.camera_id)
-            if not buf:
-                time.sleep(0.05)
-                continue
-            try:
-                frame = cv2.resize(buf[0], (640, 380))
-            except:
-                time.sleep(0.05)
-                continue
-
-            # ——— inferencia ———
-            results    = model(frame, verbose=False)
-            detections = results[0].boxes
-
-            # ¿Es la cámara “Planchada” o “Mesa”?
-            is_planchada = nombre_camera.lower() == "planchada"
-            is_mesa      = nombre_camera.lower() == "mesa"
-
-            # 1) Extraer & dibujar siempre las personas
-            self.person_boxes = [
-                tuple(map(int, det.xyxy[0]))
-                for det in detections
-                if LABELS[int(det.cls[0])] == "A_Person"
-            ]
-            for (x1, y1, x2, y2) in self.person_boxes:
-                text = "A_Person"
-                (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
-                bx, by = x1, y1 - 10
-                box_coords = ((bx, by-th-5), (bx+tw+25, by+5))
-                self.dibujo_etiquetas(
-                    frame, text, x1, y1, x2, y2,
-                    self.COLORS["A_Person"],
-                    box_coords, bx, by, tw, th
-                )
-
-            # ——— Procesar cada área ———
-            for area_name, area_config in areas.items():
-                pts     = self.escalar_puntos(area_config)
-                # todas las etiquetas configuradas en la BD, menos puntos/camara/punto
-                allowed = [k for k in area_config if k not in ("points","camara","punto")]
-
-                # ── EXCLUIR persona sola de alertas en Mesa área1 y área2 ──
-                if is_mesa and area_name in ("area1", "area2"):
-                    allowed = [lab for lab in allowed if lab != "A_Person"]
-
-                # Dibujar polígono del área
-                if area_name == "area3":
-                    poly_color = (0,255,0)
-                elif area_name == "area2":
-                    poly_color = (255,255,0)
-                else:
-                    poly_color = (255,0,0)
-                cv2.polylines(frame, [pts], True, poly_color, 2)
-
-                # ── PLANCHADA: SOLO persona en area1 y Loading_Machine ──
-                if is_planchada:
-                    if area_name != "area1":
-                        continue
-                    for det in detections:
-                        lab = LABELS[int(det.cls[0])]
-                        if lab == "A_Person" and "A_Person" in allowed:
-                            self.procesar_deteccion_2(det, area_name, area_config,
-                                tiempos_limite, frame, sitio, nombre_camera,
-                                info_notifications, emails, pts)
-                        elif lab == "Loading_Machine" and "Loading_Machine" in allowed:
-                            self.procesar_deteccion_2(det, area_name, area_config,
-                                tiempos_limite, frame, sitio, nombre_camera,
-                                info_notifications, emails, pts)
-                    continue
-
-                # ── MESA: persona en area3, cascos/otras en area1 y area2 ──
-                if is_mesa:
-                    if area_name == "area3":
-                        # SOLO persona en area3
-                        for det in detections:
-                            lab = LABELS[int(det.cls[0])]
-                            if lab == "A_Person" and "A_Person" in allowed:
-                                self.procesar_deteccion_2(det, area_name, area_config,
-                                    tiempos_limite, frame, sitio, nombre_camera,
-                                    info_notifications, emails, pts)
-                        continue
-
-                    # area1 y area2 de Mesa: cascos y demás etiquetas
-                    for det in detections:
-                        lab = LABELS[int(det.cls[0])]
-
-                        # 1) Cascos sobre la cabeza
-                        if self.person_boxes and lab in self.HELMET_LABELS:
-                            x1, y1, x2, y2 = map(int, det.xyxy[0])
-                            box = (x1, y1, x2, y2)
-                            for pb in self.person_boxes:
-                                hb = self.get_head_region(pb, fraction=0.25, offset=5)
-                                if self.compute_iou(box, hb) >= 0.1:
-                                    if lab in allowed:
-                                        # Caso normal: casco configurado
-                                        self.procesar_deteccion_2(
-                                            det, area_name, area_config,
-                                            tiempos_limite, frame, sitio, nombre_camera,
-                                            info_notifications, emails, pts,
-                                            override_label=lab
-                                        )
-                                    else:
-                                        # Fallback: casco NO configurado + persona sí permitida
-                                        has_person_cfg = "A_Person" in area_config
-                                        if has_person_cfg:
-                                            # buscamos y disparamos la detección de la persona
-                                            for pd in detections:
-                                                if LABELS[int(pd.cls[0])] == "A_Person":
-                                                    self.procesar_deteccion_2(
-                                                        pd, area_name, area_config,
-                                                        tiempos_limite, frame, sitio, nombre_camera,
-                                                        info_notifications, emails, pts
-                                                    )
-                                                    break
-                                    break
-                            continue
-
-                        # 2) Otras etiquetas (Harness, No_Harness, Mud_Bucket, Loading_Machine, gloves…)
-                        if lab in allowed and lab not in self.HELMET_LABELS:
-                            self.procesar_deteccion_2(det, area_name, area_config,
-                                tiempos_limite, frame, sitio, nombre_camera,
-                                info_notifications, emails, pts)
-                            continue
-
-                    continue
-
-            # ——— reset detecciones inactivas ———
-            umbral = 7.0
-            for key, last_ts in list(self.tiempo_ultimo_detecciones.items()):
-                if now - last_ts > umbral:
-                    print(f"⏹️ Reiniciando {key} tras {now-last_ts:.1f}s inactivo")
-                    self.tiempo_ultimo_detecciones.pop(key, None)
-                    self.tiempo_deteccion_por_area.pop(key, None)
-
-            # ——— actualizar buffer y dormir ———
-            self.actualizar_buffer(frame)
-            time.sleep(0.01)
-
-
-
-
-
- 
-#-------------------------------------------- ORIGINAL PROCESAR IP CAMBIOS DE MARZO  -----------------------------------------------------------------------------------------------------------------
+    
+    #--------------------------------------------ORIGINAL PROCESAR -------------------------------------------------------------------------------------------------------------------------------------------------
 
     # def procesar(self):
     #     # host_ip = socket.gethostbyname(socket.gethostname())
-    #     host_ip = "172.30.37.67"
+    #     host_ip = "172.30.37.48"
+    #     host_ip = "172.30.37.67"    #Este toca usarlo
     #     feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
 
     #     # Guardar la URL del video feed en la base de datos
-    #     # self.save_feed_url_to_database(self.camera_id, feed_url)
+    #     self.save_feed_url_to_database(self.camera_id, feed_url)
 
     #     while self.running:
-    #         now = time.time()
     #         # print("Buffer antes de todo: ", self.buffer_detecciones)
             
     #         # Cargar configuración
@@ -311,9 +127,8 @@ class ProcesarDetecciones:
     #                 except json.JSONDecodeError as e:
     #                     print(f"Error decodificando JSON de notificaciones: {e}")
                         
-    #             #-----------------------enviar correo a todos en base de datos linea247-----------------------------
-    #             # emails = self.config['camera']["info_emails"]
-    #             emails = json.dumps(["fabianmartinezr867@gmail.com"])  # Esto genera un string JSON válido
+    #             emails = self.config['camera']["info_emails"]
+    #             # emails = json.dumps(["cristian.tascon@axuretechnologies.com"])  # Esto genera un string JSON válido
     #             # print(f'formato de emails: {emails}')
 
     #             if emails:
@@ -364,7 +179,7 @@ class ProcesarDetecciones:
 
     #                 for detection in results[0].boxes:
     #                     self.procesar_deteccion_2(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts)
-
+                    
     #             # except Exception as area_error:
     #             #     print(f"Error al procesar {area_name}: {area_error}")
 
@@ -678,7 +493,6 @@ class ProcesarDetecciones:
 
     #     # Abrir el video estático utilizando la URL rtsp
     #     cap = cv2.VideoCapture(rtsp_url)
-    #     print("rtsp  url:", rtsp_url)
     #     if not cap.isOpened():
     #         print("Error al abrir el video con rtsp_url")
     #         return
@@ -686,7 +500,6 @@ class ProcesarDetecciones:
     #     target_width, target_height = 640, 380  # Resolución deseada
 
     #     while True:
-    #         now = time.time()
     #         ret, frame = cap.read()
     #         if not ret:
     #             print("Fin del video o error al leer frame")
@@ -716,17 +529,7 @@ class ProcesarDetecciones:
     #                     detection, area_name, area_config, tiempos_limite,
     #                     frame, sitio, nombre_camera, info_notifications, emails, pts
     #                 )
-    #             # ——— RESET de detecciones inactivas ———
-    #         umbral = 8.0  # segundos sin ver la detección
-    #         # recorremos las claves (area,label) que tenemos activas
-    #         for key in list(self.tiempo_ultimo_detecciones.keys()):
-    #             last_ts = self.tiempo_ultimo_detecciones[key]
-    #             if now - last_ts > umbral:
-    #                 print(f"⏹️ Reiniciando detect. {key} tras {now-last_ts:.1f}s sin actualizaciones")
-    #                 # borramos el inicio y la última actualización
-    #                 self.tiempo_ultimo_detecciones.pop(key, None)
-    #                 self.tiempo_deteccion_por_area.pop(key, None)
-                        
+                    
     #             # Guardar frame en buffer de detecciones
     #             # self.actualizar_buffer(frame)
 
@@ -794,6 +597,13 @@ class ProcesarDetecciones:
             [[int(point["x"]), int(point["y"])] for point in scaled_points],
             dtype=np.int32
         ).reshape((-1, 1, 2))
+    
+    # #-------------------------------------------------------AÑADI-------------------------------------------------------------
+    # def reiniciar_contadores(self):
+    #     self.tiempo_deteccion_por_area.clear()
+    #     self.tiempo_ultimo_detecciones.clear()
+    #     print("Contadores de detección reiniciados por reconexión.")
+    # #------------------------------------------------------HASTA AQUI-------------------------------------------------------
 
 
     # Versión sin areas                
@@ -961,19 +771,9 @@ class ProcesarDetecciones:
                 print("Bandera set envio correo:", get_envio_correo())
         
 
-#                         self.actualizar_promedio(sitio, nombre_camera, promedio_dict)
 
-#                         del self.tiempo_deteccion_por_area[(area_name, label)]
-#                         del self.tiempo_ultimo_detecciones[(area_name, label)]
-
-#                         set_envio_correo(True)
-
-# # ----------------------------------- FUNCIONES SIN MODIFICAR -----------------------
-#######
-#######
-#######
     
-#----------------------- Función para guardar tiempos promedio en base de datos, filtrando por PUNTO y NOMBRE DE CAMARA
+#Función para guardar tiempos promedio en base de datos, filtrando por PUNTO y NOMBRE DE CAMARA
     def actualizar_promedio(self, sitio, nombre_camera, promedio_dict):
         """Actualiza la base de datos con el promedio de permanencia."""
         connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
@@ -997,7 +797,7 @@ class ProcesarDetecciones:
             cursor.close()
             close_connection(connection)
 
-# ------------- guardar_eventO ORIGINAL-------------------------------------------------
+# ------------- guardar_evento
 
     def buscar_modelo_DB(self, label):
         connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
@@ -1105,12 +905,11 @@ class ProcesarDetecciones:
             cliente=cliente,
             fecha=fecha_actual,
             hora=hora_actual,
-            tipo_evento=tipo_evento,
-            descripcion=descripcion,
-            mod=modelo
+            tipo_evento=f"Detección de {NombreLabel} en {area_name} en la cámara {nombre_camera}",
+            descripcion=descript,
+            mod = modelo
         )
-
-        # Recuperar ID y actualizar el estado
+        
         id_registro = self.get_last_event_id()
         set_id(id_registro)
 
