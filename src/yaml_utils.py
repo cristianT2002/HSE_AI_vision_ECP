@@ -52,17 +52,18 @@ def generate_camera_yaml(data):
 
     for camera in data:
         # print(camera)
-        camera_id = camera["ID"]
-        place_cam = camera["LUGAR"]
-        ponit_int = camera["PUNTO"]
-        name_cam = camera["NOMBRE_CAMARA"]
-        ip_camera = camera["IP_CAMARA"]
-        username = camera["USUARIO"]
-        password = camera["CONTRASENA"]
-        coordinates = camera["COORDENADAS_AREA"]  # Se espera que sea un string JSON
-        times_areas = camera["TIME_AREAS"]
-        info_notifications = camera["INFO_NOTIFICATIONS"]
-        info_emails = camera["DESTINATARIOS"]
+        camera_id = camera["id_camara"]
+        place_cam = camera["id_axure"]
+        ponit_int = camera["id_proyecto"]
+        name_cliente = camera["id_cliente"]
+        name_cam = camera["nombre_camara"]
+        ip_camera = camera["ip_camara"]
+        username = camera["usuario"]
+        password = camera["contrasena"]
+        coordinates = camera["coordenadas_area"]  # Se espera que sea un string JSON
+        times_areas = camera["time_areas"]
+        info_notifications = camera["info_notifications"]
+        info_emails = camera["destinatarios"]
 
         # Convertir coordinates a un diccionario Python----------------------------------------------------
         try:
@@ -72,8 +73,8 @@ def generate_camera_yaml(data):
             print(f"Error: `COORDENADAS_AREA` no es un JSON válido para la cámara {camera_id}.")
             continue
 
-        rtsp_url = f"rtsp://{username}:{password}@{ip_camera}:554/Streaming/Channels/102"
-        # rtsp_url = "VideosEnsayoModelo/cambiandocasco-nocasco-mesa.mp4"
+        # rtsp_url = f"rtsp://{username}:{password}@{ip_camera}:554/Streaming/Channels/102"
+        rtsp_url = "VideosEnsayoModelo/mesa_prueba_hoy3.avi"
         model = "best_mejorado.pt"
 
         camera_config = {
@@ -84,10 +85,11 @@ def generate_camera_yaml(data):
                 "ip": ip_camera,
                 "port": 554,
                 "point": ponit_int,
+                "client": name_cliente,
                 "place": place_cam,
                 "name camera": name_cam,
                 "coordinates": coordinates_dict,
-                "label": camera["ESTADO_LUGAR_MODELO"],
+                "label": camera["estado_lugar_modelo"],
                 "time_areas": times_areas,
                 "info_notifications": info_notifications,
                 "info_emails": info_emails
