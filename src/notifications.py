@@ -250,8 +250,8 @@ class ProcesarDetecciones:
                 except json.JSONDecodeError as e:
                     print(f"Error decodificando JSON de notificaciones: {e}")
                     
-            # emails = self.config['camera']["info_emails"]
-            emails = json.dumps(["fabianmartinezr867@gmail.com"])  # Esto genera un string JSON válido
+            emails = self.config['camera']["info_emails"]
+            # emails = json.dumps(["fabianmartinezr867@gmail.com"])  # Esto genera un string JSON válido
             # print(f'formato de emails: {emails}')
 
             if emails:
@@ -418,6 +418,9 @@ class ProcesarDetecciones:
             for key, last_ts in list(self.tiempo_ultimo_detecciones.items()):
                 if now - last_ts > umbral:
                     print(f"⏹️ Reiniciando {key} tras {now-last_ts:.1f}s inactivo")
+                    logger.warning(f"Reiniciando {key} tras {now-last_ts:.1f} s inactivo")
+                    set_envio_correo(True)
+                    logger.info("Set envio correo", set_envio_correo)
                     self.tiempo_ultimo_detecciones.pop(key, None)
                     self.tiempo_deteccion_por_area.pop(key, None)
  
@@ -723,7 +726,7 @@ class ProcesarDetecciones:
                 hilo = threading.Thread(
                     target=self.guardar_evidencia,
                     args=(frame, area_name, display_label,
-                        nombre_camera, info_notifications, emails, cliente),
+                        nombre_camera, info_notifications, emails, cliente, sitio),
                     daemon=True
                 )
                 hilo.start()
@@ -931,16 +934,16 @@ class ProcesarDetecciones:
             cursor.close()
             close_connection(connection)
 
-    def guardar_evidencia(self, frame, area_name, label, nombre_camera, info_notifications, emails, cliente):
+    def guardar_evidencia(self, frame, area_name, label, nombre_camera, info_notifications, emails, cliente, sitio):
         """Guarda video o imagen como evidencia según configuración."""
         if info_notifications.get('Video'):
             buffer = self.buffer_detecciones[self.camera_id]
-            save_video_from_buffer(buffer, f"videos_{area_name}_{label}_{nombre_camera}.mp4", info_notifications.get('Email'), emails)
+            save_video_from_buffer(buffer, f"videos_{area_name}_{label}_{nombre_camera}.mp4", info_notifications.get('Email'), emails, cliente, sitio)
         elif info_notifications.get('Imagen'):
             nombre_img = f"Imgs/img_{area_name}_{label}_{nombre_camera}.jpg"
             os.makedirs(os.path.dirname(nombre_img), exist_ok=True)
             cv2.imwrite(nombre_img, frame)
-            guardar_imagen_en_mariadb(nombre_img, info_notifications.get('Email'), emails)
+            guardar_imagen_en_mariadb(nombre_img, info_notifications.get('Email'), emails, cliente, sitio)
 
     def actualizar_buffer(self, frame):
         """Añade el frame al buffer de detecciones compartido."""

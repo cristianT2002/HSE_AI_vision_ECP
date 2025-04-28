@@ -180,3 +180,321 @@ Traceback (most recent call last):
   File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
     frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
 AttributeError: 'list' object has no attribute 'get'
+2025-04-28 09:25:18,627 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+AttributeError: 'list' object has no attribute 'get'
+2025-04-28 09:25:20,252 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+AttributeError: 'list' object has no attribute 'get'
+2025-04-28 09:25:21,921 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+AttributeError: 'list' object has no attribute 'get'
+2025-04-28 09:25:23,723 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+AttributeError: 'list' object has no attribute 'get'
+2025-04-28 09:25:47,433 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\connection.py", line 312, in _recv_bytes
+    nread, err = ov.GetOverlappedResult(True)
+BrokenPipeError: [WinError 109] Ha terminado la canalización
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+  File "<string>", line 2, in get
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\managers.py", line 835, in _callmethod
+    kind, result = conn.recv()
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\connection.py", line 250, in recv
+    buf = self._recv_bytes()
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\connection.py", line 321, in _recv_bytes
+    raise EOFError
+EOFError
+2025-04-28 09:58:30,501 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+  File "<string>", line 2, in get
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\managers.py", line 850, in _callmethod
+    raise convert_to_error(kind, result)
+multiprocessing.managers.RemoteError: 
+---------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\managers.py", line 250, in serve_client
+    self.id_to_local_proxy_obj[ident]
+KeyError: '192ac2c3e80'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\managers.py", line 252, in serve_client
+    raise ke
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\managers.py", line 246, in serve_client
+    obj, exposed, gettypeid = id_to_obj[ident]
+KeyError: '192ac2c3e80'
+---------------------------------------------------------------------------
+2025-04-28 10:01:13,142 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+AttributeError: 'list' object has no attribute 'get'
+2025-04-28 10:01:54,446 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+  File "<string>", line 2, in get
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\managers.py", line 850, in _callmethod
+    raise convert_to_error(kind, result)
+multiprocessing.managers.RemoteError: 
+---------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\managers.py", line 250, in serve_client
+    self.id_to_local_proxy_obj[ident]
+KeyError: '1c44a1bf840'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\managers.py", line 252, in serve_client
+    raise ke
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\managers.py", line 246, in serve_client
+    obj, exposed, gettypeid = id_to_obj[ident]
+KeyError: '1c44a1bf840'
+---------------------------------------------------------------------------
+2025-04-28 10:04:41,033 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:04:43,498 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:04:43,548 - INFO - Video adjuntado exitosamente.
+2025-04-28 10:04:45,195 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:04:45,792 - WARNING - Correo enviado exitosamente se pone bandera envio correo en <function get_envio_correo at 0x0000015464DCC160>.
+2025-04-28 10:04:46,581 - INFO - -- BEGIN Twilio API Request --
+2025-04-28 10:04:46,581 - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC743208a5c6a4be7845784bd6a774f06e/Messages.json
+2025-04-28 10:04:46,581 - INFO - Headers:
+2025-04-28 10:04:46,581 - INFO - Content-Type : application/x-www-form-urlencoded
+2025-04-28 10:04:46,581 - INFO - Accept : application/json
+2025-04-28 10:04:46,581 - INFO - User-Agent : twilio-python/9.5.2 (Windows AMD64) Python/3.8.10
+2025-04-28 10:04:46,581 - INFO - X-Twilio-Client : python-9.5.2
+2025-04-28 10:04:46,582 - INFO - Accept-Charset : utf-8
+2025-04-28 10:04:46,582 - INFO - -- END Twilio API Request --
+2025-04-28 10:04:46,880 - INFO - Response Status Code: 401
+2025-04-28 10:04:46,880 - INFO - Response Headers: {'Content-Type': 'application/json', 'Content-Length': '107', 'Connection': 'keep-alive', 'Date': 'Mon, 28 Apr 2025 15:04:46 GMT', 'X-Powered-By': 'AT-5000', 'X-Twilio-Error-Code': '20003', 'Twilio-Request-Id': 'RQ3da90602b7be5b00712ab4334de14687', 'Twilio-Request-Duration': '0.019', 'X-Home-Region': 'us1', 'X-Api-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'Www-Authenticate': 'Basic realm="Twilio API"', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Idempotency-Key, X-Pre-Auth-Context, X-Target-Region', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'ETag, Twilio-Request-Id', 'Access-Control-Allow-Credentials': 'true', 'X-Shenanigans': 'none', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 a35750b050dede7d040b12847d4543bc.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': '3auFMToK3BWVlF3atynhKZmXWZH-bz1ZGmK4eEMAQ10OuMANhOVE7Q=='}
+2025-04-28 10:04:51,631 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:04:51,966 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:04:54,707 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:04:56,800 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:04:57,913 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:05:00,776 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:05:01,351 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:05:03,751 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:05:07,431 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:05:08,081 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:56:45,438 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:56:45,520 - INFO - Video adjuntado exitosamente.
+2025-04-28 10:56:46,244 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:56:46,306 - INFO - Video adjuntado exitosamente.
+2025-04-28 10:56:47,852 - WARNING - Correo enviado exitosamente se pone bandera envio correo en <function get_envio_correo at 0x000001C64606B160>.
+2025-04-28 10:56:48,170 - INFO - -- BEGIN Twilio API Request --
+2025-04-28 10:56:48,170 - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC743208a5c6a4be7845784bd6a774f06e/Messages.json
+2025-04-28 10:56:48,170 - INFO - Headers:
+2025-04-28 10:56:48,170 - INFO - Content-Type : application/x-www-form-urlencoded
+2025-04-28 10:56:48,170 - INFO - Accept : application/json
+2025-04-28 10:56:48,170 - INFO - User-Agent : twilio-python/9.5.2 (Windows AMD64) Python/3.8.10
+2025-04-28 10:56:48,170 - INFO - X-Twilio-Client : python-9.5.2
+2025-04-28 10:56:48,170 - INFO - Accept-Charset : utf-8
+2025-04-28 10:56:48,170 - INFO - -- END Twilio API Request --
+2025-04-28 10:56:48,418 - INFO - Response Status Code: 401
+2025-04-28 10:56:48,418 - INFO - Response Headers: {'Content-Type': 'application/json', 'Content-Length': '107', 'Connection': 'keep-alive', 'Date': 'Mon, 28 Apr 2025 15:56:48 GMT', 'X-Powered-By': 'AT-5000', 'X-Twilio-Error-Code': '20003', 'Twilio-Request-Id': 'RQe73288a1d7bd39506698e83d504958b6', 'Twilio-Request-Duration': '0.022', 'X-Home-Region': 'us1', 'X-Api-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'Www-Authenticate': 'Basic realm="Twilio API"', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Idempotency-Key, X-Pre-Auth-Context, X-Target-Region', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'ETag, Twilio-Request-Id', 'Access-Control-Allow-Credentials': 'true', 'X-Shenanigans': 'none', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 3d547705ef4ad7ab86da5bf4a91afa2c.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'NNsG94YcIw3t9mqff93SoOpyE7WxEYN1SFZCQgJN7DC7DcOgkf9nDg=='}
+2025-04-28 10:56:48,457 - WARNING - Correo enviado exitosamente se pone bandera envio correo en <function get_envio_correo at 0x000001DB3BBFA160>.
+2025-04-28 10:56:48,726 - INFO - -- BEGIN Twilio API Request --
+2025-04-28 10:56:48,726 - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC743208a5c6a4be7845784bd6a774f06e/Messages.json
+2025-04-28 10:56:48,726 - INFO - Headers:
+2025-04-28 10:56:48,727 - INFO - Content-Type : application/x-www-form-urlencoded
+2025-04-28 10:56:48,727 - INFO - Accept : application/json
+2025-04-28 10:56:48,727 - INFO - User-Agent : twilio-python/9.5.2 (Windows AMD64) Python/3.8.10
+2025-04-28 10:56:48,727 - INFO - X-Twilio-Client : python-9.5.2
+2025-04-28 10:56:48,727 - INFO - Accept-Charset : utf-8
+2025-04-28 10:56:48,728 - INFO - -- END Twilio API Request --
+2025-04-28 10:56:48,860 - INFO - Response Status Code: 401
+2025-04-28 10:56:48,860 - INFO - Response Headers: {'Content-Type': 'application/json', 'Content-Length': '107', 'Connection': 'keep-alive', 'Date': 'Mon, 28 Apr 2025 15:56:48 GMT', 'X-Powered-By': 'AT-5000', 'X-Twilio-Error-Code': '20003', 'Twilio-Request-Id': 'RQ1407d0593300aa520dc75d756540a3a0', 'Twilio-Request-Duration': '0.014', 'X-Home-Region': 'us1', 'X-Api-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'Www-Authenticate': 'Basic realm="Twilio API"', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Idempotency-Key, X-Pre-Auth-Context, X-Target-Region', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'ETag, Twilio-Request-Id', 'Access-Control-Allow-Credentials': 'true', 'X-Shenanigans': 'none', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 11937561e31bed8643821214f9ac248c.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'NaOkSqVxJHz9q7JRGq9kvCodoMVth5_CeiqsBM51-k4uZ_6LFR5djw=='}
+2025-04-28 10:56:49,126 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:56:53,702 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:56:53,721 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:56:56,152 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:56:58,640 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:57:00,401 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:57:02,328 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 10:57:03,547 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 11:00:08,011 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 11:00:08,050 - INFO - Video adjuntado exitosamente.
+2025-04-28 11:00:09,780 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 11:00:09,867 - INFO - Video adjuntado exitosamente.
+2025-04-28 11:00:10,494 - WARNING - Correo enviado exitosamente se pone bandera envio correo en <function get_envio_correo at 0x0000022D671FA160>.
+2025-04-28 11:00:10,863 - INFO - -- BEGIN Twilio API Request --
+2025-04-28 11:00:10,863 - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC743208a5c6a4be7845784bd6a774f06e/Messages.json
+2025-04-28 11:00:10,863 - INFO - Headers:
+2025-04-28 11:00:10,864 - INFO - Content-Type : application/x-www-form-urlencoded
+2025-04-28 11:00:10,864 - INFO - Accept : application/json
+2025-04-28 11:00:10,864 - INFO - User-Agent : twilio-python/9.5.2 (Windows AMD64) Python/3.8.10
+2025-04-28 11:00:10,864 - INFO - X-Twilio-Client : python-9.5.2
+2025-04-28 11:00:10,864 - INFO - Accept-Charset : utf-8
+2025-04-28 11:00:10,864 - INFO - -- END Twilio API Request --
+2025-04-28 11:00:11,105 - INFO - Response Status Code: 401
+2025-04-28 11:00:11,107 - INFO - Response Headers: {'Content-Type': 'application/json', 'Content-Length': '107', 'Connection': 'keep-alive', 'Date': 'Mon, 28 Apr 2025 16:00:11 GMT', 'X-Powered-By': 'AT-5000', 'X-Twilio-Error-Code': '20003', 'Twilio-Request-Id': 'RQf38ad65062de94de5ab6e9ab9aa98239', 'Twilio-Request-Duration': '0.020', 'X-Home-Region': 'us1', 'X-Api-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'Www-Authenticate': 'Basic realm="Twilio API"', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Idempotency-Key, X-Pre-Auth-Context, X-Target-Region', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'ETag, Twilio-Request-Id', 'Access-Control-Allow-Credentials': 'true', 'X-Shenanigans': 'none', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 8e51096665629c353988341150c1029c.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'wsk8e0fDbtr2pJzdOoQTTlgYIl8jmUxMq7pG4Y7651iIrIHPMyySEw=='}
+2025-04-28 11:00:11,940 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 11:00:12,348 - WARNING - Correo enviado exitosamente se pone bandera envio correo en <function get_envio_correo at 0x00000269827FA160>.
+2025-04-28 11:00:12,681 - INFO - -- BEGIN Twilio API Request --
+2025-04-28 11:00:12,681 - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC743208a5c6a4be7845784bd6a774f06e/Messages.json
+2025-04-28 11:00:12,681 - INFO - Headers:
+2025-04-28 11:00:12,681 - INFO - Content-Type : application/x-www-form-urlencoded
+2025-04-28 11:00:12,681 - INFO - Accept : application/json
+2025-04-28 11:00:12,681 - INFO - User-Agent : twilio-python/9.5.2 (Windows AMD64) Python/3.8.10
+2025-04-28 11:00:12,682 - INFO - X-Twilio-Client : python-9.5.2
+2025-04-28 11:00:12,682 - INFO - Accept-Charset : utf-8
+2025-04-28 11:00:12,682 - INFO - -- END Twilio API Request --
+2025-04-28 11:00:12,816 - INFO - Response Status Code: 401
+2025-04-28 11:00:12,816 - INFO - Response Headers: {'Content-Type': 'application/json', 'Content-Length': '107', 'Connection': 'keep-alive', 'Date': 'Mon, 28 Apr 2025 16:00:12 GMT', 'X-Powered-By': 'AT-5000', 'X-Twilio-Error-Code': '20003', 'Twilio-Request-Id': 'RQ282dc98d40d8e72d1e9efe14b988e6fd', 'Twilio-Request-Duration': '0.010', 'X-Home-Region': 'us1', 'X-Api-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'Www-Authenticate': 'Basic realm="Twilio API"', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Idempotency-Key, X-Pre-Auth-Context, X-Target-Region', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'ETag, Twilio-Request-Id', 'Access-Control-Allow-Credentials': 'true', 'X-Shenanigans': 'none', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 a35750b050dede7d040b12847d4543bc.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'zDAIWickBvshl0rKYXHKCy4Q4qw3ObxW8ZgiD8kqTtBGfSrvHfc4Pw=='}
+2025-04-28 11:00:16,358 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 11:00:17,318 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 11:00:19,515 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 11:00:23,424 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 11:00:23,561 - WARNING - Video guardado en la base de datos exitosamente.
+2025-04-28 11:03:41,145 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 172
+2025-04-28 11:03:41,146 - ERROR - Error al enviar el correo: [Errno 2] No such file or directory: 'img_area1_Persona_Planchada.jpg'
+2025-04-28 11:03:41,190 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 172
+2025-04-28 11:03:41,191 - ERROR - Error al enviar el correo: [Errno 2] No such file or directory: 'img_area2_Persona_Mesa.jpg'
+2025-04-28 11:03:44,213 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 173
+2025-04-28 11:03:44,214 - ERROR - Error al enviar el correo: [Errno 2] No such file or directory: 'img_area1_Persona_Planchada.jpg'
+2025-04-28 11:03:44,901 - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\connection.py", line 312, in _recv_bytes
+    nread, err = ov.GetOverlappedResult(True)
+BrokenPipeError: [WinError 109] Ha terminado la canalización
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\serving.py", line 333, in execute
+    for data in application_iter:
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wsgi.py", line 256, in __next__
+    return self._next()
+  File "C:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\ent_back_HSE\lib\site-packages\werkzeug\wrappers\response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "c:\Users\geola\OneDrive\Escritorio\HSE_AI_vision_ECP\src\video_feed.py", line 54, in generate_frames
+    frame_buffer = streamers.get(camera_id, None)  # Usa deque con tamaño máximo
+  File "<string>", line 2, in get
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\managers.py", line 835, in _callmethod
+    kind, result = conn.recv()
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\connection.py", line 250, in recv
+    buf = self._recv_bytes()
+  File "C:\Users\geola\AppData\Local\Programs\Python\Python38\lib\multiprocessing\connection.py", line 321, in _recv_bytes
+    raise EOFError
+EOFError
+2025-04-28 12:15:16,119 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 174
+2025-04-28 12:15:16,127 - INFO - Imagen adjuntada exitosamente.
+2025-04-28 12:15:18,119 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 175
+2025-04-28 12:15:18,124 - INFO - Imagen adjuntada exitosamente.
+2025-04-28 12:15:18,260 - WARNING - Correo enviado exitosamente se pone bandera envio correo en <function get_envio_correo at 0x00000297BDC4B160>.
+2025-04-28 12:15:18,568 - INFO - -- BEGIN Twilio API Request --
+2025-04-28 12:15:18,568 - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC743208a5c6a4be7845784bd6a774f06e/Messages.json
+2025-04-28 12:15:18,568 - INFO - Headers:
+2025-04-28 12:15:18,569 - INFO - Content-Type : application/x-www-form-urlencoded
+2025-04-28 12:15:18,569 - INFO - Accept : application/json
+2025-04-28 12:15:18,569 - INFO - User-Agent : twilio-python/9.5.2 (Windows AMD64) Python/3.8.10
+2025-04-28 12:15:18,569 - INFO - X-Twilio-Client : python-9.5.2
+2025-04-28 12:15:18,569 - INFO - Accept-Charset : utf-8
+2025-04-28 12:15:18,569 - INFO - -- END Twilio API Request --
+2025-04-28 12:15:18,856 - INFO - Response Status Code: 401
+2025-04-28 12:15:18,857 - INFO - Response Headers: {'Content-Type': 'application/json', 'Content-Length': '107', 'Connection': 'keep-alive', 'Date': 'Mon, 28 Apr 2025 17:15:18 GMT', 'X-Powered-By': 'AT-5000', 'X-Twilio-Error-Code': '20003', 'Twilio-Request-Id': 'RQf00e7fced61d2dfe7e31ebb243ebbe9f', 'Twilio-Request-Duration': '0.014', 'X-Home-Region': 'us1', 'X-Api-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'Www-Authenticate': 'Basic realm="Twilio API"', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Idempotency-Key, X-Pre-Auth-Context, X-Target-Region', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'ETag, Twilio-Request-Id', 'Access-Control-Allow-Credentials': 'true', 'X-Shenanigans': 'none', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 31847af2bdf6b34a1bb209d60de0f25e.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': '_LkCCRTtv2xGMD3YDpKwcU7UtaQISs-gRbVEqqPjhIL6lFgsq_bpSw=='}
+2025-04-28 12:15:19,098 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 176
+2025-04-28 12:15:20,399 - WARNING - Correo enviado exitosamente se pone bandera envio correo en <function get_envio_correo at 0x0000025CDF33D160>.
+2025-04-28 12:15:20,671 - INFO - -- BEGIN Twilio API Request --
+2025-04-28 12:15:20,672 - INFO - POST Request: https://api.twilio.com/2010-04-01/Accounts/AC743208a5c6a4be7845784bd6a774f06e/Messages.json
+2025-04-28 12:15:20,672 - INFO - Headers:
+2025-04-28 12:15:20,672 - INFO - Content-Type : application/x-www-form-urlencoded
+2025-04-28 12:15:20,672 - INFO - Accept : application/json
+2025-04-28 12:15:20,672 - INFO - User-Agent : twilio-python/9.5.2 (Windows AMD64) Python/3.8.10
+2025-04-28 12:15:20,672 - INFO - X-Twilio-Client : python-9.5.2
+2025-04-28 12:15:20,672 - INFO - Accept-Charset : utf-8
+2025-04-28 12:15:20,672 - INFO - -- END Twilio API Request --
+2025-04-28 12:15:20,814 - INFO - Response Status Code: 401
+2025-04-28 12:15:20,814 - INFO - Response Headers: {'Content-Type': 'application/json', 'Content-Length': '107', 'Connection': 'keep-alive', 'Date': 'Mon, 28 Apr 2025 17:15:20 GMT', 'X-Powered-By': 'AT-5000', 'X-Twilio-Error-Code': '20003', 'Twilio-Request-Id': 'RQ9e1347f6490f90e7f9eea7d0bd95f8e7', 'Twilio-Request-Duration': '0.008', 'X-Home-Region': 'us1', 'X-Api-Domain': 'api.twilio.com', 'Strict-Transport-Security': 'max-age=31536000', 'Www-Authenticate': 'Basic realm="Twilio API"', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, Idempotency-Key, X-Pre-Auth-Context, X-Target-Region', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'ETag, Twilio-Request-Id', 'Access-Control-Allow-Credentials': 'true', 'X-Shenanigans': 'none', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 3d547705ef4ad7ab86da5bf4a91afa2c.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BOG50-P2', 'X-Amz-Cf-Id': 'cwPBcKUAyNoXbJWLW6dT0-ib7Z16KTxL377rZTf6ytcLe5o3aEzs8Q=='}
+2025-04-28 12:15:24,126 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 177
+2025-04-28 12:15:24,663 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 178
+2025-04-28 12:15:28,224 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 179
+2025-04-28 12:15:29,020 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 180
+2025-04-28 12:15:31,240 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 181
+2025-04-28 12:15:34,864 - WARNING - Imagen guardada en la base de datos exitosamente. ID: 182

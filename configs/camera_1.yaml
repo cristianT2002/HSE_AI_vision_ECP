@@ -61,8 +61,8 @@ camera:
         y: 90.6001984126984
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com"]'
-  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
-    true}'
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
   ip: 172.29.5.230
   label: Green, No_Harness, No_Helmet, Yellow, A_Person
   name camera: Mesa
