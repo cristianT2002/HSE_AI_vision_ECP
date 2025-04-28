@@ -1,5 +1,5 @@
 camera:
-  client: GEOPARK
+  client: ECOPETROL
   coordinates:
     area1:
       Green: '70'
@@ -20,7 +20,7 @@ camera:
         y: 15.46792328042328
       - x: 17.529793473513443
         y: 13.086970899470899
-      punto: TORITO_OESTE1_GEOPARK
+      punto: NABORS_PX_42
     area2:
       A_Person: '10'
       Green: '70'
@@ -44,7 +44,7 @@ camera:
         y: 140.6001984126984
       - x: 100.78929306794784
         y: 40.60019841269841
-      punto: TORITO_OESTE1_GEOPARK
+      punto: NABORS_PX_42
     area3:
       A_Person: '10'
       camara: Mesa
@@ -59,18 +59,18 @@ camera:
         y: 80.01818783068782
       - x: 127.74380732513882
         y: 90.6001984126984
-      punto: TORITO_OESTE1_GEOPARK
+      punto: NABORS_PX_42
   info_emails: '["nelson.ceron@axuretechnologies.com"]'
   info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
     false}'
-  ip: 172.29.5.230
+  ip: 10.10.148.233
   label: Green, No_Harness, No_Helmet, Yellow, A_Person
   name camera: Mesa
   password: 4xUR3_2017
-  place: Pozo1
-  point: TORITO_OESTE1_GEOPARK
+  place: Pozo2
+  point: NABORS_PX_42
   port: 554
-  rtsp_url: VideosEnsayoModelo/mesa_prueba_hoy3.avi
+  rtsp_url: rtsp://admin:4xUR3_2017@10.10.148.233:554/Streaming/Channels/102
   time_areas: '{"area1": "5", "area2": "5", "area3": "120"}'
   username: admin
 labels:
