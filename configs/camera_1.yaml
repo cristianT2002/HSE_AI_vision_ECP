@@ -1,27 +1,31 @@
 camera:
+  client: GEOPARK
   coordinates:
     area1:
-      Green: '60'
-      No_Harness: '49'
-      No_Helmet: '70'
-      Yellow: '60'
+      Green: '70'
+      No_Harness: '70'
+      No_Helmet: '75'
+      Yellow: '70'
       camara: Mesa
       points:
-      - x: 10.042428402071504
-        y: 12.02876984126984
-      - x: 47.47925375928121
-        y: 137.6901455026455
-      - x: 106.4796905222437
-        y: 124.9917328042328
-      - x: 64.25095151931116
-        y: 1.1822089947089947
-      - x: 10.042428402071504
-        y: 12.02876984126984
+      - x: 17.529793473513443
+        y: 12.822420634920634
+      - x: 66.04791913645722
+        y: 3.2986111111111107
+      - x: 109.1751419479628
+        y: 139.80654761904762
+      - x: 53.16965121357708
+        y: 147.74305555555554
+      - x: 8.544955387783116
+        y: 15.46792328042328
+      - x: 17.529793473513443
+        y: 13.086970899470899
       punto: TORITO_OESTE1_GEOPARK
     area2:
-      Green: '30'
-      No_Helmet: '70'
-      Yellow: '50'
+      A_Person: '10'
+      Green: '70'
+      No_Helmet: '80'
+      Yellow: '70'
       camara: Mesa
       points:
       - x: 100.78929306794784
@@ -42,7 +46,7 @@ camera:
         y: 40.60019841269841
       punto: TORITO_OESTE1_GEOPARK
     area3:
-      A_Person: '30'
+      A_Person: '10'
       camara: Mesa
       points:
       - x: 128.34279653085417
@@ -56,21 +60,18 @@ camera:
       - x: 127.74380732513882
         y: 90.6001984126984
       punto: TORITO_OESTE1_GEOPARK
-  info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
-    "cristian.tascon@axuretechnologies.com", "fabismartinez867@gmail.com", "edwin.granados@axuretechnologies.com",
-    "co.perforacion_07@geo-park.com", "taladrohs7@geo-park.com", "ygonzalez@geo-park.com",
-    "vvalencia@geo-park.com", "fpuentes@geo-park.com"]'
-  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
-    true}'
+  info_emails: '["nelson.ceron@axuretechnologies.com"]'
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
   ip: 172.29.5.230
   label: Green, No_Harness, No_Helmet, Yellow, A_Person
   name camera: Mesa
   password: 4xUR3_2017
-  place: POZO11
+  place: Pozo1
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "5", "area2": "10", "area3": "300"}'
+  rtsp_url: VideosEnsayoModelo/mesa_prueba_hoy3.avi
+  time_areas: '{"area1": "5", "area2": "5", "area3": "120"}'
   username: admin
 labels:
 - A_Person

@@ -25,6 +25,8 @@ COLORS = {
     "Loading_Machine": (0, 100, 19),  # Verde Oscuro
     "Mud_Bucket": (255, 171, 171),  # Rosa Suave
     "Orange": (0, 128, 255),  # Naranja
+    "Black": (0, 200, 200),
+    "Brown": (100, 100, 100)
 }
 
 
@@ -104,5 +106,3 @@ def video_feed(camera_id):
         print(f"Error en video_feed: {e}")
         return f"Error al procesar la solicitud de la cámara {camera_id}.", 500
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)

@@ -10,9 +10,10 @@ from src.buffers_camaras import start_streaming_from_configs
 from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads, set_streamers_procesado
 from src.notifications import ProcesarDetecciones
 import multiprocessing as mp
-from src.variables_globales import set_processes, get_processes
+from src.variables_globales import set_processes, get_processes, set_ip_local, get_ip_local, obtener_ip_local
 from multiprocessing import Manager
-
+import psycopg2
+import socket
 
 def load_yaml_config(path):
     """
@@ -28,6 +29,7 @@ def start_flask_server():
     app.run(host="0.0.0.0", port=5000)
 
 
+
 def monitor_database_and_start_detections(db_config, shared_buffers):
     """
     Monitorea la base de datos, actualiza YAML/JSON e inicia procesos de detección por cámara.
@@ -41,22 +43,39 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
         # try:
             # Establece una nueva conexión en cada iteración
             connection = connect_to_db(db_config)
-            cursor = connection.cursor(dictionary=True)
-            cursor.execute(db_config["query_yaml"])
+            cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            
+            ip_local = get_ip_local()
+            # print("🌐 IP del equipo:", ip_local)  
+            
+            # Buscamos el proyecto en la base de datos segun la ip local
+            cursor.execute(db_config["query_proyecto_por_ip"], (ip_local,))
+            resultado = cursor.fetchone()  
+            
+            if not resultado:
+                print("❌ No se encontró un proyecto para la IP:", ip_local)
+                return
+            
+            # Despues buscamos las camaras segun el proyecto de este PC
+            id_proyecto = resultado["id_proyecto"]
+            cursor.execute(db_config["query_yaml"], (id_proyecto,))
             cameras = cursor.fetchall()
+            cameras = [dict(fila) for fila in cameras]
+            print("""📡 Datos obtenidos de la base de datos: """, cameras)
 
+            
             # Actualizar YAML si hay cambios en la base de datos
             if cameras != previous_data:
-                print("📡 Datos obtenidos de la base de datos:", cameras)
+                # print("📡 Datos obtenidos de la base de datos:", cameras)
                 generate_camera_yaml(cameras)  # Actualizar YAML
-                cursor.execute(db_config["query_json"])
+                cursor.execute(db_config["query_json"], (id_proyecto,))
                 data = cursor.fetchall()
                 generate_json(data)
                 previous_data = cameras
 
                 # Iniciar o reiniciar procesos de detección por cámara
                 for camera in cameras:
-                    camera_id = camera["ID"]
+                    camera_id = camera["id_camara"]
 
                     # Crear buffer si no existe
                     if camera_id not in buffer_detecciones:
@@ -102,6 +121,9 @@ if __name__ == "__main__":
     # Cargar configuración desde database.yaml
     db_config = load_yaml_config("configs/database.yaml")["database"]
 
+    host_ip = obtener_ip_local()
+    set_ip_local(host_ip)
+    
     # Iniciar el servidor Flask en un hilo separado
     flask_thread = threading.Thread(target=start_flask_server, daemon=True)
     flask_thread.start()

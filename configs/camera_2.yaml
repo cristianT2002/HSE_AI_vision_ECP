@@ -1,35 +1,33 @@
 camera:
+  client: GEOPARK
   coordinates:
     area1:
-      A_Person: '30'
+      A_Person: '50'
       camara: Planchada
       points:
-      - x: 174.7644599737942
-        y: 62.2933201058201
-      - x: 63.05297310788045
-        y: 135.3091931216931
-      - x: 187.64272789667436
-        y: 146.68485449735448
-      - x: 225.07955325388406
-        y: 72.87533068783068
-      - x: 175.0639545766519
-        y: 62.2933201058201
+      - x: 176.64673434385574
+        y: 56.125624436983045
+      - x: 221.14680387521437
+        y: 65.29768241749242
+      - x: 189.70008807305427
+        y: 112.99238391614118
+      - x: 156.47336948963982
+        y: 146.79796904430432
+      - x: 85.56992536967505
+        y: 125.04708869052493
       punto: TORITO_OESTE1_GEOPARK
-  info_emails: '["nelson.ceron@axuretechnologies.com", "carlos.saavedra@axuretechnologies.com",
-    "cristian.tascon@axuretechnologies.com", "fabismartinez867@gmail.com", "edwin.granados@axuretechnologies.com",
-    "co.perforacion_07@geo-park.com", "taladrohs7@geo-park.com", "ygonzalez@geo-park.com",
-    "vvalencia@geo-park.com", "fpuentes@geo-park.com"]'
-  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+  info_emails: '["nelson.ceron@axuretechnologies.com"]'
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 172.29.5.231
   label: A_Person, Loading_Machine
   name camera: Planchada
   password: 4xUR3_2017
-  place: POZO11
+  place: Pozo1
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
-  time_areas: '{"area1": "60", "area2": "60", "area3": "60"}'
+  rtsp_url: VideosEnsayoModelo/mesa_prueba_hoy3.avi
+  time_areas: '{"area1": "3", "area2": "15", "area3": "300"}'
   username: admin
 labels:
 - A_Person
