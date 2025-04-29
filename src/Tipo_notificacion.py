@@ -231,11 +231,13 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, client
 
             # Insertar la imagen en la base de datos
             insert_sql = """
-                INSERT INTO notificaciones (id_evento, fecha_envio, mensaje, estado, nombre_archivo, imagen_alerta)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO notificaciones (id_evento, id_cliente, id_proyecto ,fecha_envio, mensaje, estado, nombre_archivo, imagen_alerta)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(insert_sql, (
                 id_a_buscar,
+                cliente,
+                sitio,
                 fecha_notification,
                 mensaje_notification,
                 estado_notification,
