@@ -12,7 +12,9 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     git \
     libgl1 \
+    libglib2.0-0 \
     && apt-get clean
+
 
 # Directorio de trabajo dentro del contenedor
 WORKDIR /app
