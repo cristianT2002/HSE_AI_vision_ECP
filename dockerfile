@@ -19,7 +19,7 @@ WORKDIR /app
 # Copia archivos necesarios (exceptuando ent_back_HSE)
 COPY certs/ certs/
 COPY configs/ configs/
-COPY imgs/ imgs/
+COPY Imgs/ Imgs/
 COPY logs/ logs/
 COPY models/ models/
 COPY outputs/ outputs/
