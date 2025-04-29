@@ -32,8 +32,11 @@ COPY VideosEnsayoModelo/ VideosEnsayoModelo/
 COPY requirements.txt .
 COPY app.py .
 
-# Instala dependencias
+# Instala dependencias específicas de PyTorch primero
 RUN pip3 install --upgrade pip
+RUN pip3 install torch==2.0.1+cu117 torchvision==0.15.2+cu117 torchaudio==2.0.2 -f https://download.pytorch.org/whl/cu117/torch_stable.html
+
+# Luego instala el resto de tus dependencias
 RUN pip3 install -r requirements.txt
 
 # Ejecuta el programa
