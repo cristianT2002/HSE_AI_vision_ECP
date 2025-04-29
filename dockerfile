@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     build-essential \
     git \
+    libgl1 \
     && apt-get clean
 
 # Directorio de trabajo dentro del contenedor
