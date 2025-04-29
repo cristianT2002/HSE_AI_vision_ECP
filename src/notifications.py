@@ -420,7 +420,7 @@ class ProcesarDetecciones:
                     print(f"⏹️ Reiniciando {key} tras {now-last_ts:.1f}s inactivo")
                     logger.warning(f"Reiniciando {key} tras {now-last_ts:.1f} s inactivo")
                     set_envio_correo(True)
-                    logger.info("Set envio correo", get_envio_correo)
+                    logger.info("Set envio correo: %s", get_envio_correo())
                     self.tiempo_ultimo_detecciones.pop(key, None)
                     self.tiempo_deteccion_por_area.pop(key, None)
  
