@@ -1,31 +1,46 @@
-# Usar una imagen base que tenga tanto Python 3.9 como Node.js 16
-FROM nikolaik/python-nodejs:python3.9-nodejs16
+# Imagen base con soporte CUDA
+FROM nvidia/cuda:12.0.0-runtime-ubuntu20.04
 
-# Establecer el directorio de trabajo dentro del contenedor
+# Evita prompts interactivos
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Instala Python y utilidades necesarias
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    build-essential \
+    git \
+    libgl1 \
+    libglib2.0-0 \
+    && apt-get clean
+
+
+# Directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar el archivo requirements.txt al contenedor
+# Copia archivos necesarios (exceptuando ent_back_HSE)
+COPY certs/ certs/
+COPY configs/ configs/
+COPY Imgs/ Imgs/
+COPY logs/ logs/
+COPY models/ models/
+COPY outputs/ outputs/
+COPY pruebas_realizadas/ pruebas_realizadas/
+COPY src/ src/
+COPY Videos/ Videos/
+COPY VideosEnsayoModelo/ VideosEnsayoModelo/
+
+# También copia el resto de archivos importantes (si los necesitas)
 COPY requirements.txt .
+COPY app.py .
 
-# Instalar las dependencias del proyecto
-RUN pip install -r requirements.txt
+# Instala dependencias específicas de PyTorch primero
+RUN pip3 install --upgrade pip
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
+# Luego instala el resto de tus dependencias
+RUN pip3 install -r requirements.txt
 
-
-# Regresar al directorio principal de la aplicación Flask
-WORKDIR /app
-
-# Copiar los archivos de la aplicación al contenedor
-COPY NUEVO.py .
-COPY best_mejorado7.pt .
-
-
-
-# Instalar la biblioteca libgl1-mesa-glx
-RUN apt-get update && apt-get install -y libgl1-mesa-glx
-
-# Exponer el puerto en el que se ejecutará la aplicación Flask
-EXPOSE 8444
-
-# Establecer el comando por defecto para ejecutar la aplicación Flask
-CMD ["sh", "-c", "python NUEVO.py"]
+# Ejecuta el programa
+CMD ["python3", "app.py"]
