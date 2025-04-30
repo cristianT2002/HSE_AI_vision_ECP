@@ -4,7 +4,6 @@ camera:
     area1:
       Green: '75'
       No_Helmet: '73'
-      White: '20'
       Yellow: '65'
       camara: Mesa
       points:
@@ -58,7 +57,7 @@ camera:
         y: 91.3938492063492
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
-  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 172.29.5.230
   label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person
@@ -67,7 +66,7 @@ camera:
   place: Pozo1
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: VideosEnsayoModelo/mesa_prueba_hoy3.avi
+  rtsp_url: VideosEnsayoModelo/cambiandocasco-nocasco-mesa.mp4
   time_areas: '{"area1": "5", "area2": "5", "area3": "120"}'
   username: admin
 labels:

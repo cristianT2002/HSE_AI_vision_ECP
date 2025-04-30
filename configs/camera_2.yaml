@@ -26,7 +26,7 @@ camera:
   place: Pozo1
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: VideosEnsayoModelo/mesa_prueba_hoy3.avi
+  rtsp_url: VideosEnsayoModelo/cambiandocasco-nocasco-mesa.mp4
   time_areas: '{"area1": "3", "area2": "15", "area3": "300"}'
   username: admin
 labels:

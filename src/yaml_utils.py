@@ -74,7 +74,7 @@ def generate_camera_yaml(data):
             continue
 
         # rtsp_url = f"rtsp://{username}:{password}@{ip_camera}:554/Streaming/Channels/102"
-        rtsp_url = "VideosEnsayoModelo/mesa_prueba_hoy3.avi"
+        rtsp_url = "VideosEnsayoModelo/cambiandocasco-nocasco-mesa.mp4"
         model = "best_mejorado.pt"
 
         camera_config = {
