@@ -50,11 +50,11 @@ class ProcesarDetecciones:
         self.COLORS = {
             "A_Person": (255, 0, 0),  # Azul
             "Green": (0, 0, 255),  # Rojo
-            "Harness": (0, 255, 206),  # Verde
+            "Harness": (0, 178, 144),  # Verde
             "No_Harness": (0, 0, 255),  # Rojo
             "No_Helmet": (0, 0, 255),  # Rojo
             "White": (120, 120, 120),  # Gris
-            "Yellow": (0, 255, 255),  # Amarillo
+            "Yellow": (0, 178, 165),  # Amarillo
             "Loading_Machine": (0, 100, 19),  # Verde Oscuro
             "Mud_Bucket": (255, 171, 171),  # Rosa Suave
             "Orange": (0, 128, 255),  # Naranja
@@ -71,22 +71,40 @@ class ProcesarDetecciones:
     
     #---------------------AÑADI------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def compute_iou(self, boxA, boxB):
-        xA = max(boxA[0], boxB[0])
-        yA = max(boxA[1], boxB[1])
-        xB = min(boxA[2], boxB[2])
-        yB = min(boxA[3], boxB[3])
-        interArea = max(0, xB - xA) * max(0, yB - yA)
-        areaA = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
-        areaB = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
-        union = areaA + areaB - interArea
-        return interArea / union if union > 0 else 0
+    # def compute_iou(self, boxA, boxB):
+    #     xA = max(boxA[0], boxB[0])
+    #     yA = max(boxA[1], boxB[1])
+    #     xB = min(boxA[2], boxB[2])
+    #     yB = min(boxA[3], boxB[3])
+    #     interArea = max(0, xB - xA) * max(0, yB - yA)
+    #     areaA = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
+    #     areaB = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
+    #     union = areaA + areaB - interArea
+    #     return interArea / union if union > 0 else 0
     #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def is_inside(self, inner_box, outer_box):
         x1, y1, x2, y2 = inner_box
         X1, Y1, X2, Y2 = outer_box
         return (x1 >= X1) and (y1 >= Y1) and (x2 <= X2) and (y2 <= Y2)
+    
+    def is_mostly_inside(self, inner_box, outer_box, threshold=0.9):
+        ix1, iy1, ix2, iy2 = inner_box
+        ox1, oy1, ox2, oy2 = outer_box
+
+        inter_x1 = max(ix1, ox1)
+        inter_y1 = max(iy1, oy1)
+        inter_x2 = min(ix2, ox2)
+        inter_y2 = min(iy2, oy2)
+
+        inter_area = max(0, inter_x2 - inter_x1) * max(0, inter_y2 - inter_y1)
+        inner_area = (ix2 - ix1) * (iy2 - iy1)
+
+        return (inter_area / inner_area) >= threshold
+    
+
+
+
 
     
     #--------------------------------------------ORIGINAL PROCESAR -------------------------------------------------------------------------------------------------------------------------------------------------
@@ -379,7 +397,8 @@ class ProcesarDetecciones:
                             box = (x1, y1, x2, y2)
                             for pb in self.person_boxes:
                                 hb = self.get_head_region(pb, fraction=0.25, offset=5)
-                                if self.compute_iou(box, hb) >= 0.1:
+                                # if self.compute_iou(box, hb) >= 0.1:
+                                if self.is_mostly_inside(box, hb, threshold=0.4):  # puedes ajustar threshold entre 0.8 y 0.95
                                     if lab in allowed:
                                         # Caso normal: casco configurado
                                         self.procesar_deteccion_2(

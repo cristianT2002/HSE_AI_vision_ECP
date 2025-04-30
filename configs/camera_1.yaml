@@ -1,0 +1,79 @@
+camera:
+  client: GEOPARK
+  coordinates:
+    area1:
+      Green: '75'
+      No_Helmet: '73'
+      Yellow: '65'
+      camara: Mesa
+      points:
+      - x: 98.6928308479441
+        y: 22.61078042328042
+      - x: 129.84026954514258
+        y: 146.94940476190476
+      - x: 286.1764522368503
+        y: 144.03935185185185
+      - x: 283.4810008111312
+        y: 55.67956349206349
+      - x: 213.09976913957695
+        y: 12.02876984126984
+      - x: 98.99232545080177
+        y: 22.081679894179892
+      punto: TORITO_OESTE1_GEOPARK
+    area2:
+      Green: '55'
+      Harness: '30'
+      No_Harness: '40'
+      No_Helmet: '55'
+      Orange: '30'
+      White: '30'
+      Yellow: '65'
+      camara: Mesa
+      points:
+      - x: 2.206461780929866
+        y: 12.361804929981163
+      - x: 82.00991980716636
+        y: 2.4035705511424124
+      - x: 103.66662031242757
+        y: 95.17238555400868
+      - x: 4.283131692393269
+        y: 111.94414871836868
+      - x: 2.799796041347981
+        y: 12.099746130538039
+      punto: TORITO_OESTE1_GEOPARK
+    area3:
+      A_Person: '20'
+      camara: Mesa
+      points:
+      - x: 128.94178573656953
+        y: 91.3938492063492
+      - x: 128.64229113371186
+        y: 106.73776455026454
+      - x: 188.54121170524738
+        y: 96.42030423280423
+      - x: 177.45991139951332
+        y: 81.87003968253968
+      - x: 128.94178573656953
+        y: 91.3938492063492
+      punto: TORITO_OESTE1_GEOPARK
+  info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
+  ip: 172.29.5.230
+  label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person
+  name camera: Mesa
+  password: 4xUR3_2017
+  place: Pozo1
+  point: TORITO_OESTE1_GEOPARK
+  port: 554
+  rtsp_url: VideosEnsayoModelo/cambiandocasco-nocasco-mesa.mp4
+  time_areas: '{"area1": "5", "area2": "5", "area3": "120"}'
+  username: admin
+labels:
+- A_Person
+- Harness
+- No_Helmet
+- White
+- YellowGreen
+model:
+  path: models/best_mejorado.pt

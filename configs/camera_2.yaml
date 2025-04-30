@@ -1,0 +1,39 @@
+camera:
+  client: GEOPARK
+  coordinates:
+    area1:
+      A_Person: '95'
+      camara: Planchada
+      points:
+      - x: 176.64673434385574
+        y: 56.125624436983045
+      - x: 221.14680387521437
+        y: 65.29768241749242
+      - x: 189.70008807305427
+        y: 112.99238391614118
+      - x: 156.47336948963982
+        y: 146.79796904430432
+      - x: 85.56992536967505
+        y: 125.04708869052493
+      punto: TORITO_OESTE1_GEOPARK
+  info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
+  ip: 172.29.5.231
+  label: A_Person, Loading_Machine
+  name camera: Planchada
+  password: 4xUR3_2017
+  place: Pozo1
+  point: TORITO_OESTE1_GEOPARK
+  port: 554
+  rtsp_url: VideosEnsayoModelo/cambiandocasco-nocasco-mesa.mp4
+  time_areas: '{"area1": "3", "area2": "15", "area3": "300"}'
+  username: admin
+labels:
+- A_Person
+- Harness
+- No_Helmet
+- White
+- YellowGreen
+model:
+  path: models/best_mejorado.pt
