@@ -4,6 +4,7 @@ camera:
     area1:
       Green: '75'
       No_Helmet: '73'
+      White: '20'
       Yellow: '65'
       camara: Mesa
       points:
@@ -57,7 +58,7 @@ camera:
         y: 91.3938492063492
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
-  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
+  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 172.29.5.230
   label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person

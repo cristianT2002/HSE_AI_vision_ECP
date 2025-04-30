@@ -83,10 +83,10 @@ class ProcesarDetecciones:
     #     return interArea / union if union > 0 else 0
     #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def is_inside(self, inner_box, outer_box):
-        x1, y1, x2, y2 = inner_box
-        X1, Y1, X2, Y2 = outer_box
-        return (x1 >= X1) and (y1 >= Y1) and (x2 <= X2) and (y2 <= Y2)
+    # def is_inside(self, inner_box, outer_box):
+    #     x1, y1, x2, y2 = inner_box
+    #     X1, Y1, X2, Y2 = outer_box
+    #     return (x1 >= X1) and (y1 >= Y1) and (x2 <= X2) and (y2 <= Y2)
     
     def is_mostly_inside(self, inner_box, outer_box, threshold=0.9):
         ix1, iy1, ix2, iy2 = inner_box
@@ -398,7 +398,7 @@ class ProcesarDetecciones:
                             for pb in self.person_boxes:
                                 hb = self.get_head_region(pb, fraction=0.25, offset=5)
                                 # if self.compute_iou(box, hb) >= 0.1:
-                                if self.is_mostly_inside(box, hb, threshold=0.4):  # puedes ajustar threshold entre 0.8 y 0.95
+                                if self.is_mostly_inside(box, hb, threshold=0.4):  # AÑADÍ
                                     if lab in allowed:
                                         # Caso normal: casco configurado
                                         self.procesar_deteccion_2(
@@ -730,25 +730,25 @@ class ProcesarDetecciones:
         #    if tiempo_acumulado >= 7:
             if tiempo_acumulado >= tiempos_limite.get(area_name, 0):
                 # Llamar a guardar_evento con el display_label y el modelo para BD
-                self.guardar_evento(
-                    area_name,
-                    label,
-                    nombre_camera,
-                    sitio,
-                    tiempo_acumulado,
-                    area_config,   # para decidir persona+casco vs casco
-                    modelo_bd, cliente      # valor limpio para la columna modelo
-                )
+                # self.guardar_evento(
+                #     area_name,
+                #     label,
+                #     nombre_camera,
+                #     sitio,
+                #     tiempo_acumulado,
+                #     area_config,   # para decidir persona+casco vs casco
+                #     modelo_bd, cliente      # valor limpio para la columna modelo
+                # )
                 # Reiniciar contador
                 self.tiempo_deteccion_por_area[key] = now
                 # Guardar evidencia en hilo
-                hilo = threading.Thread(
-                    target=self.guardar_evidencia,
-                    args=(frame, area_name, display_label,
-                        nombre_camera, info_notifications, emails, cliente, sitio),
-                    daemon=True
-                )
-                hilo.start()
+                # hilo = threading.Thread(
+                #     target=self.guardar_evidencia,
+                #     args=(frame, area_name, display_label,
+                #         nombre_camera, info_notifications, emails, cliente, sitio),
+                #     daemon=True
+                # )
+                # hilo.start()
                 print(f"🚨 Evento registrado: {display_label} en {area_name} (Cámara {nombre_camera})")
  
             # Log de progreso
