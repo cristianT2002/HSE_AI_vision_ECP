@@ -125,18 +125,21 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
 
         if total_registros > 15:
             print("Se ha alcanzado el límite de registros en la tabla Notificaciones.")
-            borrar_primer_registro()
+            borrar_primer_registro(cliente, sitio)
 
         # Buscar evento por ID
         id_a_buscar = get_id()
-        cursor.execute("SELECT * FROM eventos WHERE id_evento = %s", (id_a_buscar,))
+        print(f"ID a buscar: {id_a_buscar}")
+        cursor.execute("SELECT * FROM eventos WHERE id_evento = %s AND id_proyecto = %s AND id_cliente = %s", (id_a_buscar, sitio, cliente))
         resultado = cursor.fetchone()
 
         if resultado:
             print("Datos del registro:", resultado)
 
             fecha_notification = resultado['fecha']
+            print("1Fecha del evento: ", repr(fecha_notification))
             mensaje_notification = resultado['descripcion']
+            print("2Mensaje del evento:", repr(mensaje_notification))
             estado_notification = 'pendiente'
             sitio_notificacion = resultado['id_proyecto']
             company_notificacion = resultado['id_cliente']
@@ -215,7 +218,9 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, client
 
             # Extraer datos del registro
             fecha_notification = resultado['fecha']
+            print("3Fecha del evento:", fecha_notification)
             mensaje_notification = resultado['descripcion']
+            print("4Mensaje del evento:", mensaje_notification)
             estado_notification = 'pendiente'
             sitio_notificacion = resultado['id_proyecto']  # Ajusta según la estructura de tu tabla 'eventos'
             company_notificacion = resultado['id_cliente']  # Ajusta según la estructura de tu tabla 'eventos'

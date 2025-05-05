@@ -2,9 +2,9 @@ camera:
   client: GEOPARK
   coordinates:
     area1:
+      A_Person: '20'
       Green: '75'
       No_Helmet: '73'
-      White: '20'
       Yellow: '65'
       camara: Mesa
       points:
@@ -31,16 +31,22 @@ camera:
       Yellow: '65'
       camara: Mesa
       points:
-      - x: 2.206461780929866
+      - x: 16.44648403096463
         y: 12.361804929981163
-      - x: 82.00991980716636
-        y: 2.4035705511424124
-      - x: 103.66662031242757
-        y: 95.17238555400868
+      - x: 91.20660084364715
+        y: 9.479158136106788
+      - x: 90.01993232281092
+        y: 52.718860044222424
+      - x: 90.31659945301998
+        y: 82.59356318073867
+      - x: 96.84327631761924
+        y: 101.7238555400868
+      - x: 2.5031289111389237
+        y: 107.22709032839244
       - x: 4.283131692393269
-        y: 111.94414871836868
-      - x: 2.799796041347981
-        y: 12.099746130538039
+        y: 20.747686512161167
+      - x: 15.853149770546516
+        y: 12.62386372942429
       punto: TORITO_OESTE1_GEOPARK
     area3:
       A_Person: '20'
@@ -58,17 +64,17 @@ camera:
         y: 91.3938492063492
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
-  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 172.29.5.230
-  label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person
+  label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White
   name camera: Mesa
   password: 4xUR3_2017
   place: Pozo1
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: VideosEnsayoModelo/cambiandocasco-nocasco-mesa.mp4
-  time_areas: '{"area1": "5", "area2": "5", "area3": "120"}'
+  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
+  time_areas: '{"area1": "9", "area2": "9", "area3": "120"}'
   username: admin
 labels:
 - A_Person
