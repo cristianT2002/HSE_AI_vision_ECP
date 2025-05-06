@@ -1,0 +1,86 @@
+camera:
+  client: GEOPARK
+  coordinates:
+    area1:
+      A_Person: '20'
+      Green: '75'
+      No_Helmet: '73'
+      Yellow: '65'
+      camara: Mesa
+      points:
+      - x: 98.6928308479441
+        y: 22.61078042328042
+      - x: 129.84026954514258
+        y: 146.94940476190476
+      - x: 286.1764522368503
+        y: 144.03935185185185
+      - x: 283.4810008111312
+        y: 55.67956349206349
+      - x: 213.09976913957695
+        y: 12.02876984126984
+      - x: 98.99232545080177
+        y: 22.081679894179892
+      punto: TORITO_OESTE1_GEOPARK
+    area2:
+      Green: '55'
+      Harness: '30'
+      No_Harness: '40'
+      No_Helmet: '55'
+      Orange: '30'
+      White: '30'
+      Yellow: '65'
+      camara: Mesa
+      points:
+      - x: 16.44648403096463
+        y: 12.361804929981163
+      - x: 91.20660084364715
+        y: 9.479158136106788
+      - x: 90.01993232281092
+        y: 52.718860044222424
+      - x: 90.31659945301998
+        y: 82.59356318073867
+      - x: 96.84327631761924
+        y: 101.7238555400868
+      - x: 2.5031289111389237
+        y: 107.22709032839244
+      - x: 4.283131692393269
+        y: 20.747686512161167
+      - x: 15.853149770546516
+        y: 12.62386372942429
+      punto: TORITO_OESTE1_GEOPARK
+    area3:
+      A_Person: '20'
+      camara: Mesa
+      points:
+      - x: 128.94178573656953
+        y: 91.3938492063492
+      - x: 128.64229113371186
+        y: 106.73776455026454
+      - x: 188.54121170524738
+        y: 96.42030423280423
+      - x: 177.45991139951332
+        y: 81.87003968253968
+      - x: 128.94178573656953
+        y: 91.3938492063492
+      punto: TORITO_OESTE1_GEOPARK
+  info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
+  ip: 172.29.5.230
+  label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White
+  name camera: Mesa
+  password: 4xUR3_2017
+  place: Pozo1
+  point: TORITO_OESTE1_GEOPARK
+  port: 554
+  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
+  time_areas: '{"area1": "9", "area2": "9", "area3": "120"}'
+  username: admin
+labels:
+- A_Person
+- Harness
+- No_Helmet
+- White
+- YellowGreen
+model:
+  path: models/best_mejorado.pt

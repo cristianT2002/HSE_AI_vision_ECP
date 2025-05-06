@@ -73,40 +73,37 @@ def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails
     guardar_video_en_mariadb(output_path, output_path, envio_correo, lista_emails, cliente, sitio)
     print(f"Video guardado como {output_path}")
     
-def borrar_primer_registro(host='10.20.30.33', user='analitica', password='4xUR3_2017', database='hseVideoAnalytics'):
-    # Conectar a la base de datos
-    conexion = pymysql.connect(host=host, user=user, password=password, database=database, cursorclass=pymysql.cursors.DictCursor)
-    
+def borrar_primer_registro(cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017', database='hse_video_analitics', port=5432):
     try:
-        with conexion.cursor() as cursor:
-            # Obtener el ID del primer registro (más antiguo) en Notificaciones
-            sql_select = "SELECT id_notificacion, id_evento FROM Notificaciones ORDER BY id_notificacion ASC LIMIT 1"
-            cursor.execute(sql_select)
-            resultado = cursor.fetchone()
-            
-            if resultado:
-                id_a_borrar = resultado['id_notificacion']
-                id_a_borrar_evento = resultado['id_evento']
-                print(f"ID del primer registro a eliminar: {id_a_borrar}")
-                print(f"ID del evento asociado a eliminar: {id_a_borrar_evento}")
-                
-                # Borrar el registro en Notificaciones
-                sql_delete_notificaciones = "DELETE FROM Notificaciones WHERE id_notificacion = %s"
-                cursor.execute(sql_delete_notificaciones, (id_a_borrar,))
-                
-                # Borrar el registro en Eventos
-                sql_delete_eventos = "DELETE FROM Eventos WHERE id_evento = %s"
-                cursor.execute(sql_delete_eventos, (id_a_borrar_evento,))
-                
-                # Confirmar cambios
-                conexion.commit()
-                print(f"Registro con ID {id_a_borrar} en Notificaciones y evento con ID {id_a_borrar_evento} en Eventos eliminados exitosamente.")
-            else:
-                print("No hay registros en la tabla Notificaciones.")
+        conexion = psycopg2.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            dbname=database
+        )
+        cursor = conexion.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+        # Eliminar el registro más antiguo filtrado por cliente y proyecto
+        delete_query = """
+            DELETE FROM notificaciones
+            WHERE id_notificaciones = (
+                SELECT id_notificaciones FROM notificaciones
+                WHERE id_proyecto = %s AND id_cliente = %s
+                ORDER BY id_notificaciones ASC
+                LIMIT 1
+            )
+        """
+        cursor.execute(delete_query, (sitio, cliente))
+        conexion.commit()
+        print(f"✅ Se eliminó el registro más antiguo para cliente '{cliente}' y sitio/proyecto '{sitio}'")
+
     except Exception as e:
-        print("Error al borrar el primer registro:", e)
+        print("❌ Error al borrar el primer registro:", e)
     finally:
-        conexion.close()
+        if conexion:
+            cursor.close()
+            conexion.close()
 
     
 def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017', database='hse_video_analitics'):
@@ -122,24 +119,27 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
         cursor = conexion.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
         # Verificar número de registros
-        cursor.execute("SELECT COUNT(*) AS total_registros FROM notificaciones")
+        cursor.execute("SELECT COUNT(*) AS total_registros FROM notificaciones WHERE id_proyecto = %s AND id_cliente = %s", (sitio, cliente))
         total_registros = cursor.fetchone()['total_registros']
         print(f"Total de registros en la tabla notificaciones: {total_registros}")
 
         if total_registros > 15:
             print("Se ha alcanzado el límite de registros en la tabla Notificaciones.")
-            borrar_primer_registro()
+            borrar_primer_registro(cliente, sitio)
 
         # Buscar evento por ID
         id_a_buscar = get_id()
-        cursor.execute("SELECT * FROM eventos WHERE id_evento = %s", (id_a_buscar,))
+        print(f"ID a buscar: {id_a_buscar}")
+        cursor.execute("SELECT * FROM eventos WHERE id_evento = %s AND id_proyecto = %s AND id_cliente = %s", (id_a_buscar, sitio, cliente))
         resultado = cursor.fetchone()
 
         if resultado:
             print("Datos del registro:", resultado)
 
             fecha_notification = resultado['fecha']
+            print("1Fecha del evento: ", repr(fecha_notification))
             mensaje_notification = resultado['descripcion']
+            print("2Mensaje del evento:", repr(mensaje_notification))
             estado_notification = 'pendiente'
             sitio_notificacion = resultado['id_proyecto']
             company_notificacion = resultado['id_cliente']
@@ -197,7 +197,7 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, client
         cursor = conexion.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
         # Contar el número de registros en la tabla notificaciones
-        cursor.execute("SELECT COUNT(*) AS total_registros FROM notificaciones")
+        cursor.execute("SELECT COUNT(*) AS total_registros FROM notificaciones WHERE id_proyecto = %s AND id_cliente = %s", (sitio, cliente))
         total_registros = cursor.fetchone()['total_registros']
 
         print(f"Total de registros en la tabla notificaciones: {total_registros}")
@@ -206,7 +206,7 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, client
         if total_registros > 15:
             print("Se ha alcanzado el límite de registros en la tabla Notificaciones.")
             # Llamar a la función para borrar el primer registro (asegúrate de que esté definida para PostgreSQL)
-            borrar_primer_registro()
+            borrar_primer_registro(cliente, sitio)
 
         # Obtener el último registro con el ID de get_id()
         id_a_buscar = get_id()  # Asegúrate de que esta función esté definida
@@ -218,7 +218,9 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, client
 
             # Extraer datos del registro
             fecha_notification = resultado['fecha']
+            print("3Fecha del evento:", fecha_notification)
             mensaje_notification = resultado['descripcion']
+            print("4Mensaje del evento:", mensaje_notification)
             estado_notification = 'pendiente'
             sitio_notificacion = resultado['id_proyecto']  # Ajusta según la estructura de tu tabla 'eventos'
             company_notificacion = resultado['id_cliente']  # Ajusta según la estructura de tu tabla 'eventos'

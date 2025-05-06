@@ -50,11 +50,11 @@ class ProcesarDetecciones:
         self.COLORS = {
             "A_Person": (255, 0, 0),  # Azul
             "Green": (0, 0, 255),  # Rojo
-            "Harness": (0, 255, 206),  # Verde
+            "Harness": (0, 178, 144),  # Verde
             "No_Harness": (0, 0, 255),  # Rojo
             "No_Helmet": (0, 0, 255),  # Rojo
             "White": (120, 120, 120),  # Gris
-            "Yellow": (0, 255, 255),  # Amarillo
+            "Yellow": (0, 178, 165),  # Amarillo
             "Loading_Machine": (0, 100, 19),  # Verde Oscuro
             "Mud_Bucket": (255, 171, 171),  # Rosa Suave
             "Orange": (0, 128, 255),  # Naranja
@@ -71,22 +71,40 @@ class ProcesarDetecciones:
     
     #---------------------AÑADI------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def compute_iou(self, boxA, boxB):
-        xA = max(boxA[0], boxB[0])
-        yA = max(boxA[1], boxB[1])
-        xB = min(boxA[2], boxB[2])
-        yB = min(boxA[3], boxB[3])
-        interArea = max(0, xB - xA) * max(0, yB - yA)
-        areaA = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
-        areaB = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
-        union = areaA + areaB - interArea
-        return interArea / union if union > 0 else 0
+    # def compute_iou(self, boxA, boxB):
+    #     xA = max(boxA[0], boxB[0])
+    #     yA = max(boxA[1], boxB[1])
+    #     xB = min(boxA[2], boxB[2])
+    #     yB = min(boxA[3], boxB[3])
+    #     interArea = max(0, xB - xA) * max(0, yB - yA)
+    #     areaA = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
+    #     areaB = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
+    #     union = areaA + areaB - interArea
+    #     return interArea / union if union > 0 else 0
     #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def is_inside(self, inner_box, outer_box):
-        x1, y1, x2, y2 = inner_box
-        X1, Y1, X2, Y2 = outer_box
-        return (x1 >= X1) and (y1 >= Y1) and (x2 <= X2) and (y2 <= Y2)
+    # def is_inside(self, inner_box, outer_box):
+    #     x1, y1, x2, y2 = inner_box
+    #     X1, Y1, X2, Y2 = outer_box
+    #     return (x1 >= X1) and (y1 >= Y1) and (x2 <= X2) and (y2 <= Y2)
+    
+    def is_mostly_inside(self, inner_box, outer_box, threshold=0.9):
+        ix1, iy1, ix2, iy2 = inner_box
+        ox1, oy1, ox2, oy2 = outer_box
+
+        inter_x1 = max(ix1, ox1)
+        inter_y1 = max(iy1, oy1)
+        inter_x2 = min(ix2, ox2)
+        inter_y2 = min(iy2, oy2)
+
+        inter_area = max(0, inter_x2 - inter_x1) * max(0, inter_y2 - inter_y1)
+        inner_area = (ix2 - ix1) * (iy2 - iy1)
+
+        return (inter_area / inner_area) >= threshold
+    
+
+
+
 
     
     #--------------------------------------------ORIGINAL PROCESAR -------------------------------------------------------------------------------------------------------------------------------------------------
@@ -379,7 +397,8 @@ class ProcesarDetecciones:
                             box = (x1, y1, x2, y2)
                             for pb in self.person_boxes:
                                 hb = self.get_head_region(pb, fraction=0.25, offset=5)
-                                if self.compute_iou(box, hb) >= 0.1:
+                                # if self.compute_iou(box, hb) >= 0.1:
+                                if self.is_mostly_inside(box, hb, threshold=0.4):  # AÑADÍ
                                     if lab in allowed:
                                         # Caso normal: casco configurado
                                         self.procesar_deteccion_2(
@@ -900,6 +919,7 @@ class ProcesarDetecciones:
             nombre_camera=nombre_camera,
             tiempo_acumulado=tiempo_acumulado
         )
+        print("🔎 DEBUG formatted description:", repr(descript))
         self.add_event_to_database(
             sitio=sitio,
             cliente=cliente,
@@ -913,26 +933,72 @@ class ProcesarDetecciones:
         id_registro = self.get_last_event_id()
         set_id(id_registro)
 
-    def add_event_to_database(self,sitio, cliente, fecha, hora, tipo_evento, descripcion, mod):
+    # def add_event_to_database(self,sitio, cliente, fecha, hora, tipo_evento, descripcion, mod):
+    #     """
+    #     Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.
+    #     """
+    #     connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+    #     cursor = connection.cursor()
+
+    #     try:
+    #         insert_query = """
+    #             INSERT INTO eventos (id_proyecto, id_cliente, id_modelo, fecha, hora, tipo_evento, descripcion)
+    #             VALUES (%s, %s, %s, %s, %s, %s, %s)
+    #         """
+    #         cursor.execute(insert_query, (sitio, cliente, mod, fecha, hora, tipo_evento, descripcion))
+    #         connection.commit()
+    #         # print("✅ Evento guardado en la base de datos.")
+    #     except Exception as e:
+    #         print(f"Error al añadir el evento a la base de datos: {e}")
+    #     finally:
+    #         cursor.close()
+    #         close_connection(connection)
+    def add_event_to_database(self, sitio, cliente, fecha, hora, tipo_evento, descripcion, mod):
         """
         Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.
         """
+        # 1) Conexión y cursor
         connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
-        cursor = connection.cursor()
+        cursor     = connection.cursor()
 
         try:
+            # 2) Construyes el SQL y la tupla params
             insert_query = """
-                INSERT INTO eventos (id_proyecto, id_cliente, id_modelo, fecha, hora, tipo_evento, descripcion)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO eventos
+                (id_proyecto, id_cliente, id_modelo,
+                fecha,       hora,       tipo_evento,
+                descripcion)
+                VALUES (%s,        %s,         %s,
+                        %s,        %s,         %s,
+                        %s)
             """
-            cursor.execute(insert_query, (sitio, cliente, mod, fecha, hora, tipo_evento, descripcion))
+            params = (
+                sitio,         # id_proyecto
+                cliente,       # id_cliente
+                mod,           # id_modelo
+                fecha,         # fecha
+                hora,          # hora
+                tipo_evento,   # tipo_evento
+                descripcion    # descripción formateada
+            )
+
+            # 3) DEBUG: comprueba que params, cursor y connection existen
+            print("▶️ DEBUG add_event params:", params)
+            print("   cursor is:", cursor)
+            print("   connection is:", connection)
+
+            # 4) Ejecutas el insert y confirmas
+            cursor.execute(insert_query, params)
             connection.commit()
-            # print("✅ Evento guardado en la base de datos.")
+
         except Exception as e:
             print(f"Error al añadir el evento a la base de datos: {e}")
         finally:
             cursor.close()
             close_connection(connection)
+
+
+
 
     def guardar_evidencia(self, frame, area_name, label, nombre_camera, info_notifications, emails, cliente, sitio):
         """Guarda video o imagen como evidencia según configuración."""
