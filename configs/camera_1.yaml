@@ -2,9 +2,8 @@ camera:
   client: GEOPARK
   coordinates:
     area1:
-      A_Person: '20'
       Green: '75'
-      No_Helmet: '73'
+      No_Helmet: '63'
       Yellow: '65'
       camara: Mesa
       points:
@@ -49,7 +48,7 @@ camera:
         y: 12.62386372942429
       punto: TORITO_OESTE1_GEOPARK
     area3:
-      A_Person: '20'
+      White: '20'
       camara: Mesa
       points:
       - x: 128.94178573656953
@@ -64,17 +63,17 @@ camera:
         y: 91.3938492063492
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
-  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
+  info_notifications: '{"Email": false, "Imagen": false, "Page_HSE": true, "Video":
     false}'
-  ip: 172.29.5.230
+  ip: 10.10.148.220
   label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White
   name camera: Mesa
   password: 4xUR3_2017
   place: Pozo1
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.230:554/Streaming/Channels/102
-  time_areas: '{"area1": "9", "area2": "9", "area3": "120"}'
+  rtsp_url: VideosEnsayoModelo/perros.mp4
+  time_areas: '{"area1": "3", "area2": "10", "area3": "10"}'
   username: admin
 labels:
 - A_Person

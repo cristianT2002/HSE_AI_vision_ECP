@@ -92,7 +92,8 @@ def start_streaming_from_configs():
         except (IndexError, ValueError):
             print(f"⚠️ No se pudo extraer el número de cámara de {yaml_file}")
             continue
-
+        # print(f"⚠️ No se pudo extraer el número de cámara de {yaml_file}")
+        # print(config)
         camara_name = config['camera'].get('name camera', f"Camara_{camara_number}")
         rtsp_url = config['camera'].get('rtsp_url')
 

@@ -319,37 +319,78 @@ class ProcesarDetecciones:
             #---------------------------HASTA AQUI PARA QUE NO DETECTE NADA FUERA DE AREAS ESTABLECIDAS-------------------
  
  
-            # ¿Es la cámara “Planchada” o “Mesa”?
+             # ¿Es la cámara “Planchada” o “Mesa”?
             is_planchada = nombre_camera.lower() == "planchada"
             is_mesa      = nombre_camera.lower() == "mesa"
- 
+
             # 1) Extraer & dibujar siempre las personas
-            self.person_boxes = [
-                tuple(map(int, det.xyxy[0]))
-                for det in detections
-                if LABELS[int(det.cls[0])] == "A_Person"
-            ]
+            # self.person_boxes = [
+            #     tuple(map(int, det.xyxy[0]))
+            #     for det in detections
+            #     if LABELS[int(det.cls[0])] == "A_Person"
+            # ]
+            # for (x1, y1, x2, y2) in self.person_boxes:
+            #     text = "A_Person"
+            #     (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+            #     bx, by = x1, y1 - 10
+            #     box_coords = ((bx, by-th-5), (bx+tw+25, by+5))
+            #     self.dibujo_etiquetas(
+            #         frame, text, x1, y1, x2, y2,
+            #         self.COLORS["A_Person"],
+            #         box_coords, bx, by, tw, th
+            #     )
+
+
+            # Define un umbral de confianza para el dibujo (0.0–1.0)
+            # Umbrales de confianza y tamaño
+            MIN_CONF_DRAW   = 0.10     # 10 %
+            MIN_PERSON_H    = 40       # altura mínima en px
+            MAX_PERSON_H    = 300      # altura máxima en px
+            MIN_PERSON_W    = 10       # ancho mínimo en px
+            MAX_PERSON_W    = 120      # ancho máximo en px
+
+            # 1) Extraer sólo las A_Person que pasen confianza y tamaño
+            self.person_boxes = []
+            for det in detections:
+                lab  = LABELS[int(det.cls[0])]
+                conf = float(det.conf[0])  # entre 0.0 y 1.0
+                if lab != "A_Person" or conf < MIN_CONF_DRAW:
+                    continue
+
+                x1, y1, x2, y2 = map(int, det.xyxy[0])
+                w, h = x2 - x1, y2 - y1
+
+                # filtrado por tamaño mínimo y máximo
+                if h < MIN_PERSON_H or h > MAX_PERSON_H or w < MIN_PERSON_W or w > MAX_PERSON_W:
+                    continue
+
+                # si pasa todos los filtros, la guardo para dibujar y usar luego
+                self.person_boxes.append((x1, y1, x2, y2))
+
+            # 2) Dibujar únicamente las cajas filtradas
             for (x1, y1, x2, y2) in self.person_boxes:
                 text = "A_Person"
                 (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
                 bx, by = x1, y1 - 10
-                box_coords = ((bx, by-th-5), (bx+tw+25, by+5))
+                box_coords = ((bx, by - th - 5), (bx + tw + 25, by + 5))
                 self.dibujo_etiquetas(
                     frame, text, x1, y1, x2, y2,
-                    self.COLORS["A_Person"],
+                    self.COLORS[text],
                     box_coords, bx, by, tw, th
                 )
- 
+
+
+
             # ——— Procesar cada área ———
             for area_name, area_config in areas.items():
                 pts     = self.escalar_puntos(area_config)
                 # todas las etiquetas configuradas en la BD, menos puntos/camara/punto
                 allowed = [k for k in area_config if k not in ("points","camara","punto")]
- 
+
                 # ── EXCLUIR persona sola de alertas en Mesa área1 y área2 ──
                 if is_mesa and area_name in ("area1", "area2"):
                     allowed = [lab for lab in allowed if lab != "A_Person"]
- 
+
                 # Dibujar polígono del área
                 if area_name == "area3":
                     poly_color = (0,255,0)
@@ -358,7 +399,7 @@ class ProcesarDetecciones:
                 else:
                     poly_color = (255,0,0)
                 cv2.polylines(frame, [pts], True, poly_color, 2)
- 
+
                 # ── PLANCHADA: SOLO persona en area1 y Loading_Machine ──
                 if is_planchada:
                     if area_name != "area1":
@@ -374,7 +415,7 @@ class ProcesarDetecciones:
                                 tiempos_limite, frame, sitio, nombre_camera,
                                 info_notifications, emails, pts, cliente)
                     continue
- 
+
                 # ── MESA: persona en area3, cascos/otras en area1 y area2 ──
                 if is_mesa:
                     if area_name == "area3":
@@ -384,13 +425,13 @@ class ProcesarDetecciones:
                             if lab == "A_Person" and "A_Person" in allowed:
                                 self.procesar_deteccion_2(det, area_name, area_config,
                                     tiempos_limite, frame, sitio, nombre_camera,
-                                    info_notifications, emails, pts,cliente)
+                                    info_notifications, emails, pts, cliente)
                         continue
- 
+
                     # area1 y area2 de Mesa: cascos y demás etiquetas
                     for det in detections:
                         lab = LABELS[int(det.cls[0])]
- 
+
                         # 1) Cascos sobre la cabeza
                         if self.person_boxes and lab in self.HELMET_LABELS:
                             x1, y1, x2, y2 = map(int, det.xyxy[0])
@@ -404,7 +445,7 @@ class ProcesarDetecciones:
                                         self.procesar_deteccion_2(
                                             det, area_name, area_config,
                                             tiempos_limite, frame, sitio, nombre_camera,
-                                            info_notifications, emails, pts,cliente,
+                                            info_notifications, emails, pts, cliente, 
                                             override_label=lab
                                         )
                                     else:
@@ -422,16 +463,127 @@ class ProcesarDetecciones:
                                                     break
                                     break
                             continue
- 
                         # 2) Otras etiquetas (Harness, No_Harness, Mud_Bucket, Loading_Machine, gloves…)
                         if lab in allowed and lab not in self.HELMET_LABELS:
                             self.procesar_deteccion_2(det, area_name, area_config,
                                 tiempos_limite, frame, sitio, nombre_camera,
                                 info_notifications, emails, pts, cliente)
                             continue
- 
+                # else:
+                #     # ── GENERAL (sólo area1) ──
+                #     # if area_name != "area1":
+                #     #     continue
+
+                #     for det in detections:
+                #         lab = LABELS[int(det.cls[0])]
+                #         x1, y1, x2, y2 = map(int, det.xyxy[0])
+                #         box = (x1, y1, x2, y2)
+
+                #         # 1) Cascos sobre la cabeza
+                #         if self.person_boxes and lab in self.HELMET_LABELS:
+                #             for pb in self.person_boxes:
+                #                 hb = self.get_head_region(pb, fraction=0.25, offset=5)
+                #                 # misma comprobación que en "mesa"
+                #                 if self.is_mostly_inside(box, hb, threshold=0.4):
+                #                     if lab in allowed:
+                #                         self.procesar_deteccion_2(
+                #                             det, area_name, area_config,
+                #                             tiempos_limite, frame, sitio, nombre_camera,
+                #                             info_notifications, emails, pts, cliente,
+                #                             override_label=lab
+                #                         )
+                #                     break    # no miro más personas
+                #             continue  # pase lo que pase, voy al siguiente det
+
+                #         # 2) Otras etiquetas (persona, arnés, etc.)
+                #         #    excluyo cascos para que no caiga aquí
+                #         if lab in allowed and lab not in self.HELMET_LABELS:
+                #             self.procesar_deteccion_2(
+                #                 det, area_name, area_config,
+                #                 tiempos_limite, frame, sitio, nombre_camera,
+                #                 info_notifications, emails, pts, cliente
+                #             )
+                #             continue
+
+                #     continue
+
+
+                # ——— LÓGICA GENERAL (cámaras que NO son "mesa" ni "planchada") ———
+                else:
+                    # Umbrales estáticos de tamaño de persona (en píxeles):
+                    MIN_PERSON_H = 10   # altura mínima
+                    MAX_PERSON_H = 300   # altura máxima
+                    MIN_PERSON_W = 10    # ancho mínimo
+                    MAX_PERSON_W = 200   # ancho máximo
+
+                    for det in detections:
+                        lab = LABELS[int(det.cls[0])]
+                        # obtenemos la caja del objeto
+                        x1, y1, x2, y2 = map(int, det.xyxy[0])
+                        box_w, box_h = x2 - x1, y2 - y1
+
+                        # —————— 1) PERSONA filtrada por tamaño y configuración ——————
+                        if lab == "A_Person":
+                            # 1.a) solo si A_Person está en allowed para este área
+                            if "A_Person" not in allowed:
+                                continue
+
+                            # 1.b) descartamos alturas y anchuras fuera de rango
+                            if (box_h < MIN_PERSON_H or box_h > MAX_PERSON_H or
+                                box_w < MIN_PERSON_W or box_w > MAX_PERSON_W):
+                                continue
+
+                            # 1.c) dibujamos la etiqueta
+                            self.dibujo_etiquetas(
+                                frame,
+                                "A_Person", x1, y1, x2, y2,
+                                self.COLORS["A_Person"],
+                                ((x1, y1-15), (x1+60, y1)),
+                                x1, y1-5,
+                                *cv2.getTextSize("A_Person",
+                                                cv2.FONT_HERSHEY_SIMPLEX,
+                                                0.4, 1)[0]
+                            )
+                            # 1.d) procesamos la detección
+                            self.procesar_deteccion_2(
+                                det, area_name, area_config,
+                                tiempos_limite, frame, sitio, nombre_camera,
+                                info_notifications, emails, pts, cliente
+                            )
+                            continue  # pasamos al siguiente det
+
+                        # —————— 2) Cascos sobre la cabeza ——————
+                        if self.person_boxes and lab in self.HELMET_LABELS:
+                            box = (x1, y1, x2, y2)
+                            for pb in self.person_boxes:
+                                hb = self.get_head_region(pb, fraction=0.25, offset=5)
+                                if self.is_mostly_inside(box, hb, threshold=0.4):
+                                    if lab in allowed:
+                                        # procesamos casco correctamente posicionado
+                                        self.procesar_deteccion_2(
+                                            det, area_name, area_config,
+                                            tiempos_limite, frame, sitio, nombre_camera,
+                                            info_notifications, emails, pts, cliente,
+                                            override_label=lab
+                                        )
+                                    break
+                            continue
+
+                        # —————— 3) Resto de etiquetas (arnés, guantes, máquinas…) ——————
+                        if lab in allowed and lab not in self.HELMET_LABELS:
+                            self.procesar_deteccion_2(
+                                det, area_name, area_config,
+                                tiempos_limite, frame, sitio, nombre_camera,
+                                info_notifications, emails, pts, cliente
+                            )
+                            continue
+
+                    # terminamos este área, pasamos a la siguiente
                     continue
- 
+                    
+
+
+
             # ——— reset detecciones inactivas ———
             umbral = 5.0
             for key, last_ts in list(self.tiempo_ultimo_detecciones.items()):
@@ -439,14 +591,12 @@ class ProcesarDetecciones:
                     print(f"⏹️ Reiniciando {key} tras {now-last_ts:.1f}s inactivo")
                     logger.warning(f"Reiniciando {key} tras {now-last_ts:.1f} s inactivo")
                     set_envio_correo(True)
-                    logger.info("Set envio correo: %s", get_envio_correo())
                     self.tiempo_ultimo_detecciones.pop(key, None)
                     self.tiempo_deteccion_por_area.pop(key, None)
- 
+
             # ——— actualizar buffer y dormir ———
             self.actualizar_buffer(frame)
             time.sleep(0.01)
-
     # #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
     # # Funciones auxiliares que deben estar en la clase:
     # def get_head_region(self, person_box, fraction=0.25, offset=5):
