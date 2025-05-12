@@ -50,25 +50,31 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
             
             # Buscamos el proyecto en la base de datos segun la ip local
             cursor.execute(db_config["query_proyecto_por_ip"], (ip_local,))
-            resultado = cursor.fetchone()  
+            resultado = cursor.fetchall()
             
             if not resultado:
                 print("❌ No se encontró un proyecto para la IP:", ip_local)
                 return
             
             # Despues buscamos las camaras segun el proyecto de este PC
-            id_proyecto = resultado["id_proyecto"]
-            cursor.execute(db_config["query_yaml"], (id_proyecto,))
+            proyectos_ids = [row["id_proyecto"] for row in resultado]
+            if not proyectos_ids:
+                print("❌ No se encontró ningún proyecto para la IP:", ip_local)
+                return
+            print("📡 Proyectos encontrados:", proyectos_ids)
+            # 🔸 Obtener cámaras usando IN %s y pasando una tupla
+            cursor.execute(db_config["query_yaml"], (tuple(proyectos_ids),))
             cameras = cursor.fetchall()
             cameras = [dict(fila) for fila in cameras]
-            print("""📡 Datos obtenidos de la base de datos: """, cameras)
+            # print("📡 Datos obtenidos de la base de datos:", cameras)
 
             
             # Actualizar YAML si hay cambios en la base de datos
             if cameras != previous_data:
                 # print("📡 Datos obtenidos de la base de datos:", cameras)
                 generate_camera_yaml(cameras)  # Actualizar YAML
-                cursor.execute(db_config["query_json"], (id_proyecto,))
+                # 🔸 Obtener datos para JSON también con múltiples proyectos
+                cursor.execute(db_config["query_json"], (tuple(proyectos_ids),))
                 data = cursor.fetchall()
                 generate_json(data)
                 previous_data = cameras
