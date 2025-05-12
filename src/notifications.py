@@ -429,8 +429,11 @@ class ProcesarDetecciones:
                                 tiempos_limite, frame, sitio, nombre_camera,
                                 info_notifications, emails, pts, cliente)
                             continue
- 
+                        
                     continue
+                
+                
+                
  
             # ——— reset detecciones inactivas ———
             umbral = 5.0

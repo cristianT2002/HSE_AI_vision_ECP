@@ -22,7 +22,7 @@
         "id_cliente": "GEOPARK",
         "nombre_camara": "Mesa",
         "ip_camara": "10.10.148.220",
-        "url_camara_server": "http://10.212.134.19:5000/video_feed/1",
+        "url_camara_server": "http://10.212.134.17:5000/video_feed/1",
         "estado_lugar_modelo": "Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White",
         "usuario": "admin",
         "contrasena": "4xUR3_2017",
