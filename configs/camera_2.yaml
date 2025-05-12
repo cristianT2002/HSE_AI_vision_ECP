@@ -2,6 +2,7 @@ camera:
   client: GEOPARK
   coordinates:
     area1:
+      A_Person: '20'
       camara: Planchada
       points:
       - x: 176.64673434385574

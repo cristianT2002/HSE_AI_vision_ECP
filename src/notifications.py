@@ -83,10 +83,10 @@ class ProcesarDetecciones:
     #     return interArea / union if union > 0 else 0
     #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def is_inside(self, inner_box, outer_box):
-        x1, y1, x2, y2 = inner_box
-        X1, Y1, X2, Y2 = outer_box
-        return (x1 >= X1) and (y1 >= Y1) and (x2 <= X2) and (y2 <= Y2)
+    # def is_inside(self, inner_box, outer_box):
+    #     x1, y1, x2, y2 = inner_box
+    #     X1, Y1, X2, Y2 = outer_box
+    #     return (x1 >= X1) and (y1 >= Y1) and (x2 <= X2) and (y2 <= Y2)
     
     def is_mostly_inside(self, inner_box, outer_box, threshold=0.9):
         ix1, iy1, ix2, iy2 = inner_box
@@ -398,7 +398,7 @@ class ProcesarDetecciones:
                             for pb in self.person_boxes:
                                 hb = self.get_head_region(pb, fraction=0.25, offset=5)
                                 # if self.compute_iou(box, hb) >= 0.1:
-                                if self.is_mostly_inside(box, hb, threshold=0.4):  # puedes ajustar threshold entre 0.8 y 0.95
+                                if self.is_mostly_inside(box, hb, threshold=0.4):  # AÑADÍ
                                     if lab in allowed:
                                         # Caso normal: casco configurado
                                         self.procesar_deteccion_2(
@@ -922,6 +922,7 @@ class ProcesarDetecciones:
             nombre_camera=nombre_camera,
             tiempo_acumulado=tiempo_acumulado
         )
+        print("🔎 DEBUG formatted description:", repr(descript))
         self.add_event_to_database(
             sitio=sitio,
             cliente=cliente,
@@ -935,26 +936,72 @@ class ProcesarDetecciones:
         id_registro = self.get_last_event_id()
         set_id(id_registro)
 
-    def add_event_to_database(self,sitio, cliente, fecha, hora, tipo_evento, descripcion, mod):
+    # def add_event_to_database(self,sitio, cliente, fecha, hora, tipo_evento, descripcion, mod):
+    #     """
+    #     Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.
+    #     """
+    #     connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+    #     cursor = connection.cursor()
+
+    #     try:
+    #         insert_query = """
+    #             INSERT INTO eventos (id_proyecto, id_cliente, id_modelo, fecha, hora, tipo_evento, descripcion)
+    #             VALUES (%s, %s, %s, %s, %s, %s, %s)
+    #         """
+    #         cursor.execute(insert_query, (sitio, cliente, mod, fecha, hora, tipo_evento, descripcion))
+    #         connection.commit()
+    #         # print("✅ Evento guardado en la base de datos.")
+    #     except Exception as e:
+    #         print(f"Error al añadir el evento a la base de datos: {e}")
+    #     finally:
+    #         cursor.close()
+    #         close_connection(connection)
+    def add_event_to_database(self, sitio, cliente, fecha, hora, tipo_evento, descripcion, mod):
         """
         Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.
         """
+        # 1) Conexión y cursor
         connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
-        cursor = connection.cursor()
+        cursor     = connection.cursor()
 
         try:
+            # 2) Construyes el SQL y la tupla params
             insert_query = """
-                INSERT INTO eventos (id_proyecto, id_cliente, id_modelo, fecha, hora, tipo_evento, descripcion)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO eventos
+                (id_proyecto, id_cliente, id_modelo,
+                fecha,       hora,       tipo_evento,
+                descripcion)
+                VALUES (%s,        %s,         %s,
+                        %s,        %s,         %s,
+                        %s)
             """
-            cursor.execute(insert_query, (sitio, cliente, mod, fecha, hora, tipo_evento, descripcion))
+            params = (
+                sitio,         # id_proyecto
+                cliente,       # id_cliente
+                mod,           # id_modelo
+                fecha,         # fecha
+                hora,          # hora
+                tipo_evento,   # tipo_evento
+                descripcion    # descripción formateada
+            )
+
+            # 3) DEBUG: comprueba que params, cursor y connection existen
+            print("▶️ DEBUG add_event params:", params)
+            print("   cursor is:", cursor)
+            print("   connection is:", connection)
+
+            # 4) Ejecutas el insert y confirmas
+            cursor.execute(insert_query, params)
             connection.commit()
-            # print("✅ Evento guardado en la base de datos.")
+
         except Exception as e:
             print(f"Error al añadir el evento a la base de datos: {e}")
         finally:
             cursor.close()
             close_connection(connection)
+
+
+
 
     def guardar_evidencia(self, frame, area_name, label, nombre_camera, info_notifications, emails, cliente, sitio):
         """Guarda video o imagen como evidencia según configuración."""
