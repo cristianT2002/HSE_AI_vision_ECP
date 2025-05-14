@@ -25,7 +25,7 @@ camera:
   place: Pozo1
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
+  rtsp_url: VideosEnsayoModelo/perros.mp4
   time_areas: '{"area1": "120", "area2": "15", "area3": "300"}'
   username: admin
 labels:
