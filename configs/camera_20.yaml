@@ -1,0 +1,42 @@
+camera:
+  client: GEOPARK
+  coordinates:
+    area1:
+      A_Person: '20'
+      Black: '20'
+      Green: '20'
+      No_Helmet: '20'
+      White: '20'
+      Yellow: '20'
+      camara: Perimetral 2
+      points:
+      - x: 3.154052536344918
+        y: 2.2404100529100526
+      - x: 295.1612903225806
+        y: 1.1822089947089947
+      - x: 296.9582579397267
+        y: 147.4785052910053
+      - x: 3.154052536344918
+        y: 146.68485449735448
+      punto: NABORS_PX_42
+  info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
+  info_notifications: '{"Email": false, "Imagen": false, "Page_HSE": true, "Video":
+    false}'
+  ip: 10.10.148.221
+  label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White
+  name camera: Perimetral 2 2
+  password: 4xUR3_2017
+  place: Pozo4
+  point: NABORS_PX_43
+  port: 554
+  rtsp_url: VideosEnsayoModelo/perros.mp4
+  time_areas: '{"area1": "2", "area2": "10", "area3": "10"}'
+  username: admin
+labels:
+- A_Person
+- Harness
+- No_Helmet
+- White
+- YellowGreen
+model:
+  path: models/best_mejorado.pt

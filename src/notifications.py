@@ -429,8 +429,48 @@ class ProcesarDetecciones:
                                 tiempos_limite, frame, sitio, nombre_camera,
                                 info_notifications, emails, pts, cliente)
                             continue
+                        
+                    # continue
+                else:
+                    # ── GENERAL (sólo area1) ──
+                    # if area_name != "area1":
+                    #     continue
+ 
+                    for det in detections:
+                        lab = LABELS[int(det.cls[0])]
+                        x1, y1, x2, y2 = map(int, det.xyxy[0])
+                        box = (x1, y1, x2, y2)
+ 
+                        # 1) Cascos sobre la cabeza
+                        if self.person_boxes and lab in self.HELMET_LABELS:
+                            for pb in self.person_boxes:
+                                hb = self.get_head_region(pb, fraction=0.25, offset=5)
+                                # misma comprobación que en "mesa"
+                                if self.is_mostly_inside(box, hb, threshold=0.4):
+                                    if lab in allowed:
+                                        self.procesar_deteccion_2(
+                                            det, area_name, area_config,
+                                            tiempos_limite, frame, sitio, nombre_camera,
+                                            info_notifications, emails, pts, cliente,
+                                            override_label=lab
+                                        )
+                                    break    # no miro más personas
+                            continue  # pase lo que pase, voy al siguiente det
+ 
+                        # 2) Otras etiquetas (persona, arnés, etc.)
+                        #    excluyo cascos para que no caiga aquí
+                        if lab in allowed and lab not in self.HELMET_LABELS:
+                            self.procesar_deteccion_2(
+                                det, area_name, area_config,
+                                tiempos_limite, frame, sitio, nombre_camera,
+                                info_notifications, emails, pts, cliente
+                            )
+                            continue
  
                     continue
+                
+                
+                
  
             # ——— reset detecciones inactivas ———
             umbral = 5.0

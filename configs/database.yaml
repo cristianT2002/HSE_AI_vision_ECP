@@ -25,7 +25,7 @@ database:
       camaras.destinatarios
       FROM camaras
       JOIN proyectos ON camaras.id_proyecto = proyectos.id_proyecto
-      WHERE camaras.id_proyecto = %s;
+      WHERE camaras.id_proyecto IN %s;
 
   query_json: >
       SELECT
@@ -45,5 +45,4 @@ database:
       camaras.destinatarios
       FROM camaras
       JOIN proyectos ON camaras.id_proyecto = proyectos.id_proyecto
-      WHERE camaras.id_proyecto = %s;
-
+      WHERE camaras.id_proyecto IN %s;
