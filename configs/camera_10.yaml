@@ -20,8 +20,8 @@ camera:
         y: 146.68485449735448
       punto: NABORS_PX_42
   info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
-  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
-    true}'
+  info_notifications: '{"Email": false, "Imagen": false, "Page_HSE": true, "Video":
+    false}'
   ip: 10.10.148.221
   label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White
   name camera: Perimetral 2
