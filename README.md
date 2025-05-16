@@ -116,10 +116,10 @@ sudo apt update
 sudo apt install -y nvidia-container-toolkit
 sudo systemctl restart docker
 
-docker run --rm --gpus all nvidia/cuda:12.3.2-base-ubuntu22.04 nvidia-smi
+docker run --restart=on-failure --gpus all nvidia/cuda:12.3.2-base-ubuntu22.04 nvidia-smi
 
 docker build -t hse_video_analytics_ecp .
-docker run --gpus all -it --rm --network host --name hse_video_analytics_ecp_py hse_video_analytics_ecp
+docker run --gpus all -it --restart=on-failure --network host --name hse_video_analytics_ecp_py hse_video_analytics_ecp
 
 Listo 🚀
 
