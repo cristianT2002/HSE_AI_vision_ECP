@@ -39,6 +39,15 @@ curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dear
 ARCH=amd64
 echo "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://nvidia.github.io/libnvidia-container/stable/ubuntu22.04/${ARCH} /" | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
+# (opcional) Añade el repositorio “genérico” (él mismo detecta amd64/jammy)
+
+bash
+Copiar
+Editar
+curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list \
+  | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' \
+  | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
 # 2. Instalar toolkit
 sudo apt update
 sudo apt install -y nvidia-container-toolkit
@@ -67,6 +76,10 @@ sudo systemctl restart docker
 Prueba este comando:
 
 docker run --gpus all --restart=on-failure nvidia/cuda:12.3.2-base-ubuntu22.04 nvidia-smi
+
+# si el primero no sirve se intenta con este verificando la version del cuda para este caso es la 12.8
+docker run --rm --gpus all nvidia/cuda:12.8-base nvidia-smi
+
 
 
 Deberías ver tu GPU desde dentro del contenedor.
