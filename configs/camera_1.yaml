@@ -2,7 +2,7 @@ camera:
   client: GEOPARK
   coordinates:
     area1:
-      Green: '75'
+      Green: '40'
       No_Helmet: '63'
       Yellow: '65'
       camara: Mesa
@@ -22,11 +22,8 @@ camera:
       punto: TORITO_OESTE1_GEOPARK
     area2:
       Green: '55'
-      Harness: '30'
-      No_Harness: '40'
+      No_Harness: '43'
       No_Helmet: '55'
-      Orange: '30'
-      White: '30'
       Yellow: '65'
       camara: Mesa
       points:
@@ -48,7 +45,7 @@ camera:
         y: 12.62386372942429
       punto: TORITO_OESTE1_GEOPARK
     area3:
-      White: '20'
+      A_Person: '20'
       camara: Mesa
       points:
       - x: 128.94178573656953
@@ -63,9 +60,9 @@ camera:
         y: 91.3938492063492
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
-  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
-    false}'
-  ip: 10.10.148.220
+  info_notifications: '{"Email": true, "Imagen": false, "Page_HSE": true, "Video":
+    true}'
+  ip: 172.29.5.230
   label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White
   name camera: Mesa
   password: 4xUR3_2017
@@ -73,7 +70,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: VideosEnsayoModelo/muchas-personas-perimetral2.mp4
-  time_areas: '{"area1": "20", "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "15", "area2": "5", "area3": "180"}'
   username: admin
 labels:
 - A_Person
@@ -82,4 +79,4 @@ labels:
 - White
 - YellowGreen
 model:
-  path: models/best_only_person.pt
+  path: models/best_person_cascos.pt

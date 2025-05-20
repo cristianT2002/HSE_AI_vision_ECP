@@ -2,6 +2,7 @@ camera:
   client: GEOPARK
   coordinates:
     area1:
+      A_Person: '20'
       camara: Planchada
       points:
       - x: 176.64673434385574
@@ -16,7 +17,7 @@ camera:
         y: 125.04708869052493
       punto: TORITO_OESTE1_GEOPARK
   info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
-  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+  info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 172.29.5.231
   label: A_Person, Loading_Machine
@@ -35,4 +36,4 @@ labels:
 - White
 - YellowGreen
 model:
-  path: models/best_only_person.pt
+  path: models/best_person_cascos.pt

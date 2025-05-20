@@ -10,10 +10,11 @@ from src.buffers_camaras import start_streaming_from_configs
 from src.variables_globales import get_streamers, get_threads, set_streamers, set_threads, set_streamers_procesado
 from src.notifications import ProcesarDetecciones
 import multiprocessing as mp
-from src.variables_globales import set_processes, get_processes, set_ip_local, get_ip_local, obtener_ip_local
+from src.variables_globales import set_processes, get_processes, set_ip_local, get_ip_local, obtener_ip_local, set_entorno, get_entorno
 from multiprocessing import Manager
 import psycopg2
 import socket
+from psycopg2.extras import RealDictCursor
 
 def load_yaml_config(path):
     """
@@ -30,7 +31,7 @@ def start_flask_server():
 
 
 
-def monitor_database_and_start_detections(db_config, shared_buffers):
+def monitor_database_and_start_detections(db_config, shared_buffers, entorno):
     """
     Monitorea la base de datos, actualiza YAML/JSON e inicia procesos de detección por cámara.
     """
@@ -42,7 +43,7 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
     while True:
         # try:
             # Establece una nueva conexión en cada iteración
-            connection = connect_to_db(db_config)
+            connection = connect_to_db(db_config, entorno)
             cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             
             ip_local = get_ip_local()
@@ -115,6 +116,34 @@ def monitor_database_and_start_detections(db_config, shared_buffers):
             time.sleep(5)
 
 
+def obtener_entorno_servidor(host: str,
+                             port: int,
+                             user: str,
+                             password: str,
+                             dbname: str,
+                             ip_servidor: str):
+    """
+    Conecta a PostgreSQL con los parámetros dados y devuelve el valor
+    de la columna 'entorno' de la tabla 'servidores' para la IP indicada.
+    Retorna None si no existe ningún registro.
+    """
+    conn = psycopg2.connect(
+        host     = host,
+        port     = port,
+        user     = user,
+        password = password,
+        dbname   = dbname
+    )
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(
+                "SELECT entorno FROM servidores WHERE id_servidor = %s;",
+                (ip_servidor,)
+            )
+            row = cur.fetchone()
+            return row["entorno"] if row else None
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     # Vaciar la carpeta de videos
@@ -126,9 +155,25 @@ if __name__ == "__main__":
 
     # Cargar configuración desde database.yaml
     db_config = load_yaml_config("configs/database.yaml")["database"]
+    print(db_config)
 
     host_ip = obtener_ip_local()
     set_ip_local(host_ip)
+    
+    entorno = obtener_entorno_servidor(
+        host="10.20.30.33",
+        port=5432,
+        user="postgres",
+        password="4xUR3_2017",
+        dbname="hse_video_analitics",
+        ip_servidor=host_ip
+    )
+    
+    set_entorno(entorno)
+    if entorno is not None:
+        print(f"Entorno para {host_ip}: {entorno}")
+    else:
+        print(f"No se encontró ningún servidor con IP {host_ip}.")
     
     # Iniciar el servidor Flask en un hilo separado
     flask_thread = threading.Thread(target=start_flask_server, daemon=True)
@@ -138,4 +183,4 @@ if __name__ == "__main__":
     shared_buffers, threads = start_streaming_from_configs()
 
     
-    monitor_database_and_start_detections(db_config, shared_buffers)
+    monitor_database_and_start_detections(db_config, shared_buffers, entorno)

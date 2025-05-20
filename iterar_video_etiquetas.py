@@ -3,7 +3,7 @@ import cv2
 from ultralytics import YOLO
 
 # Ruta al modelo fijo
-MODEL_PATH = os.path.join("models", "best_only_person.pt")
+MODEL_PATH = os.path.join("models", "best_person_cascos.pt")
 
 # Cargar el modelo una sola vez
 model = YOLO(MODEL_PATH)

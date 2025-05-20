@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import cv2
 
 # —————— 1. Carga del modelo y vídeo ——————
-model = YOLO("models/best_only_person.pt")
+model = YOLO("models/best_person_cascos.pt")
 video_path = "VideosEnsayoModelo/muchas-personas-perimetral2.mp4"
 
 cap = cv2.VideoCapture(video_path)

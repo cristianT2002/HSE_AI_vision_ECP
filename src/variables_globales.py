@@ -9,6 +9,8 @@ envio_correo = True
 
 ip_local = None
 
+entorno = None
+
 def get_streamers():
     return streamers
 
@@ -71,3 +73,11 @@ def get_ip_local():
 def set_ip_local(ip_local_edit):
     global ip_local
     ip_local = ip_local_edit
+    
+def get_entorno():
+    global entorno
+    return entorno
+
+def set_entorno(entorno_edit):
+    global entorno
+    entorno = entorno_edit
