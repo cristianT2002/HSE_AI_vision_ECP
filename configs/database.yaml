@@ -4,7 +4,8 @@ database:
   port: 5432
   user: "postgres"
   password: "4xUR3_2017"
-  database_name: "hse_video_analitics" 
+  database_prod: "hse_video_analitics" 
+  database_dev: "hse_video_analitics_pruebas" 
   query_proyecto_por_ip: >
     SELECT id_proyecto FROM servidores WHERE id_servidor = %s;
   query_yaml: >
