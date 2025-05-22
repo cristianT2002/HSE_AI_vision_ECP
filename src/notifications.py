@@ -7,7 +7,7 @@ import numpy as np
 import multiprocessing as mp
 from multiprocessing import Manager
 from datetime import datetime
-from src.variables_globales import get_streamers, set_streamers, set_id, set_envio_correo, get_envio_correo, get_ip_local, set_ip_local, obtener_ip_local
+from src.variables_globales import get_streamers, set_streamers, set_id, set_envio_correo, get_envio_correo, get_ip_local, set_ip_local, obtener_ip_local, get_entorno
 from src.Tipo_notificacion import save_video_from_buffer, guardar_imagen_en_mariadb
 from src.db_utils import connect_to_db, close_connection
 from src.load_config import load_yaml_config
@@ -604,7 +604,9 @@ class ProcesarDetecciones:
         """
         Guarda la URL del video feed en la columna URL_CAMARA_SERVER de la base de datos.
         """
-        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+        entorno = get_entorno()
+        print("entorno bd reemplazar: ", entorno)
+        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"], entorno)
         cursor = connection.cursor()
 
         try:
