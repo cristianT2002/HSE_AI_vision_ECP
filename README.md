@@ -85,7 +85,14 @@ docker build -t hse_video_analytics_ecp .
 
 Ejecuta el contenedor usando --gpus all y --network host para acceder a dispositivos de red reales:
 
-docker run --gpus all -it --restart=on-failure --network host --name hse_video_analytics_ecp_py hse_video_analytics_ecp
+docker run --gpus all -it \
+  --restart=on-failure \
+  --network host \
+  --name hse_video_analytics_ecp_py \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v /etc/timezone:/etc/timezone:ro \
+  -e TZ=$(cat /etc/timezone) \
+  hse_video_analytics_ecp
 
 Notas:
 
@@ -119,7 +126,15 @@ sudo systemctl restart docker
 docker run --restart=on-failure --gpus all nvidia/cuda:12.3.2-base-ubuntu22.04 nvidia-smi
 
 docker build -t hse_video_analytics_ecp .
-docker run --gpus all -it --restart=on-failure --network host --name hse_video_analytics_ecp_py hse_video_analytics_ecp
+
+docker run --gpus all -it \
+  --restart=on-failure \
+  --network host \
+  --name hse_video_analytics_ecp_py \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v /etc/timezone:/etc/timezone:ro \
+  -e TZ=$(cat /etc/timezone) \
+  hse_video_analytics_ecp
 
 Listo 🚀
 
