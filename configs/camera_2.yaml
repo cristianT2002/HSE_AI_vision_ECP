@@ -19,14 +19,14 @@ camera:
   info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
   info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
     false}'
-  ip: 172.29.5.231
+  ip: 10.57.191.56
   label: A_Person, Loading_Machine
   name camera: Planchada
   password: 4xUR3_2017
   place: Pozo1
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.29.5.231:554/Streaming/Channels/102
+  rtsp_url: rtsp://admin:4xUR3_2017@10.57.191.56:554/Streaming/Channels/102
   time_areas: '{"area1": "120", "area2": "15", "area3": "300"}'
   username: admin
 labels:
