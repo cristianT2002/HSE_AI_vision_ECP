@@ -267,7 +267,7 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, client
             conexion.commit()
             print("✅ Imagen guardada en la base de datos exitosamente.")
             logger.warning(f"Imagen guardada en la base de datos exitosamente. ID: {id_a_buscar}")
-            print("estado de envio_correo", envio_correo)
+            print("estado de envio_correpoo", envio_correo)
 
             # Enviar correo si está habilitado
             if envio_correo:
