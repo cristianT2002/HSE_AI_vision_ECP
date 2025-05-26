@@ -26,7 +26,7 @@ camera:
   point: TORITO_OESTE1_GEOPARK
   port: 554
   rtsp_url: rtsp://admin:4xUR3_2017@172.30.37.15:554/Streaming/Channels/102
-  time_areas: '{"area1": "10", "area2": "10", "area3": "10"}'
+  time_areas: '{"area1": "5", "area2": "5", "area3": "10"}'
   username: admin
 labels:
 - A_Person

@@ -1,5 +1,21 @@
 [
     {
+        "id_camara": 24,
+        "id_axure": "Pozo1",
+        "id_proyecto": "TORITO_OESTE1_GEOPARK",
+        "id_cliente": "GEOPARK",
+        "nombre_camara": "Afuera",
+        "ip_camara": "172.30.37.15",
+        "url_camara_server": "http://172.30.36.26:5000/video_feed/24",
+        "estado_lugar_modelo": "Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White",
+        "usuario": "admin",
+        "contrasena": "4xUR3_2017",
+        "coordenadas_area": "{\"area1\": {\"points\": [{\"x\": 4.651525550633306, \"y\": 1.1822089947089947}, {\"x\": 295.760279528296, \"y\": 2.769510582010582}, {\"x\": 297.8567417482997, \"y\": 147.213955026455}, {\"x\": 7.047482373494727, \"y\": 144.03935185185185}], \"camara\": \"Afuera\", \"punto\": \"TORITO_OESTE1_GEOPARK\", \"A_Person\": \"19\"}}",
+        "time_areas": "{\"area1\": \"5\", \"area2\": \"5\", \"area3\": \"10\"}",
+        "info_notifications": "{\"Email\": false, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}",
+        "destinatarios": "[\"nelson.ceron@axuretechnologies.com\", \"cristian.tascon@axuretechnologies.com\", \"fabianmartinezr867@gmail.com\"]"
+    },
+    {
         "id_camara": 1,
         "id_axure": "Pozo1",
         "id_proyecto": "TORITO_OESTE1_GEOPARK",
@@ -14,22 +30,6 @@
         "time_areas": "{\"area1\": \"15\", \"area2\": \"5\", \"area3\": \"180\"}",
         "info_notifications": "{\"Email\": true, \"Imagen\": false, \"Page_HSE\": true, \"Video\": true}",
         "destinatarios": "[\"nelson.ceron@axuretechnologies.com\",\"fabianmartinezr867@gmail.com\"]"
-    },
-    {
-        "id_camara": 24,
-        "id_axure": "Pozo1",
-        "id_proyecto": "TORITO_OESTE1_GEOPARK",
-        "id_cliente": "GEOPARK",
-        "nombre_camara": "Afuera",
-        "ip_camara": "172.30.37.15",
-        "url_camara_server": "http://172.30.36.26:5000/video_feed/24",
-        "estado_lugar_modelo": "Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White",
-        "usuario": "admin",
-        "contrasena": "4xUR3_2017",
-        "coordenadas_area": "{\"area1\": {\"points\": [{\"x\": 4.651525550633306, \"y\": 1.1822089947089947}, {\"x\": 295.760279528296, \"y\": 2.769510582010582}, {\"x\": 297.8567417482997, \"y\": 147.213955026455}, {\"x\": 7.047482373494727, \"y\": 144.03935185185185}], \"camara\": \"Afuera\", \"punto\": \"TORITO_OESTE1_GEOPARK\", \"A_Person\": \"19\"}}",
-        "time_areas": "{\"area1\": \"10\", \"area2\": \"10\", \"area3\": \"10\"}",
-        "info_notifications": "{\"Email\": false, \"Imagen\": true, \"Page_HSE\": true, \"Video\": false}",
-        "destinatarios": "[\"nelson.ceron@axuretechnologies.com\", \"cristian.tascon@axuretechnologies.com\", \"fabianmartinezr867@gmail.com\"]"
     },
     {
         "id_camara": 2,

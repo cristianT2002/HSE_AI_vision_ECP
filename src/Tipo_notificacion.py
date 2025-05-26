@@ -73,7 +73,7 @@ def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails
     guardar_video_en_mariadb(output_path, output_path, envio_correo, lista_emails, cliente, sitio)
     print(f"Video guardado como {output_path}")
     
-def borrar_primer_registro(cliente, sitio,database, host='10.20.30.33', user='postgres', password='4xUR3_2017', port=5432):
+def borrar_primer_registro(cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017', port=5432):
     entorno = get_entorno()
     if entorno == "production":
         database = 'hse_video_analitics'
@@ -111,7 +111,7 @@ def borrar_primer_registro(cliente, sitio,database, host='10.20.30.33', user='po
             conexion.close()
 
     
-def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, cliente, sitio,database,  host='10.20.30.33', user='postgres', password='4xUR3_2017'):
+def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, cliente, sitio,  host='10.20.30.33', user='postgres', password='4xUR3_2017'):
     port = 5432
     entorno = get_entorno()
     if entorno == "production":
@@ -195,7 +195,7 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
         conexion.close()
 
     
-def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, cliente, sitio, database, host='10.20.30.33', user='postgres', password='4xUR3_2017'):
+def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017'):
     port = 5432
     entorno = get_entorno()
     if entorno == "production":
@@ -267,10 +267,12 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, client
             conexion.commit()
             print("✅ Imagen guardada en la base de datos exitosamente.")
             logger.warning(f"Imagen guardada en la base de datos exitosamente. ID: {id_a_buscar}")
+            print("estado de envio_correo", envio_correo)
 
             # Enviar correo si está habilitado
             if envio_correo:
                 if get_envio_correo() == True:
+                    print("Enviando correo... BANDERA EN TRUE")
                     send_email_with_outlook("Add_Image", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
                     numero_destino = '+573012874982'  # Número de destino en formato internacional (ejemplo para Colombia)
                     mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio con una imagen.'
@@ -287,7 +289,7 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, client
             cursor.close()
             conexion.close()
     
-def recuperar_video_de_mariadb(id_video, database, string_adicional='', host='10.20.30.33', user='analitica', password='4xUR3_2017'):
+def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='analitica', password='4xUR3_2017'):
     # Conectar a la base de datos
     entorno = get_entorno()
     if entorno == "production":
@@ -426,7 +428,7 @@ def enviar_sms(numero_destino, mensaje):
     
     print(f"Mensaje enviado con SID: {mensaje_enviado.sid}")
 
-def recuperar_video_de_mariadb(id_video, database, string_adicional='', host='10.20.30.33', user='ax_monitor', password='axure.2024'):
+def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='ax_monitor', password='axure.2024'):
     # Conectar a la base de datos
     entorno = get_entorno()
     if entorno == "production":
