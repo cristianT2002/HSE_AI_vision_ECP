@@ -1,0 +1,38 @@
+camera:
+  client: GEOPARK
+  coordinates:
+    area1:
+      A_Person: '19'
+      camara: Afuera
+      points:
+      - x: 4.651525550633306
+        y: 1.1822089947089947
+      - x: 295.760279528296
+        y: 2.769510582010582
+      - x: 297.8567417482997
+        y: 147.213955026455
+      - x: 7.047482373494727
+        y: 144.03935185185185
+      punto: TORITO_OESTE1_GEOPARK
+  info_emails: '["nelson.ceron@axuretechnologies.com", "cristian.tascon@axuretechnologies.com",
+    "fabianmartinezr867@gmail.com"]'
+  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
+  ip: 172.30.37.15
+  label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White
+  name camera: Afuera
+  password: 4xUR3_2017
+  place: Pozo1
+  point: TORITO_OESTE1_GEOPARK
+  port: 554
+  rtsp_url: rtsp://admin:4xUR3_2017@172.30.37.15:554/Streaming/Channels/102
+  time_areas: '{"area1": "5", "area2": "5", "area3": "10"}'
+  username: admin
+labels:
+- A_Person
+- Harness
+- No_Helmet
+- White
+- YellowGreen
+model:
+  path: models/best.pt
