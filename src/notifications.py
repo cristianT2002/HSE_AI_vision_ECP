@@ -837,7 +837,8 @@ class ProcesarDetecciones:
 #Función para guardar tiempos promedio en base de datos, filtrando por PUNTO y NOMBRE DE CAMARA
     def actualizar_promedio(self, sitio, nombre_camera, promedio_dict):
         """Actualiza la base de datos con el promedio de permanencia."""
-        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+        entorno = get_entorno()
+        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"], entorno)
         cursor = connection.cursor()
 
         try:
@@ -861,7 +862,8 @@ class ProcesarDetecciones:
 # ------------- guardar_evento
 
     def buscar_modelo_DB(self, label):
-        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+        entorno = get_entorno()
+        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"], entorno)
         cursor = connection.cursor()
 
         try:
@@ -894,7 +896,8 @@ class ProcesarDetecciones:
             
             
     def buscar_descripcion_DB(self, label):
-        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+        entorno = get_entorno()
+        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"], entorno)
         cursor = connection.cursor()
 
         try:
@@ -1000,7 +1003,8 @@ class ProcesarDetecciones:
         Inserta un nuevo registro en la tabla 'eventos' con los valores proporcionados.
         """
         # 1) Conexión y cursor
-        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+        entorno = get_entorno()
+        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"], entorno)
         cursor     = connection.cursor()
 
         try:
@@ -1072,7 +1076,8 @@ class ProcesarDetecciones:
         """
         Obtiene el ID del último registro en la tabla 'Eventos'.
         """
-        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"])
+        entorno = get_entorno()
+        connection = connect_to_db(load_yaml_config("configs/database.yaml")["database"], entorno)
         cursor = connection.cursor()
 
         try:
