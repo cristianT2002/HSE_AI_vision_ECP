@@ -16,7 +16,7 @@ camera:
       - x: 85.56992536967505
         y: 125.04708869052493
       punto: TORITO_OESTE1_GEOPARK
-  info_emails: '["nelson.ceron@axuretechnologies.com", "fabianmartinezr867@gmail.com"]'
+  info_emails: '["nelson.ceron@axuretechnologies.com","fabianmartinezr867@gmail.com"]'
   info_notifications: '{"Email": true, "Imagen": true, "Page_HSE": true, "Video":
     false}'
   ip: 10.57.191.56

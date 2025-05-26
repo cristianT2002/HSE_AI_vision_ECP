@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import pymysql
-from src.variables_globales import get_streamers, set_streamers, set_id, get_id, get_envio_correo, set_envio_correo
+from src.variables_globales import get_streamers, set_streamers, set_id, get_id, get_envio_correo, set_envio_correo, get_ip_local, set_ip_local, get_entorno
 import os
 import datetime
 import smtplib
@@ -73,7 +73,12 @@ def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails
     guardar_video_en_mariadb(output_path, output_path, envio_correo, lista_emails, cliente, sitio)
     print(f"Video guardado como {output_path}")
     
-def borrar_primer_registro(cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017', database='hse_video_analitics', port=5432):
+def borrar_primer_registro(cliente, sitio,database, host='10.20.30.33', user='postgres', password='4xUR3_2017', port=5432):
+    entorno = get_entorno()
+    if entorno == "production":
+        database = 'hse_video_analitics'
+    else:
+        database = 'hse_video_analitics_pruebas'
     try:
         conexion = psycopg2.connect(
             host=host,
@@ -106,8 +111,14 @@ def borrar_primer_registro(cliente, sitio, host='10.20.30.33', user='postgres', 
             conexion.close()
 
     
-def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017', database='hse_video_analitics'):
+def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, cliente, sitio,database,  host='10.20.30.33', user='postgres', password='4xUR3_2017'):
     port = 5432
+    entorno = get_entorno()
+    if entorno == "production":
+        database = 'hse_video_analitics'
+    else:
+        database = 'hse_video_analitics_pruebas'
+        
     try:
         conexion = psycopg2.connect(
             host=host,
@@ -184,8 +195,13 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
         conexion.close()
 
     
-def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017', database='hse_video_analitics'):
+def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, cliente, sitio, database, host='10.20.30.33', user='postgres', password='4xUR3_2017'):
     port = 5432
+    entorno = get_entorno()
+    if entorno == "production":
+        database = 'hse_video_analitics'
+    else:
+        database = 'hse_video_analitics_pruebas'
     try:
         conexion = psycopg2.connect(
             host=host,
@@ -271,8 +287,13 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, client
             cursor.close()
             conexion.close()
     
-def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='analitica', password='4xUR3_2017', database='hseVideoAnalytics'):
+def recuperar_video_de_mariadb(id_video, database, string_adicional='', host='10.20.30.33', user='analitica', password='4xUR3_2017'):
     # Conectar a la base de datos
+    entorno = get_entorno()
+    if entorno == "production":
+        database = 'hse_video_analitics'
+    else:
+        database = 'hse_video_analitics_pruebas'
     conexion = pymysql.connect(host=host, user=user, password=password, database=database)
     
     try:
@@ -405,8 +426,13 @@ def enviar_sms(numero_destino, mensaje):
     
     print(f"Mensaje enviado con SID: {mensaje_enviado.sid}")
 
-def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='ax_monitor', password='axure.2024', database='hseVideoAnalytics'):
+def recuperar_video_de_mariadb(id_video, database, string_adicional='', host='10.20.30.33', user='ax_monitor', password='axure.2024'):
     # Conectar a la base de datos
+    entorno = get_entorno()
+    if entorno == "production":
+        database = 'hse_video_analitics'
+    else:
+        database = 'hse_video_analitics_pruebas'
     conexion = pymysql.connect(host=host, user=user, password=password, database=database)
     
     try:
