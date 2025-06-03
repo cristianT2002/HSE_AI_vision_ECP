@@ -23,7 +23,8 @@ database:
       camaras.coordenadas_area,
       camaras.time_areas,
       camaras.info_notifications,
-      camaras.destinatarios
+      camaras.destinatarios,
+      camaras.numeros
       FROM camaras
       JOIN proyectos ON camaras.id_proyecto = proyectos.id_proyecto
       WHERE camaras.id_proyecto IN %s;
@@ -43,7 +44,10 @@ database:
       camaras.coordenadas_area,
       camaras.time_areas,
       camaras.info_notifications,
-      camaras.destinatarios
+      camaras.destinatarios,
+      camaras.numeros
       FROM camaras
       JOIN proyectos ON camaras.id_proyecto = proyectos.id_proyecto
       WHERE camaras.id_proyecto IN %s;
+
+
