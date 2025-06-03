@@ -25,7 +25,7 @@ import psycopg2.extras
 logger = get_logger(__name__)
 
 
-def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails, cliente, sitio, fps=20):
+def save_video_from_buffer(frame_buffer, output_file, envio_correo, envio_whatsapp, lista_emails, numeros, cliente, sitio, fps=20):
     """
     Guarda un video MP4 a partir de un buffer de frames en una carpeta llamada 'Videos'.
     Si el nombre del archivo ya existe, agrega un sufijo numérico para evitar sobrescribirlo.
@@ -70,7 +70,7 @@ def save_video_from_buffer(frame_buffer, output_file, envio_correo, lista_emails
     out.release()
 
     # Llamar a la función para guardar el video en la base de datos y enviar correos
-    guardar_video_en_mariadb(output_path, output_path, envio_correo, lista_emails, cliente, sitio)
+    guardar_video_en_mariadb(output_path, output_path, envio_correo, envio_whatsapp, lista_emails, numeros, cliente, sitio)
     print(f"Video guardado como {output_path}")
     
 def borrar_primer_registro(cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017', port=5432):
@@ -111,7 +111,8 @@ def borrar_primer_registro(cliente, sitio, host='10.20.30.33', user='postgres', 
             conexion.close()
 
     
-def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_emails, cliente, sitio,  host='10.20.30.33', user='postgres', password='4xUR3_2017'):
+import ast
+def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, envio_whatsapp, lista_emails, numeros, cliente, sitio,  host='10.20.30.33', user='postgres', password='4xUR3_2017'):
     port = 5432
     entorno = get_entorno()
     if entorno == "production":
@@ -177,13 +178,52 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
             print("✅ Video guardado en la base de datos exitosamente.")
             logger.warning("Video guardado en la base de datos exitosamente.")
 
+
+            if envio_whatsapp and get_envio_correo():
+                    print("Enviando whatsapp en video... BANDERA EN TRUE")
+                    # 🛠️ Convertir string a lista real si es necesario
+                    try:
+                        if isinstance(numeros, str):
+                            numeros = ast.literal_eval(numeros)
+                        elif not isinstance(numeros, list):
+                            raise ValueError("Formato inválido para números")
+                    except Exception as e:
+                        print("❌ Error al procesar los números:", e)
+                        numeros = []
+
+                    print("Enviando SMS... a numeros VIDEO", numeros)
+                    enviar_whatsapp_personalizado(
+                        numeros,
+                        mensaje_notification,
+                        sitio_notificacion,
+                        company_notificacion,
+                        fecha_notification
+                    )
+
+
             if envio_correo and get_envio_correo():
+               
+                print("Enviando correo... EN VIDEO BANDERA EN TRUE")
+                print("Enviando correo... a emails VIDEO ", lista_emails)
+                                   
+               
                 send_email_with_outlook("Add_Video", lista_emails, fecha_notification,
                                         mensaje_notification, nombre_archivo,
                                         sitio_notificacion, company_notificacion)
-                numero_destino = '+573012874982'
-                mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'
-                enviar_sms(numero_destino, mensaje)
+                
+
+            # if envio_correo and get_envio_correo():
+            #     send_email_with_outlook("Add_Video", lista_emails, fecha_notification,
+            #                             mensaje_notification, nombre_archivo,
+            #                             sitio_notificacion, company_notificacion)
+            #     numero_destino = '+573012874982'
+            #     mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'
+            #     enviar_sms(numero_destino, mensaje)
+
+
+
+
+
         else:
             print(f"⚠️ No se encontró un registro con ID {id_a_buscar}.")
 
@@ -195,7 +235,7 @@ def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, lista_e
         conexion.close()
 
     
-def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017'):
+def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, envio_whatsapp, lista_emails, numeros, cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017'):
     port = 5432
     entorno = get_entorno()
     if entorno == "production":
@@ -270,13 +310,38 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, lista_emails, client
             print("estado de envio_correpoo", envio_correo)
 
             # Enviar correo si está habilitado
-            if envio_correo:
-                if get_envio_correo() == True:
+            if envio_whatsapp and get_envio_correo() == True:
+                    print("Enviando whatsapp... BANDERA EN TRUE")
+                    # 🛠️ Convertir string a lista real si es necesario
+                    try:
+                        if isinstance(numeros, str):
+                            numeros = ast.literal_eval(numeros)
+                        elif not isinstance(numeros, list):
+                            raise ValueError("Formato inválido para números")
+                    except Exception as e:
+                        print("❌ Error al procesar los números:", e)
+                        numeros = []
+
+                    print("Enviando SMS... a numeros ", numeros)
+                    enviar_whatsapp_personalizado(
+                        numeros,
+                        mensaje_notification,
+                        sitio_notificacion,
+                        company_notificacion,
+                        fecha_notification
+                    )
+
+            # Enviar correo si está habilitado
+            if envio_correo and get_envio_correo() == True:
+                    
+
                     print("Enviando correo... BANDERA EN TRUE")
-                    send_email_with_outlook("Add_Image", lista_emails, fecha_notification, mensaje_notification, nombre_archivo, sitio_notificacion, company_notificacion)
-                    numero_destino = '+573012874982'  # Número de destino en formato internacional (ejemplo para Colombia)
-                    mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio con una imagen.'
-                    enviar_sms(numero_destino, mensaje)
+                    print("Enviando correo... a emails ", lista_emails)
+                    
+
+                    send_email_with_outlook("Add_Image", lista_emails, fecha_notification, 
+                                            mensaje_notification, nombre_archivo, sitio_notificacion,
+                                              company_notificacion)
 
         else:
             print(f"No se encontró un registro con ID {id_a_buscar}.")

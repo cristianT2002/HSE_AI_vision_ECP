@@ -104,110 +104,6 @@ class ProcesarDetecciones:
     
 
 
-
-
-    
-    #--------------------------------------------ORIGINAL PROCESAR -------------------------------------------------------------------------------------------------------------------------------------------------
-
-    # def procesar(self):
-    #     # host_ip = socket.gethostbyname(socket.gethostname())
-    #     host_ip = "172.30.37.48"
-    #     host_ip = "172.30.37.67"    #Este toca usarlo
-    #     feed_url = f"http://{host_ip}:5000/video_feed/{self.camera_id}"
-
-    #     # Guardar la URL del video feed en la base de datos
-    #     self.save_feed_url_to_database(self.camera_id, feed_url)
-
-    #     while self.running:
-    #         # print("Buffer antes de todo: ", self.buffer_detecciones)
-            
-    #         # Cargar configuración
-    #         try:
-    #             self.config = load_yaml_config(self.config_path)
-    #             rtsp_url = self.config["camera"]["rtsp_url"]
-    #             areas = self.config["camera"]["coordinates"]
-    #             tiempos_limite = json.loads(self.config["camera"]["time_areas"])
-
-    #             # Convertir valores de tiempos_limite a float
-    #             tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-    #             # Convertir valores de tiempos_limite a float
-    #             if isinstance(tiempos_limite, str):
-    #                 tiempos_limite = json.loads(tiempos_limite)  # Convertir JSON si es una cadena
-    #             tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-                
-    #             sitio = self.config['camera']["point"]
-    #             nombre_camera = self.config['camera']["name camera"]
-    #             info_notifications = self.config['camera']["info_notifications"]
-    #             if info_notifications:
-    #                 try:
-    #                     info_notifications = json.loads(info_notifications)
-    #                     # print(info_notifications)
-    #                 except json.JSONDecodeError as e:
-    #                     print(f"Error decodificando JSON de notificaciones: {e}")
-                        
-    #             emails = self.config['camera']["info_emails"]
-    #             # emails = json.dumps(["cristian.tascon@axuretechnologies.com"])  # Esto genera un string JSON válido
-    #             # print(f'formato de emails: {emails}')
-
-    #             if emails:
-    #                 try:
-    #                     emails = json.loads(emails)
-    #                     # print(emails)
-    #                 except json.JSONDecodeError as e:
-    #                     print(f"Error decodificando JSON de correos: {e}")
-    #         except Exception as e:
-    #             print(f"Error al cargar configuración: {e}")
-    #             return
-
-    #         # Variables para el seguimiento de detecciones
-    #         target_width, target_height = 640, 380  # Resolución deseada
-
-    #         # Obtener buffer de frames
-    #         frame_buffer = self.shared_buffers.get(self.camera_id, None)
-
-    #         if not frame_buffer:
-    #             time.sleep(0.05)
-    #             continue
-
-    #         try:
-    #             frame_to_process = frame_buffer[0]  # Último frame en el buffer
-    #         except IndexError:
-    #             print(f"⚠️ Error: Intento de acceder a un frame inexistente en notifications {self.camera_id}")
-    #             time.sleep(0.05)
-    #             continue
-            
-    #         frame = cv2.resize(frame_to_process, (target_width, target_height))
-
-    #         for area_name, area_config in areas.items():
-    #             # try:
-    #                 # Procesar el área y realizar detección
-    #                 pts = self.escalar_puntos(area_config)
-    #                 # Dibujar el polígono escalado en el frame
-    #                 if area_name == "area3":
-    #                     polygon_color = (0, 255, 0)  # Verde para area2
-    #                 elif area_name == "area2":
-    #                     polygon_color = (255, 255, 0)
-    #                 else:
-    #                     polygon_color = (255, 0, 0)  # Rojo o azul para otras áreas (según lo desees)
-                    
-    #                 # Dibujar el polígono escalado en el frame con el color definido
-    #                 cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
-
-    #                 results = model(frame, verbose=False)
-
-    #                 for detection in results[0].boxes:
-    #                     self.procesar_deteccion_2(detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts)
-                    
-    #             # except Exception as area_error:
-    #             #     print(f"Error al procesar {area_name}: {area_error}")
-
-    #         # Guardar frame en buffer de detecciones
-    #         self.actualizar_buffer(frame)
-
-
-    
-
-
     #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
     def procesar(self):
         host_ip = obtener_ip_local()
@@ -246,6 +142,9 @@ class ProcesarDetecciones:
                         # print(emails)
                     except json.JSONDecodeError as e:
                         print(f"Error decodificando JSON de correos: {e}")
+
+                numeros = cfg['camera']["info_numeros"]
+
  
                 # emails = ["fabianmartinezr867@gmail.com"]
             except Exception as e:
@@ -368,11 +267,11 @@ class ProcesarDetecciones:
                         if lab == "A_Person" and "A_Person" in allowed:
                             self.procesar_deteccion_2(det, area_name, area_config,
                                 tiempos_limite, frame, sitio, nombre_camera,
-                                info_notifications, emails, pts, cliente)
+                                info_notifications, emails, numeros, pts, cliente)
                         elif lab == "Loading_Machine" and "Loading_Machine" in allowed:
                             self.procesar_deteccion_2(det, area_name, area_config,
                                 tiempos_limite, frame, sitio, nombre_camera,
-                                info_notifications, emails, pts, cliente)
+                                info_notifications, emails, numeros, pts, cliente)
                     continue
  
                 # ── MESA: persona en area3, cascos/otras en area1 y area2 ──
@@ -384,7 +283,7 @@ class ProcesarDetecciones:
                             if lab == "A_Person" and "A_Person" in allowed:
                                 self.procesar_deteccion_2(det, area_name, area_config,
                                     tiempos_limite, frame, sitio, nombre_camera,
-                                    info_notifications, emails, pts,cliente)
+                                    info_notifications, emails, numeros, pts,cliente)
                         continue
  
                     # area1 y area2 de Mesa: cascos y demás etiquetas
@@ -404,7 +303,7 @@ class ProcesarDetecciones:
                                         self.procesar_deteccion_2(
                                             det, area_name, area_config,
                                             tiempos_limite, frame, sitio, nombre_camera,
-                                            info_notifications, emails, pts,cliente,
+                                            info_notifications, emails, numeros, pts,cliente,
                                             override_label=lab
                                         )
                                     else:
@@ -417,7 +316,7 @@ class ProcesarDetecciones:
                                                     self.procesar_deteccion_2(
                                                         pd, area_name, area_config,
                                                         tiempos_limite, frame, sitio, nombre_camera,
-                                                        info_notifications, emails, pts, cliente
+                                                        info_notifications, emails, numeros, pts, cliente
                                                     )
                                                     break
                                     break
@@ -427,7 +326,7 @@ class ProcesarDetecciones:
                         if lab in allowed and lab not in self.HELMET_LABELS:
                             self.procesar_deteccion_2(det, area_name, area_config,
                                 tiempos_limite, frame, sitio, nombre_camera,
-                                info_notifications, emails, pts, cliente)
+                                info_notifications, emails, numeros, pts, cliente)
                             continue
                         
                     # continue
@@ -451,7 +350,7 @@ class ProcesarDetecciones:
                                         self.procesar_deteccion_2(
                                             det, area_name, area_config,
                                             tiempos_limite, frame, sitio, nombre_camera,
-                                            info_notifications, emails, pts, cliente,
+                                            info_notifications, emails, numeros, pts, cliente,
                                             override_label=lab
                                         )
                                     break    # no miro más personas
@@ -463,7 +362,7 @@ class ProcesarDetecciones:
                             self.procesar_deteccion_2(
                                 det, area_name, area_config,
                                 tiempos_limite, frame, sitio, nombre_camera,
-                                info_notifications, emails, pts, cliente
+                                info_notifications, emails, numeros, pts, cliente
                             )
                             continue
  
@@ -487,118 +386,6 @@ class ProcesarDetecciones:
             self.actualizar_buffer(frame)
             time.sleep(0.01)
 
-    # #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
-    # # Funciones auxiliares que deben estar en la clase:
-    # def get_head_region(self, person_box, fraction=0.25, offset=5):
-    #     x1, y1, x2, y2 = person_box
-    #     y1_adjusted = max(0, y1 - offset)
-    #     adjusted_height = y2 - y1_adjusted
-    #     head_height = int(adjusted_height * fraction)
-    #     return (x1, y1_adjusted, x2, y1_adjusted + head_height)
-    # #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
-    # def compute_iou(self, boxA, boxB):
-    #     xA = max(boxA[0], boxB[0])
-    #     yA = max(boxA[1], boxB[1])
-    #     xB = min(boxA[2], boxB[2])
-    #     yB = min(boxA[3], boxB[3])
-    #     interArea = max(0, xB - xA) * max(0, yB - yA)
-    #     areaA = max(0, boxA[2] - boxA[0]) * max(0, boxA[3] - boxA[1])
-    #     areaB = max(0, boxB[2] - boxB[0]) * max(0, boxB[3] - boxB[1])
-    #     union = areaA + areaB - interArea
-    #     return interArea / union if union != 0 else 0
-    # #---------------------AÑADI-------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
-    # def is_inside(self, inner_box, outer_box):
-    #     x1, y1, x2, y2 = inner_box
-    #     X1, Y1, X2, Y2 = outer_box
-    #     return x1 >= X1 and y1 >= Y1 and x2 <= X2 and y2 <= Y2
-
-
-
-
-
-
-
-    # def procesar(self):
-    #     # Cargar la configuración y obtener parámetros necesarios
-    #     try:
-    #         self.config = load_yaml_config(self.config_path)
-    #         rtsp_url = self.config["camera"]["rtsp_url"]
-    #         areas = self.config["camera"]["coordinates"]
-    #         tiempos_limite = self.config["camera"]["time_areas"]
-    #         # Asegurar que tiempos_limite sea un diccionario con valores float
-    #         if isinstance(tiempos_limite, str):
-    #             tiempos_limite = json.loads(tiempos_limite)
-    #         tiempos_limite = {key: float(value) for key, value in tiempos_limite.items()}
-
-    #         sitio = self.config["camera"]["point"]
-    #         nombre_camera = self.config["camera"]["name camera"]
-
-    #         info_notifications = self.config["camera"]["info_notifications"]
-    #         if info_notifications:
-    #             try:
-    #                 info_notifications = json.loads(info_notifications)
-    #             except json.JSONDecodeError as e:
-    #                 print(f"Error decodificando JSON de notificaciones: {e}")
-
-    #         emails = self.config["camera"]["info_emails"]
-    #         if emails:
-    #             try:
-    #                 emails = json.loads(emails)
-    #             except json.JSONDecodeError as e:
-    #                 print(f"Error decodificando JSON de correos: {e}")
-    #     except Exception as e:
-    #         print(f"Error al cargar configuración: {e}")
-    #         return
-
-    #     # Abrir el video estático utilizando la URL rtsp
-    #     cap = cv2.VideoCapture(rtsp_url)
-    #     if not cap.isOpened():
-    #         print("Error al abrir el video con rtsp_url")
-    #         return
-
-    #     target_width, target_height = 640, 380  # Resolución deseada
-
-    #     while True:
-    #         ret, frame = cap.read()
-    #         if not ret:
-    #             print("Fin del video o error al leer frame")
-    #             break
-
-    #         # Redimensionar el frame
-    #         frame = cv2.resize(frame, (target_width, target_height))
-
-    #         # Procesar cada área definida en la configuración
-    #         for area_name, area_config in areas.items():
-    #             pts = self.escalar_puntos(area_config)
-    #             # Seleccionar el color del polígono según el nombre del área
-    #             if area_name == "area3":
-    #                 polygon_color = (0, 255, 0)
-    #             elif area_name == "area2":
-    #                 polygon_color = (255, 255, 0)
-    #             else:
-    #                 polygon_color = (255, 0, 0)
-                
-    #             # Dibujar el polígono en el frame
-    #             cv2.polylines(frame, [pts], isClosed=True, color=polygon_color, thickness=2)
-
-    #             # Realizar detección en el frame (se asume que 'model' está definido)
-    #             results = model(frame, verbose=False)
-    #             for detection in results[0].boxes:
-    #                 self.procesar_deteccion_2(
-    #                     detection, area_name, area_config, tiempos_limite,
-    #                     frame, sitio, nombre_camera, info_notifications, emails, pts
-    #                 )
-                    
-    #             # Guardar frame en buffer de detecciones
-    #             # self.actualizar_buffer(frame)
-
-    #         # Mostrar el frame procesado (opcional)
-    #         cv2.imshow("Video", frame)
-    #         if cv2.waitKey(1) & 0xFF == ord('q'):
-    #             break
-
-    #     cap.release()
-    #     cv2.destroyAllWindows()
 
     def save_feed_url_to_database(self, camera_id, url, sitio, cliente):
         """
@@ -668,7 +455,7 @@ class ProcesarDetecciones:
 
 
     # Versión sin areas                
-    def procesar_deteccion_2(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, pts, cliente, override_label=None):
+    def procesar_deteccion_2(self, detection, area_name, area_config, tiempos_limite, frame, sitio, nombre_camera, info_notifications, emails, numeros, pts, cliente, override_label=None):
         """Procesa una detección específica en el frame y maneja el tiempo de permanencia con margen de 2 segundos."""
         
         # Extraer coordenadas y probabilidad
@@ -787,7 +574,7 @@ class ProcesarDetecciones:
                 hilo = threading.Thread(
                     target=self.guardar_evidencia,
                     args=(frame, area_name, display_label,
-                        nombre_camera, info_notifications, emails, cliente, sitio),
+                        nombre_camera, info_notifications, emails, numeros, cliente, sitio),
                     daemon=True
                 )
                 hilo.start()
@@ -1046,16 +833,17 @@ class ProcesarDetecciones:
 
 
 
-    def guardar_evidencia(self, frame, area_name, label, nombre_camera, info_notifications, emails, cliente, sitio):
+    def guardar_evidencia(self, frame, area_name, label, nombre_camera, info_notifications, emails, numeros, cliente, sitio):
         """Guarda video o imagen como evidencia según configuración."""
         if info_notifications.get('Video'):
             buffer = self.buffer_detecciones[self.camera_id]
-            save_video_from_buffer(buffer, f"videos_{area_name}_{label}_{nombre_camera}.mp4", info_notifications.get('Email'), emails, cliente, sitio)
+            save_video_from_buffer(buffer, f"videos_{area_name}_{label}_{nombre_camera}.mp4", info_notifications.get('Email'), info_notifications.get('Whatsap'), emails, numeros, cliente, sitio)
         elif info_notifications.get('Imagen'):
             nombre_img = f"Imgs/img_{area_name}_{label}_{nombre_camera}.jpg"
             os.makedirs(os.path.dirname(nombre_img), exist_ok=True)
             cv2.imwrite(nombre_img, frame)
-            guardar_imagen_en_mariadb(nombre_img, info_notifications.get('Email'), emails, cliente, sitio)
+            print("estado de watsapp en guardar evidencia", info_notifications.get('Whatsap'))
+            guardar_imagen_en_mariadb(nombre_img, info_notifications.get('Email'),  info_notifications.get('Whatsap'), emails, numeros, cliente, sitio)
 
     def actualizar_buffer(self, frame):
         """Añade el frame al buffer de detecciones compartido."""
