@@ -24,6 +24,7 @@ import psycopg2.extras
 
 logger = get_logger(__name__)
 
+# CAMARA
 
 def save_video_from_buffer(frame_buffer, output_file, envio_correo, envio_whatsapp, lista_emails, numeros, cliente, sitio, fps=20):
     """
@@ -72,168 +73,6 @@ def save_video_from_buffer(frame_buffer, output_file, envio_correo, envio_whatsa
     # Llamar a la función para guardar el video en la base de datos y enviar correos
     guardar_video_en_mariadb(output_path, output_path, envio_correo, envio_whatsapp, lista_emails, numeros, cliente, sitio)
     print(f"Video guardado como {output_path}")
-    
-def borrar_primer_registro(cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017', port=5432):
-    entorno = get_entorno()
-    if entorno == "production":
-        database = 'hse_video_analitics'
-    else:
-        database = 'hse_video_analitics_pruebas'
-    try:
-        conexion = psycopg2.connect(
-            host=host,
-            port=port,
-            user=user,
-            password=password,
-            dbname=database
-        )
-        cursor = conexion.cursor(cursor_factory=psycopg2.extras.DictCursor)
-
-        # Eliminar el registro más antiguo filtrado por cliente y proyecto
-        delete_query = """
-            DELETE FROM notificaciones
-            WHERE id_notificaciones = (
-                SELECT id_notificaciones FROM notificaciones
-                WHERE id_proyecto = %s AND id_cliente = %s
-                ORDER BY id_notificaciones ASC
-                LIMIT 1
-            )
-        """
-        cursor.execute(delete_query, (sitio, cliente))
-        conexion.commit()
-        print(f"✅ Se eliminó el registro más antiguo para cliente '{cliente}' y sitio/proyecto '{sitio}'")
-
-    except Exception as e:
-        print("❌ Error al borrar el primer registro:", e)
-    finally:
-        if conexion:
-            cursor.close()
-            conexion.close()
-
-    
-import ast
-def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, envio_whatsapp, lista_emails, numeros, cliente, sitio,  host='10.20.30.33', user='postgres', password='4xUR3_2017'):
-    port = 5432
-    entorno = get_entorno()
-    if entorno == "production":
-        database = 'hse_video_analitics'
-    else:
-        database = 'hse_video_analitics_pruebas'
-        
-    try:
-        conexion = psycopg2.connect(
-            host=host,
-            port=port,
-            user=user,
-            password=password,
-            dbname=database
-        )
-        cursor = conexion.cursor(cursor_factory=psycopg2.extras.DictCursor)
-
-        # Verificar número de registros
-        cursor.execute("SELECT COUNT(*) AS total_registros FROM notificaciones WHERE id_proyecto = %s AND id_cliente = %s", (sitio, cliente))
-        total_registros = cursor.fetchone()['total_registros']
-        print(f"Total de registros en la tabla notificaciones: {total_registros}")
-
-        if total_registros > 15:
-            print("Se ha alcanzado el límite de registros en la tabla Notificaciones.")
-            borrar_primer_registro(cliente, sitio)
-
-        # Buscar evento por ID
-        id_a_buscar = get_id()
-        print(f"ID a buscar: {id_a_buscar}")
-        cursor.execute("SELECT * FROM eventos WHERE id_evento = %s AND id_proyecto = %s AND id_cliente = %s", (id_a_buscar, sitio, cliente))
-        resultado = cursor.fetchone()
-
-        if resultado:
-            print("Datos del registro:", resultado)
-
-            fecha_notification = resultado['fecha']
-            print("1Fecha del evento: ", repr(fecha_notification))
-            mensaje_notification = resultado['descripcion']
-            print("2Mensaje del evento:", repr(mensaje_notification))
-            estado_notification = 'pendiente'
-            sitio_notificacion = resultado['id_proyecto']
-            company_notificacion = resultado['id_cliente']
-
-            with open(nombre_archivo, 'rb') as archivo_video:
-                contenido_video = archivo_video.read()
-
-            insert_sql = """
-                INSERT INTO notificaciones (id_evento, id_cliente, id_proyecto, fecha_envio, mensaje, estado, nombre_archivo, video_alerta)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """
-            cursor.execute(insert_sql, (
-                id_a_buscar,
-                cliente,
-                sitio,
-                fecha_notification,
-                mensaje_notification,
-                estado_notification,
-                os.path.basename(nombre_archivo),
-                psycopg2.Binary(contenido_video)
-            ))
-
-            conexion.commit()
-            print("✅ Video guardado en la base de datos exitosamente.")
-            logger.warning("Video guardado en la base de datos exitosamente.")
-
-
-            if envio_whatsapp and get_envio_correo():
-                    print("Enviando whatsapp en video... BANDERA EN TRUE")
-                    # 🛠️ Convertir string a lista real si es necesario
-                    try:
-                        if isinstance(numeros, str):
-                            numeros = ast.literal_eval(numeros)
-                        elif not isinstance(numeros, list):
-                            raise ValueError("Formato inválido para números")
-                    except Exception as e:
-                        print("❌ Error al procesar los números:", e)
-                        numeros = []
-
-                    print("Enviando SMS... a numeros VIDEO", numeros)
-                    enviar_whatsapp_personalizado(
-                        numeros,
-                        mensaje_notification,
-                        sitio_notificacion,
-                        company_notificacion,
-                        fecha_notification
-                    )
-
-
-            if envio_correo and get_envio_correo():
-               
-                print("Enviando correo... EN VIDEO BANDERA EN TRUE")
-                print("Enviando correo... a emails VIDEO ", lista_emails)
-                                   
-               
-                send_email_with_outlook("Add_Video", lista_emails, fecha_notification,
-                                        mensaje_notification, nombre_archivo,
-                                        sitio_notificacion, company_notificacion)
-                
-
-            # if envio_correo and get_envio_correo():
-            #     send_email_with_outlook("Add_Video", lista_emails, fecha_notification,
-            #                             mensaje_notification, nombre_archivo,
-            #                             sitio_notificacion, company_notificacion)
-            #     numero_destino = '+573012874982'
-            #     mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'
-            #     enviar_sms(numero_destino, mensaje)
-
-
-
-
-
-        else:
-            print(f"⚠️ No se encontró un registro con ID {id_a_buscar}.")
-
-    except Exception as e:
-        print("❌ Error al guardar video en PostgreSQL:", e)
-
-    finally:
-        cursor.close()
-        conexion.close()
-
     
 def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, envio_whatsapp, lista_emails, numeros, cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017'):
     port = 5432
@@ -308,6 +147,7 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, envio_whatsapp, list
             print("✅ Imagen guardada en la base de datos exitosamente.")
             logger.warning(f"Imagen guardada en la base de datos exitosamente. ID: {id_a_buscar}")
             print("estado de envio_correpoo", envio_correo)
+            print("estado de envio_whatsapp", envio_whatsapp)
 
             # Enviar correo si está habilitado
             if envio_whatsapp and get_envio_correo() == True:
@@ -354,6 +194,135 @@ def guardar_imagen_en_mariadb(nombre_archivo, envio_correo, envio_whatsapp, list
             cursor.close()
             conexion.close()
     
+
+# VIDEO
+    
+import ast
+def guardar_video_en_mariadb(nombre_archivo, nombre_video, envio_correo, envio_whatsapp, lista_emails, numeros, cliente, sitio,  host='10.20.30.33', user='postgres', password='4xUR3_2017'):
+    port = 5432
+    entorno = get_entorno()
+    if entorno == "production":
+        database = 'hse_video_analitics'
+    else:
+        database = 'hse_video_analitics_pruebas'
+        
+    try:
+        conexion = psycopg2.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            dbname=database
+        )
+        cursor = conexion.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+        # Verificar número de registros
+        cursor.execute("SELECT COUNT(*) AS total_registros FROM notificaciones WHERE id_proyecto = %s AND id_cliente = %s", (sitio, cliente))
+        total_registros = cursor.fetchone()['total_registros']
+        print(f"Total de registros en la tabla notificaciones: {total_registros}")
+
+        if total_registros > 15:
+            print("Se ha alcanzado el límite de registros en la tabla Notificaciones.")
+            borrar_primer_registro(cliente, sitio)
+
+        # Buscar evento por ID
+        id_a_buscar = get_id()
+        print(f"ID a buscar: {id_a_buscar}")
+        cursor.execute("SELECT * FROM eventos WHERE id_evento = %s AND id_proyecto = %s AND id_cliente = %s", (id_a_buscar, sitio, cliente))
+        resultado = cursor.fetchone()
+
+        if resultado:
+            print("Datos del registro:", resultado)
+
+            fecha_notification = resultado['fecha']
+            print("1Fecha del evento: ", repr(fecha_notification))
+            mensaje_notification = resultado['descripcion']
+            print("2Mensaje del evento:", repr(mensaje_notification))
+            estado_notification = 'pendiente'
+            sitio_notificacion = resultado['id_proyecto']
+            company_notificacion = resultado['id_cliente']
+
+            with open(nombre_archivo, 'rb') as archivo_video:
+                contenido_video = archivo_video.read()
+
+            insert_sql = """
+                INSERT INTO notificaciones (id_evento, id_cliente, id_proyecto, fecha_envio, mensaje, estado, nombre_archivo, video_alerta)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(insert_sql, (
+                id_a_buscar,
+                cliente,
+                sitio,
+                fecha_notification,
+                mensaje_notification,
+                estado_notification,
+                os.path.basename(nombre_archivo),
+                psycopg2.Binary(contenido_video)
+            ))
+
+            conexion.commit()
+            print("✅ Video guardado en la base de datos exitosamente.")
+            logger.warning("Video guardado en la base de datos exitosamente.")
+
+            print("estado de envio_correpoo", envio_correo)
+            print("estado de envio_whatsapp", envio_whatsapp)
+
+
+            if envio_whatsapp and get_envio_correo():
+                    print("Enviando whatsapp en video... BANDERA EN TRUE")
+                    # 🛠️ Convertir string a lista real si es necesario
+                    try:
+                        if isinstance(numeros, str):
+                            numeros = ast.literal_eval(numeros)
+                        elif not isinstance(numeros, list):
+                            raise ValueError("Formato inválido para números")
+                    except Exception as e:
+                        print("❌ Error al procesar los números:", e)
+                        numeros = []
+
+                    print("Enviando SMS... a numeros VIDEO", numeros)
+                    enviar_whatsapp_personalizado(
+                        numeros,
+                        mensaje_notification,
+                        sitio_notificacion,
+                        company_notificacion,
+                        fecha_notification
+                    )
+
+
+            if envio_correo and get_envio_correo():
+               
+                print("Enviando correo... EN VIDEO BANDERA EN TRUE")
+                print("Enviando correo... a emails VIDEO ", lista_emails)
+                                   
+               
+                send_email_with_outlook("Add_Video", lista_emails, fecha_notification,
+                                        mensaje_notification, nombre_archivo,
+                                        sitio_notificacion, company_notificacion)
+                
+
+            # if envio_correo and get_envio_correo():
+            #     send_email_with_outlook("Add_Video", lista_emails, fecha_notification,
+            #                             mensaje_notification, nombre_archivo,
+            #                             sitio_notificacion, company_notificacion)
+            #     numero_destino = '+573012874982'
+            #     mensaje = '¡Hola AXURE! Este es un mensaje de prueba desde la API de Twilio.'
+            #     enviar_sms(numero_destino, mensaje)
+
+
+
+
+
+        else:
+            print(f"⚠️ No se encontró un registro con ID {id_a_buscar}.")
+
+    except Exception as e:
+        print("❌ Error al guardar video en PostgreSQL:", e)
+
+    finally:
+        cursor.close()
+        conexion.close()
+
 def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='analitica', password='4xUR3_2017'):
     # Conectar a la base de datos
     entorno = get_entorno()
@@ -388,6 +357,50 @@ def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33'
         print("Error al recuperar el video:", e)
     finally:
         conexion.close()
+
+
+
+
+# ELIMINAR REGISTRO
+
+
+def borrar_primer_registro(cliente, sitio, host='10.20.30.33', user='postgres', password='4xUR3_2017', port=5432):
+    entorno = get_entorno()
+    if entorno == "production":
+        database = 'hse_video_analitics'
+    else:
+        database = 'hse_video_analitics_pruebas'
+    try:
+        conexion = psycopg2.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            dbname=database
+        )
+        cursor = conexion.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+        # Eliminar el registro más antiguo filtrado por cliente y proyecto
+        delete_query = """
+            DELETE FROM notificaciones
+            WHERE id_notificaciones = (
+                SELECT id_notificaciones FROM notificaciones
+                WHERE id_proyecto = %s AND id_cliente = %s
+                ORDER BY id_notificaciones ASC
+                LIMIT 1
+            )
+        """
+        cursor.execute(delete_query, (sitio, cliente))
+        conexion.commit()
+        print(f"✅ Se eliminó el registro más antiguo para cliente '{cliente}' y sitio/proyecto '{sitio}'")
+
+    except Exception as e:
+        print("❌ Error al borrar el primer registro:", e)
+    finally:
+        if conexion:
+            cursor.close()
+            conexion.close()
+
 
 
 

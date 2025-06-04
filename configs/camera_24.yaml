@@ -2,7 +2,7 @@ camera:
   client: GEOPARK
   coordinates:
     area1:
-      A_Person: '19'
+      A_Person: '10'
       camara: Afuera
       points:
       - x: 4.651525550633306
@@ -14,10 +14,10 @@ camera:
       - x: 7.047482373494727
         y: 144.03935185185185
       punto: TORITO_OESTE1_GEOPARK
-  info_emails: '["nelson.ceron@axuretechnologies.com", "cristian.tascon@axuretechnologies.com",
-    "fabianmartinezr867@gmail.com"]'
-  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
-    false}'
+  info_emails: '["cristian.tascon@axuretechnologies.com"]'
+  info_notifications: '{"Email":true, "Imagen": true, "Page_HSE": true, "Video": false,
+    "Whatsap":true}'
+  info_numeros: '["+573144599019","+573012874982"]'
   ip: 172.30.37.15
   label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White
   name camera: Afuera
@@ -25,8 +25,8 @@ camera:
   place: Pozo1
   point: TORITO_OESTE1_GEOPARK
   port: 554
-  rtsp_url: rtsp://admin:4xUR3_2017@172.30.37.15:554/Streaming/Channels/102
-  time_areas: '{"area1": "5", "area2": "5", "area3": "10"}'
+  rtsp_url: VideosEnsayoModelo/muchas-personas-perimetral2.mp4
+  time_areas: '{"area1": "3", "area2": "5", "area3": "10"}'
   username: admin
 labels:
 - A_Person

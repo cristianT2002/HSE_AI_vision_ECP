@@ -1,0 +1,40 @@
+camera:
+  client: GEOPARK
+  coordinates:
+    area1:
+      A_Person: '10'
+      camara: Planchada
+      points:
+      - x: 217.59218818244213
+        y: 38.4837962962963
+      - x: 274.7956573282585
+        y: 55.94411375661375
+      - x: 216.09471516815373
+        y: 146.94940476190476
+      - x: 128.0433019279965
+        y: 135.04464285714286
+      - x: 128.64229113371186
+        y: 95.09755291005291
+      punto: NABORS_PX_42
+  info_emails: '["nelson.ceron@axuretechnologies.com","fabian.martinez@axuretechnologies.com"]'
+  info_notifications: '{"Email": false, "Imagen": true, "Page_HSE": true, "Video":
+    false}'
+  info_numeros: null
+  ip: 172.30.37.15
+  label: Green, No_Harness, No_Helmet, Harness, Yellow, A_Person, White
+  name camera: Planchada
+  password: 4xUR3_2017
+  place: Pozo1
+  point: TORITO_OESTE1_GEOPARK
+  port: 554
+  rtsp_url: VideosEnsayoModelo/muchas-personas-perimetral2.mp4
+  time_areas: '{"area1": "10", "area2": "10", "area3": "10"}'
+  username: admin
+labels:
+- A_Person
+- Harness
+- No_Helmet
+- White
+- YellowGreen
+model:
+  path: models/best.pt
