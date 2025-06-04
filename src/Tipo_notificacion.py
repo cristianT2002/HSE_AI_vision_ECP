@@ -493,6 +493,37 @@ def enviar_sms(numero_destino, mensaje):
     
     print(f"Mensaje enviado con SID: {mensaje_enviado.sid}")
 
+
+def enviar_whatsapp_personalizado(numero_destino, mensaje, sitio, company, fecha):
+    account_sid = ''
+    auth_token = ''
+    client = Client(account_sid, auth_token)
+
+    texto = (
+        f" HSE Video Analytics ®️ \n\n\n"   
+        f"🚨 *Evento Detectado*\n\n"
+        f"*Mensaje:* {mensaje}\n"
+        f"*Sitio:* {sitio}\n"
+        f"*Empresa:* {company}\n"
+        f"*Fecha:* {fecha}\n\n"
+        f"⚠️ Por favor, revise los detalles y tome las acciones necesarias."
+    )
+
+    if not numero_destino:
+        print("⚠️ Lista de números vacía. No se enviará mensaje.")
+        return
+
+    for numero in numero_destino:
+        numero = numero.strip()
+        print(f"📞 Enviando a: {repr(numero)}")
+        # message = client.messages.create(
+        #     from_='whatsapp:+14155238886',
+        #     to=f'whatsapp:{numero}',
+        #     body=texto
+        # )
+        # print(f"✅ Mensaje WhatsApp enviado a {numero} con SID: {message.sid}")
+
+
 def recuperar_video_de_mariadb(id_video, string_adicional='', host='10.20.30.33', user='ax_monitor', password='axure.2024'):
     # Conectar a la base de datos
     entorno = get_entorno()
